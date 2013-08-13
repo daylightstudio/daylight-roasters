@@ -1,0 +1,183 @@
+//===========================================================================
+//	IMPORTS (TOP)
+//===========================================================================
+@import url('normalize.less');
+@import url('functions.less');
+@import url('grid.less');
+
+/* ==========================================================================
+	CORE
+============================================================================= */
+
+// VARIABLES
+//---------------------------------------- //
+
+// Colors
+@red: #ff0000;
+@black: #000;
+@dark: #0C0C0C;
+@grey: #666666;
+@white: #fff;
+@copy: #666666;
+
+// Responsive Widths
+@mobileWidth: 550px; //568px for iphone .. and (orientation : landscape)`
+@tabletWidth: 765px;
+@desktopWidth: 960px;
+
+// animations
+@cubic_ease: cubic-bezier(0.5, 0, 0.5, 1);
+
+
+/** MISC
+---------------------------------------- **/
+// Remove text-shadow in selection highlight: h5bp.com/i
+// These selection declarations have to be separate.
+// Customize the background color to match your design.
+::-moz-selection { background: fade(@red, 90%); text-shadow: none; color: @white; }
+::selection { background: fade(@red, 90%); text-shadow: none; color: @white; }
+
+// A better looking default horizontal rule
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+
+// Remove the gap between images and the bottom of their containers: h5bp.com/i/440
+img {vertical-align: middle; }
+
+// Remove default fieldset styles.
+fieldset {border: 0; margin: 0; padding: 0; }
+
+// Allow only vertical resizing of textareas.  
+textarea {resize: vertical; }
+
+// Chromeframe styles
+.chromeframe { background: #ccc; color: #000; padding: 1em 0; text-align: center;  }
+
+// Box sizing: http://paulirish.com/2012/box-sizing-border-box-ftw/
+* { box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+
+// Set html/body max width
+html, body { width: 100%; min-height: 100%; padding: 0; margin: 0; display: table; width: 100%; }
+
+
+/** TYPOGRAPHY
+---------------------------------------- **/
+/* Set base font-sizes and fonts. Set base font-size to 10px. Then use .font-size() helper function to leverage rem sizing. */
+html { font-size: 62.5%; }
+.mainfont, html, body, button, input, select, textarea { font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; }
+body { .font-size(1.6); line-height: 1.5; }
+html, body, button, input, select, textarea { color: @copy; }
+
+/** PARAGRAPH AND LIST MARGINS **/
+p, ul, ol { margin: 1em 0;
+	&:first-child { margin-top: 0 }
+	&:last-child { margin-bottom: 0 }
+}
+
+/** BASE LINK STYLING **/
+a { color: @red; text-decoration: none;
+	&:hover { text-decoration: underline; }
+	// Use vertical-align:top on linked images when using 
+	// border-bottom for link styling. Will hide border behind image.
+	// img { vertical-align: top; }
+}
+
+
+/** HEADERS **/
+.header_global { margin: 1em 0 1.5em; line-height: 1; 
+	&:first-child { margin-top: 0; }
+}
+h1, .h_headline    { /* header styles here */ &:extend(.header_global all); }
+h2, .h_subheadline { /* header styles here */ &:extend(.header_global all); }
+h3, .h_byline      { /* header styles here */ &:extend(.header_global all); }
+h4, .h_standfirst  { /* header styles here */ &:extend(.header_global all); }
+h5, .h_related     { /* header styles here */ &:extend(.header_global all); }
+h6, .h_promo       { /* header styles here */ &:extend(.header_global all); }
+
+
+/** TYPE HELPER CLASSES **/
+big, .big, .intro { .font-size(1.7); line-height: 1.5; }
+small, .small { .font-size(1.1); line-height: 1.5; }
+
+
+/** LAYOUT
+---------------------------------------- **/
+.wrapper:extend(.clearfix all) { max-width:1000px; padding: 0 20px; margin: 0 auto; }
+
+
+/* ==========================================================================
+	COMPONENTS
+============================================================================= */
+
+/** IMAGES
+---------------------------------------- **/
+img { max-width: 100%; height: auto; }
+
+
+/** BUTTONS / CTA's
+---------------------------------------- **/
+.btn { }
+.cta { }
+
+
+/** HEROSLIDER
+---------------------------------------- **/
+
+
+/** FORMS
+---------------------------------------- **/
+
+
+
+/* ==========================================================================
+	MODULES
+============================================================================= */
+
+/** HEADER
+---------------------------------------- **/
+.header { }
+.sitetitle {  }
+
+/** MAINNAV
+---------------------------------------- **/
+.mainnav { }
+
+/** FOOTER
+---------------------------------------- **/
+.footer {  }
+
+
+
+
+/* ==========================================================================
+	ERRORS, PRINT & MISC
+============================================================================= */
+
+/** ERRORS
+---------------------------------------- **/
+#error_404{}
+#error_db{}
+#error_general{}
+#error_php{}
+
+/** PRINT CSS
+---------------------------------------- **/
+@media print {
+	*{background:transparent !important;color:black !important;text-shadow:none !important;filter:none !important;-ms-filter:none !important;}
+	a,a:visited{text-decoration:underline;}
+	a[href]:after{content:" (" attr(href) ")";}
+	abbr[title]:after{content:" (" attr(title) ")";}
+	.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:"";}
+	pre,blockquote{border:1px solid #999;page-break-inside:avoid;}
+	thead{display:table-header-group;}
+	tr,img{page-break-inside:avoid;}
+	img{max-width:100% !important;}
+	@page{margin:0.5cm;}
+	p,h2,h3{orphans:3;widows:3;}
+	h2,h3{page-break-after:avoid;}
+}
+
+//===========================================================================
+//	IMPORTS (BOTTOM)
+//===========================================================================
+@import url('helpers.less');
+

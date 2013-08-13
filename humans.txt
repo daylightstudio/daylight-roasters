@@ -1,0 +1,40 @@
+           ...I777777777?...            
+        ..I777:..    ...:777?.          
+       .777.    ..,:,...  ..777..       
+      77... ,7777777777777,. . 77.      
+   .:77 ..777~...:77777777777.  77:     
+  .=7.  777.. I7777777777777777. .77.   
+  ~7...77.. 77777777777777777777. .7~.  
+ .7=. 77 ..7777777777777777777777...7.  
+ 77  77..7777777777777777777777777 .77. 
+.7.. 77.77777777777777777777777777...7. 
+77. 77..777777777777777777777777777  77 
+77 .77.7777777777777777777777777777  77 
+77  77.7777777777777777777777777777  77 
+77..77.7777777777777777777777777777  77 
+.7...77777777777777777777777777777.  7. 
+ 77  77777777777777777777777777777..77. 
+ .7,..777777777777777777777777777...7   
+  I7.  7777777777777777777777777. .7I.  
+  .77. .77777777777777777777777. .77.   
+   .77+ ..77777~.... ...77777...+7I..   
+     .77.. .77.          I7. ..77.      
+      ..77:.              ..:77,.       
+        ..7777..        .7777..         
+          ....77777777777....           
+
+DAYLIGHT STUDIO, PORTLAND OR - bydaylight.com
+
+    Anna Gillispe    -- Project Manager
+    David McReynolds -- Owner, Backend Development, FUEL CMS Creator
+    Jonathan Lee     -- Backend Developer
+    Kristin Wille    -- Front-end Developer
+    Piet van Zoen    -- Front-end Developer
+    Shawn Mann       -- Owner, Operations
+    Tyler Davis      -- Designer
+
+# TECHNOLOGY
+
+    Standards: HTML5, CSS3
+    Components: jQuery, Modernizr, LESS CSS
+    Software: FUEL CMS (fuelcms.com), Sublime Text 2, Codekit

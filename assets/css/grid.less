@@ -1,0 +1,108 @@
+/* ==========================================================================
+	GRID
+============================================================================= */
+
+// MODIFIED FROM http://Semantic.gs
+//----------------------------------------
+
+// Defaults which you can freely override
+@column-width: 60;
+@gutter-width: 20;
+@columns: 12;
+
+// Utility variable — you should never need to modify this
+@gridsystem-width: (@column-width*@columns) + (@gutter-width*@columns) * 1px;
+
+// Set @total-width to 100% for a fluid layout
+@total-width: 100%;
+// @total-width: @gridsystem-width;
+
+// Uncomment these two lines and the star-hack width/margin lines below to enable sub-pixel fix for IE6 & 7. See http://tylertate.com/blog/2012/01/05/subpixel-rounding.html
+// @min-width: 960;
+// @correction: 0.5 / @min-width * 100 * 1%;
+
+// The micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
+.clearfix { *zoom:1;
+	&:before, &:after {content:""; display:table; }
+	&:after { clear:both; }
+}
+
+
+//////////
+// GRID //
+//////////
+
+body {
+	width: 100%;
+	.clearfix;
+}
+
+.row(@columns:@columns) {
+	display: block;
+	width: (@total-width*((@gutter-width + @gridsystem-width)/@gridsystem-width));
+	margin: 0 (@total-width*(((@gutter-width*.5)/@gridsystem-width)*-1));
+	// *width: @total-width*((@gutter-width + @gridsystem-width)/@gridsystem-width)-@correction;
+	// *margin: 0 @total-width*(((@gutter-width*.5)/@gridsystem-width)*-1)-@correction;
+	.clearfix;
+}
+.column_base() {
+	min-height: 1px; 
+	display: inline;
+	float: left;
+	margin-left: (@total-width*((@gutter-width*.5)/@gridsystem-width));
+	margin-right: (@total-width*((@gutter-width*.5)/@gridsystem-width));
+} 
+.column(@x,@columns:@columns) {
+	width: (@total-width*((((@gutter-width+@column-width)*@x)-@gutter-width) / @gridsystem-width));
+	// *width: @total-width*((((@gutter-width+@column-width)*@x)-@gutter-width) / @gridsystem-width)-@correction;
+	// *margin: 0 @total-width*((@gutter-width*.5)/@gridsystem-width)-@correction;
+}
+.push(@offset:1) {
+	margin-left: (@total-width*(((@gutter-width+@column-width)*@offset) / @gridsystem-width) + @total-width*((@gutter-width*.5)/@gridsystem-width));
+}
+.pull(@offset:1) {
+	margin-right: (@total-width*(((@gutter-width+@column-width)*@offset) / @gridsystem-width) + @total-width*((@gutter-width*.5)/@gridsystem-width));
+}
+
+/** GRID CLASSES
+---------------------------------------- **/
+.row { .row(12); }
+.column { .column_base(); }
+.span1:extend(.column) { .column(1); }
+.span2:extend(.column) { .column(2); }
+.span3:extend(.column) { .column(3); }
+.span4:extend(.column) { .column(4); }
+.span5:extend(.column) { .column(5); }
+.span6:extend(.column) { .column(6); }
+.span7:extend(.column) { .column(7); }
+.span8:extend(.column) { .column(8); }
+.span9:extend(.column) { .column(9); }
+.span10:extend(.column) { .column(10); }
+.span11:extend(.column) { .column(11); }
+.span12:extend(.column) { .column(12); }
+// .span13:extend(.column) { .column(13); }
+// .span14:extend(.column) { .column(14); }
+// .span15:extend(.column) { .column(15); }
+// .span16:extend(.column) { .column(16); }
+.push1 { .push(1); }
+.push2 { .push(2); }
+.push3 { .push(3); }
+.push4 { .push(4); }
+.push5 { .push(5); }
+.push6 { .push(6); }
+.push7 { .push(7); }
+.push8 { .push(8); }
+.push9 { .push(9); }
+.push10 { .push(10); }
+.push11 { .push(11); }
+.push12 { .push(12); }
+// .push13 { .push(13); }
+// .push14 { .push(14); }
+// .push15 { .push(15); }
+// .push16 { .push(16); }
+.span_center { display: block; margin-left: auto; margin-right: auto; float: none;  }
+
+@media only screen and (max-width:@mobileWidth) {
+	.column { .column(12); .push(0); }
+}
+
