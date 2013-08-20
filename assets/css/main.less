@@ -114,7 +114,20 @@ small,
 /** LAYOUT
 ---------------------------------------- **/
 .wrapper:extend(.clearfix all) { max-width:1000px; padding: 0 20px; margin: 0 auto; }
-
+.buffer {
+	@s: 0.5em;
+	@m: 1em;
+	@l: 1.5em;
+	@xl: 2.5em;
+	// &_mar_s, &_s { margin-top: @s; margin-bottom: @s; }
+	// &_mar_m, &_m { margin-top: @m; margin-bottom: @m; }
+	// &_mar_l, &_l { margin-top: @l; margin-bottom: @l; }
+	// &_mar_xl, &_xl { margin-top: @xl; margin-bottom: @xl; }
+	&_pad_s { padding-top: @s; padding-bottom: @s; }
+	&_pad_m { padding-top: @m; padding-bottom: @m; }
+	&_pad_l, & { padding-top: @l; padding-bottom: @l; }
+	&_pad_xl { padding-top: @xl; padding-bottom: @xl; }
+}
 
 /* ==========================================================================
 	COMPONENTS
@@ -146,7 +159,9 @@ img { max-width: 100%; height: auto; }
 
 /** HEADER
 ---------------------------------------- **/
-.header { }
+.header {
+	
+}
 .sitetitle {  }
 
 /** MAINNAV
