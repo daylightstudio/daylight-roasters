@@ -49,7 +49,7 @@
 			
 			<nav class="mainnav">
 				<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */?>
-				<?php echo fuel_nav()?>
+				<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
 			</nav>
 		</div>
 	</header>
