@@ -25,9 +25,15 @@
 .text_center { text-align: center }
 .text_left { text-align: left }
 .text_right { text-align: right }
+
+/** VERTICAL ALIGNMENT - http://css-tricks.com/centering-in-the-unknown/
+---------------------------------------- **/
 .align_middle {
 	&:before { display: inline-block; content: ""; height: 100%; vertical-align: middle; margin-left: -0.3em; }
 	> * { display: inline-block; vertical-align: middle; float: none;  }
+}
+.align_bottom:extend(.align_middle all) {
+	> * { vertical-align: bottom; }
 }
 
 /* UL OL */
@@ -41,6 +47,19 @@ ul.unstyled { margin: 0; padding: 0; list-style-type: none }
 .lower { text-transform: lowercase; }
 .relative { position: relative; }
 .block { display: block; }
+
+/** RESPONSIVE HELPERS
+---------------------------------------- **/
+@media only screen and (max-width:@tabletWidth) {
+	.tablet_center { text-align: center; }
+	.tablet_hide { display: none; }
+	.tablet_break { display: block; }
+}
+@media only screen and (max-width:@mobileWidth) {
+	.mobile_center { text-align: center; }
+	.mobile_hide { display: none; }
+	.mobile_break { display: block; }
+}
 
 /* MARGIN HELPERS */
 /** MARGIN & PADDING HELPERS **/

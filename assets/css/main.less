@@ -12,13 +12,16 @@
 // VARIABLES
 //---------------------------------------- //
 
-// Colors
-@red: #ff0000;
-@black: #000;
-@dark: #0C0C0C;
-@grey: #666666;
-@white: #fff;
-@copy: #666666;
+// Base Colors
+@c_red: #ff0000;
+@c_black: #000;
+@c_dark: #0C0C0C;
+@c_grey: #666666;
+@c_white: #fff;
+@c_copy: #666666;
+
+// Component Colors
+@c_copy: @c_dark;
 
 // Responsive Widths
 @mobileWidth: 550px; //568px for iphone .. and (orientation : landscape)`
@@ -34,8 +37,8 @@
 // Remove text-shadow in selection highlight: h5bp.com/i
 // These selection declarations have to be separate.
 // Customize the background color to match your design.
-::-moz-selection { background: fade(@red, 90%); text-shadow: none; color: @white; }
-::selection { background: fade(@red, 90%); text-shadow: none; color: @white; }
+::-moz-selection { background: fade(@c_red, 90%); text-shadow: none; color: @c_white; }
+::selection { background: fade(@c_red, 90%); text-shadow: none; color: @c_white; }
 
 // A better looking default horizontal rule
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
@@ -65,16 +68,20 @@ html, body { width: 100%; min-height: 100%; padding: 0; margin: 0; display: tabl
 html { font-size: 62.5%; }
 .mainfont, html, body, button, input, select, textarea { font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; }
 body { .font-size(1.6); line-height: 1.5; }
-html, body, button, input, select, textarea { color: @copy; }
+html, body, button, input, select, textarea { color: @c_copy; }
 
 /** PARAGRAPH AND LIST MARGINS **/
-p, ul, ol { margin: 1em 0;
+.first_last_margins {
 	&:first-child { margin-top: 0 }
 	&:last-child { margin-bottom: 0 }
 }
+ul, ol { margin: 1em 0; 
+	&:extend(.first_last_margins all);
+}
+p:extend(.first_last_margins all) { margin: 0 0 1em 0; }
 
 /** BASE LINK STYLING **/
-a { color: @red; text-decoration: none;
+a { color: @c_red; text-decoration: none;
 	&:hover { text-decoration: underline; }
 	// Use vertical-align:top on linked images when using 
 	// border-bottom for link styling. Will hide border behind image.
@@ -83,7 +90,8 @@ a { color: @red; text-decoration: none;
 
 
 /** HEADERS **/
-.header_global { margin: 1em 0 1.5em; line-height: 1; 
+.header_global { margin: 0.5em 0; line-height: 1; 
+	&:extend(.first_last_margins all);
 	&:first-child { margin-top: 0; }
 }
 h1, .h_headline    { /* header styles here */ &:extend(.header_global all); }
