@@ -45,7 +45,7 @@
 
 	<header class="header clearfix">
 		<div class="wrapper">
-			<div class="sitetitle"><a class="ir" href="<?php echo site_url('')?>">Site Title</a></div>
+			<<?=(is_home() ? 'h1' : 'div')?> class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></<?=(is_home() ? 'h1' : 'div')?>>
 			
 			<nav class="mainnav">
 				<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */?>
