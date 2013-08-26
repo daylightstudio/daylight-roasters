@@ -45,11 +45,13 @@
 
 	<header class="header clearfix">
 		<div class="wrapper">
-			<<?=(is_home() ? 'h1' : 'div')?> class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></<?=(is_home() ? 'h1' : 'div')?>>
-			
-			<nav class="mainnav">
-				<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */?>
-				<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
-			</nav>
+			<div class="row">
+				<<?=(is_home() ? 'h1' : 'div')?> class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></<?=(is_home() ? 'h1' : 'div')?>>
+				
+				<nav class="mainnav_container">
+					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */?>
+					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
+				</nav>
+			</div>
 		</div>
 	</header>
