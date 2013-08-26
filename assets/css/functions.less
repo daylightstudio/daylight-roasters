@@ -15,6 +15,7 @@
 	background: -moz-linear-gradient(top, @first, @first ~"@{spread}%", @second);
 	background: -ms-linear-gradient(top, @first, @first ~"@{spread}%", @second);
 	background: -o-linear-gradient(top, @first, @first ~"@{spread}%", @second);
+	background: linear-gradient(top, @first, @first ~"@{spread}%", @second);
 }
 .gradient(linear, bottom, @first, @second, @spread: 0) {
 	// DIY FALLBACK
@@ -24,6 +25,7 @@
 	background: -moz-linear-gradient(bottom, @first, @first ~"@{spread}%", @second);
 	background: -ms-linear-gradient(bottom, @first, @first ~"@{spread}%", @second);
 	background: -o-linear-gradient(bottom, @first, @first ~"@{spread}%", @second);
+	background: linear-gradient(bottom, @first, @first ~"@{spread}%", @second);
 }
 .gradient(linear, left, @first, @second, @spread: 0) {
 	// DIY FALLBACK
@@ -33,6 +35,7 @@
 	background: -moz-linear-gradient(left, @first, @first ~"@{spread}%", @second);
 	background: -ms-linear-gradient(left, @first, @first ~"@{spread}%", @second);
 	background: -o-linear-gradient(left, @first, @first ~"@{spread}%", @second);
+	background: linear-gradient(left, @first, @first ~"@{spread}%", @second);
 }
 .gradient(linear, right, @first, @second, @spread: 0) {
 	// DIY FALLBACK
@@ -42,6 +45,7 @@
 	background: -moz-linear-gradient(right, @first, @first ~"@{spread}%", @second);
 	background: -ms-linear-gradient(right, @first, @first ~"@{spread}%", @second);
 	background: -o-linear-gradient(right, @first, @first ~"@{spread}%", @second);
+	background: linear-gradient(right, @first, @first ~"@{spread}%", @second);
 }
 // CSS reflected gradient
 .gradient(reflected, vert, @outer, @inner, @spread) {
@@ -53,6 +57,7 @@
 	background: -moz-linear-gradient(top, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 	background: -ms-linear-gradient(top, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 	background: -o-linear-gradient(top, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
+	background: linear-gradient(top, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 }
 .gradient(reflected, horz, @outer, @inner, @spread) {
 	@spreadlast: (100-@spread);
@@ -63,6 +68,7 @@
 	background: -moz-linear-gradient(left, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 	background: -ms-linear-gradient(left, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 	background: -o-linear-gradient(left, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
+	background: linear-gradient(left, @outer, @inner ~"@{spread}%", @inner, @inner ~"@{spreadlast}%", @outer);
 }
 
 // Box sizing: http://css-tricks.com/almanac/properties/b/box-sizing/
