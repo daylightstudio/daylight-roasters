@@ -25,13 +25,13 @@
 
 DAYLIGHT STUDIO, PORTLAND OR - bydaylight.com
 
-    Anna Gillispe    -- Project Manager
-    David McReynolds -- Owner, Backend Development, FUEL CMS Creator
-    Jonathan Lee     -- Backend Developer
-    Kristin Wille    -- Front-end Developer
-    Piet van Zoen    -- Front-end Developer
-    Shawn Mann       -- Owner, Operations
-    Tyler Davis      -- Designer
+    Anna Gillispe    -- Project Management
+    David McReynolds -- Company Owner, Backend Development, FUEL CMS
+    Jonathan Lee     -- Backend Development
+    Kristin Wille    -- Front-end Development
+    Piet van Zoen    -- Front-end Development
+    Shawn Mann       -- Company Owner, Operations
+    Tyler Davis      -- Design
 
 # TECHNOLOGY
 
