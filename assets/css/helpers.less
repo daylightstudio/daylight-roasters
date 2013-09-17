@@ -22,9 +22,7 @@
 .img_left, .img_right, .img_center {
 	&:first-child { margin-top: 0; }
 }
-.text_center { text-align: center }
-.text_left { text-align: left }
-.text_right { text-align: right }
+
 
 /** VERTICAL ALIGNMENT - http://css-tricks.com/centering-in-the-unknown/
 ---------------------------------------- **/
@@ -36,17 +34,27 @@
 	> * { vertical-align: bottom; }
 }
 
-/* UL OL */
-ol.unstyled,
-ul.unstyled { margin: 0; padding: 0; list-style-type: none }
+/** LISTS
+---------------------------------------- **/
+.unstyled_list { margin: 0; padding: 0; list-style-type: none }
+.delimited_list:extend(.unstyled_list) {
+	li { display: inline-block; 
+		&:before { content: ' | '; padding: 0 0.2em; }
+		&:first-child:before { display: none; }
+	}
+}
 
-/* TEXT */
-.nowrap { white-space: nowrap; }
+/** TEXT
+---------------------------------------- **/
+.text_nowrap { white-space: nowrap; }
 .strong, .bold { font-weight: bold; }
-.upper { text-transform: uppercase; }
-.lower { text-transform: lowercase; }
+.text_upper { text-transform: uppercase; }
+.text_lower { text-transform: lowercase; }
 .relative { position: relative; }
 .block { display: block; }
+.text_center { text-align: center }
+.text_left { text-align: left }
+.text_right { text-align: right }
 
 /** RESPONSIVE HELPERS
 ---------------------------------------- **/
