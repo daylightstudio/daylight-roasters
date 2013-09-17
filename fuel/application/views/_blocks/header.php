@@ -15,7 +15,7 @@
 
 	<meta name="viewport" content="width=device-width">
 
-	<meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" />
+	<?php if (!empty(fuel_var('meta_keywords'))): ?><meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" /><?php endif ?>
 	<meta name="description" content="<?php echo fuel_var('meta_description')?>" />
 
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
@@ -24,7 +24,6 @@
 	* All JavaScript in footer (_blocks/footer.php), except for jQuery and Modernizr. 
 	* Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline 
 	*/ ?>
-
 	<?php echo jquery('1.10.2') ?>
 	<?php echo js('modernizr'); ?>
 
@@ -49,7 +48,7 @@
 				<<?=(is_home() ? 'h1' : 'div')?> class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></<?=(is_home() ? 'h1' : 'div')?>>
 				
 				<nav class="mainnav_container">
-					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */?>
+					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */ ?>
 					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
 				</nav>
 			</div>
