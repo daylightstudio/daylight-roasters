@@ -9,14 +9,18 @@
 	<?php else : ?>
 		<title><?php echo fuel_var('page_title', '')?></title>
 	<?php endif ?>
-	
+
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
 	<meta name="viewport" content="width=device-width">
 
-	<?php if (!empty(fuel_var('meta_keywords'))): ?><meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" /><?php endif ?>
+	<?php if (!empty($meta_keywords)): ?>
+	<meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" />
+	<?php endif ?>
+	<?php if (!empty($meta_description)): ?>
 	<meta name="description" content="<?php echo fuel_var('meta_description')?>" />
+	<?php endif ?>
 
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
 
@@ -34,7 +38,7 @@
 
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
-	
+
 	<?php if (!empty($is_blog)) : ?>
 	<?php echo $CI->fuel_blog->header()?>
 	<?php endif; ?>
