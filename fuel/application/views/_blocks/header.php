@@ -47,8 +47,8 @@
 	<header class="header clearfix">
 		<div class="wrapper">
 			<div class="row">
-				<<?=(is_home() ? 'h1' : 'div')?> class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></<?=(is_home() ? 'h1' : 'div')?>>
-				
+				<div class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></div>
+
 				<nav class="mainnav_container">
 					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */ ?>
 					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
