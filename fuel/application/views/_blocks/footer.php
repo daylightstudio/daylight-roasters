@@ -9,9 +9,5 @@
 	<?php echo js('plugins, main'); ?>
 	<?php echo js($js); ?>
 
-	<?php if (is_environment('production')): ?>
-		<?=fuel_block('tracking')?>
-	<?php endif ?>
-
 </body>
 </html>
