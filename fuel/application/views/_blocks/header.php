@@ -21,11 +21,16 @@
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
 
 	<?php /*
-	* All JavaScript in footer (_blocks/footer.php), except for jQuery and Modernizr. 
-	* Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline 
+	* HEADER JS
+	* ---------------------
+	* All JavaScript in footer (_blocks/footer.php), except for jQuery and Modernizr/HTML5 Shiv.
+	* JQuery function grabs Google CDN's jQuery, with a protocol relative URL; fall back to local if offline. Be sure to update local jquery file.
 	*/ ?>
 	<?php echo jquery('1.10.2') ?>
-	<?php echo js('modernizr'); ?>
+
+	<!--[if lte IE8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<?php /* echo js('modernizr');
+		Remove html5 shiv if you're using modernizr. Also add `class="no-js"` to the html tag */ ?>
 
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
