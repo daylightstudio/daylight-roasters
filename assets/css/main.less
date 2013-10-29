@@ -1,39 +1,18 @@
-//===========================================================================
-//	IMPORTS (TOP)
-//===========================================================================
 @import url('normalize.less');
 @import url('functions.less');
 @import url('grid.less');
+@import url('variables.less');
 
-/* ==========================================================================
+/* ========================================================================================================================
+===========================================================================================================================
 	CORE
-============================================================================= */
-
-// VARIABLES
-//---------------------------------------- //
-
-// Base Colors
-@c_red: #ff0000;
-@c_black: #000;
-@c_dark: #0C0C0C;
-@c_grey: #666666;
-@c_white: #fff;
-@c_copy: #666666;
-
-// Component Colors
-@c_copy: @c_dark;
-
-// Responsive Widths
-@mobileWidth: 550px; //568px for iphone .. and (orientation : landscape)`
-@tabletWidth: 765px;
-@desktopWidth: 960px;
-
-// animations
-@cubic_ease: cubic-bezier(0.5, 0, 0.5, 1);
+===========================================================================================================================
+======================================================================================================================== */
 
 
-/** MISC
----------------------------------------- **/
+/* ==============
+MISC
+============== */
 // Remove text-shadow in selection highlight: h5bp.com/i
 // These selection declarations have to be separate.
 // Customize the background color to match your design.
@@ -49,7 +28,7 @@ img {vertical-align: middle; }
 // Remove default fieldset styles.
 fieldset {border: 0; margin: 0; padding: 0; }
 
-// Allow only vertical resizing of textareas.  
+// Allow only vertical resizing of textareas.
 textarea {resize: vertical; }
 
 // Chromeframe styles
@@ -59,11 +38,12 @@ textarea {resize: vertical; }
 *, :before, :after { box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
 
 // Set html/body max width
-html, body { width: 100%; min-height: 100%; padding: 0; margin: 0; display: table; width: 100%; }
+html, body { width: 100%; min-height: 100%; padding: 0; margin: 0; display: table; }
 
 
-/** TYPOGRAPHY
----------------------------------------- **/
+/* ==============
+TYPOGRAPHY
+============== */
 /* Set base font-sizes and fonts. Set base font-size to 10px. Then use .font-size() helper function to leverage rem sizing. */
 html { font-size: 62.5%; }
 .mainfont, html, body, button, input, select, textarea { font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; }
@@ -75,7 +55,7 @@ html, body, button, input, select, textarea { color: @c_copy; }
 	&:first-child { margin-top: 0 }
 	&:last-child { margin-bottom: 0 }
 }
-ul, ol { margin: 1em 0; 
+ul, ol { margin: 1em 0;
 	&:extend(.first_last_margins all);
 }
 p:extend(.first_last_margins all) { margin: 0 0 1em 0; }
@@ -83,14 +63,14 @@ p:extend(.first_last_margins all) { margin: 0 0 1em 0; }
 /** BASE LINK STYLING **/
 a { color: @c_red; text-decoration: none;
 	&:hover { text-decoration: underline; }
-	// Use vertical-align:top on linked images when using 
+	// Use vertical-align:top on linked images when using
 	// border-bottom for link styling. Will hide border behind image.
 	// img { vertical-align: top; }
 }
 
 
 /** HEADERS **/
-.header_global { margin: 0.5em 0; line-height: 1; 
+.header_global { margin: 0.5em 0; line-height: 1;
 	&:extend(.first_last_margins all);
 	&:first-child { margin-top: 0; }
 }
@@ -103,16 +83,17 @@ h6, .h_promo       { /* header styles here */ &:extend(.header_global all); }
 
 
 /** TYPE HELPER CLASSES **/
-big, 
-.text_large, 
+big,
+.text_large,
 .text_intro { .font-size(2.4); line-height: 1.5; }
 .text_medium { .font-size(1.6); }
-small, 
+small,
 .text_small { .font-size(1.4); line-height: 1.2; }
 
 
-/** LAYOUT
----------------------------------------- **/
+/* ==============
+LAYOUT
+============== */
 .wrapper:extend(.clearfix all) { max-width:960px; width: 90%; padding: 0; margin: 0 auto; }
 .buffer {
 	@s: 0.5em;
@@ -129,38 +110,15 @@ small,
 	&_pad_xl { padding-top: @xl; padding-bottom: @xl; }
 }
 
-/* ==========================================================================
-	COMPONENTS
-============================================================================= */
 
-/** IMAGES
----------------------------------------- **/
-img { max-width: 100%; height: auto; }
-
-
-/** BUTTONS / CTA's
----------------------------------------- **/
-.btn { }
-.cta { }
-
-
-/** HEROSLIDER
----------------------------------------- **/
-
-
-/** FORMS
----------------------------------------- **/
-
-
-
-/* ==========================================================================
-	MODULES
-============================================================================= */
+/* ==============
+TEMPLATE
+============== */
 
 /** HEADER
 ---------------------------------------- **/
 .header {
-	
+
 }
 .sitetitle {  }
 
@@ -174,10 +132,9 @@ img { max-width: 100%; height: auto; }
 
 
 
-
-/* ==========================================================================
-	ERRORS, PRINT & MISC
-============================================================================= */
+/* ==============
+ERRORS, PRINT & MISC
+============== */
 
 /** ERRORS
 ---------------------------------------- **/
@@ -203,8 +160,31 @@ img { max-width: 100%; height: auto; }
 	h2,h3{page-break-after:avoid;}
 }
 
-//===========================================================================
-//	IMPORTS (BOTTOM)
-//===========================================================================
+
+
+/* ========================================================================================================================
+===========================================================================================================================
+	COMPONENTS
+===========================================================================================================================
+======================================================================================================================== */
+
+
+/** IMAGES
+---------------------------------------- **/
+img { max-width: 100%; height: auto; }
+
+
+/** BUTTONS / CTA's
+---------------------------------------- **/
+.btn { }
+.cta { }
+
+
+/** ICONS
+---------------------------------------- **/
+
+
+/** HELPERS IMPORT
+---------------------------------------- **/
 @import url('helpers.less');
 

@@ -1,9 +1,9 @@
-/******************************************************************************
- HELPERS 
-******************************************************************************/
+/* ==========================================================================
+	HELPERS
+============================================================================= */
 
 /* IMAGE REPLACEMENT - sets all you need for replacing text with an image. Just set your 'background-image',width and height. */
-.ir {background-color: transparent; border: 0; overflow: hidden; /* IE 6/7 fallback */ *text-indent: -9999px; 
+.ir {background-color: transparent; border: 0; overflow: hidden; /* IE 6/7 fallback */ *text-indent: -9999px;
 	&:before {background-color: #ccc; content: ""; display: block; width: 0; height: 150%; }
 }
 
@@ -27,7 +27,7 @@
 /** VERTICAL ALIGNMENT - http://css-tricks.com/centering-in-the-unknown/
 ---------------------------------------- **/
 .align_middle {
-	&:before { display: inline-block; content: ""; height: 100%; vertical-align: middle; margin-left: -0.3em; }
+	&:before { display: inline-block; content: ""; height: 100%; vertical-align: middle; }
 	> * { display: inline-block; vertical-align: middle; float: none;  }
 }
 .align_bottom:extend(.align_middle all) {
@@ -38,7 +38,7 @@
 ---------------------------------------- **/
 .unstyled_list { margin: 0; padding: 0; list-style-type: none }
 .delimited_list:extend(.unstyled_list) {
-	li { display: inline-block; 
+	li { display: inline-block;
 		&:before { content: ' | '; padding: 0 0.2em; }
 		&:first-child:before { display: none; }
 	}
@@ -72,9 +72,9 @@
 /* MARGIN HELPERS */
 /** MARGIN & PADDING HELPERS **/
 // Edit margin and padding helper values here:
-@xxl: 2.5em; 
-@xl: 2em; 
-@l: 1.5em; 
+@xxl: 2.5em;
+@xl: 2em;
+@l: 1.5em;
 @m: 1em;
 @s: 0.5em;
 
