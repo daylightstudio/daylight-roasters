@@ -25,15 +25,15 @@
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
 
 	<script>
-		if (!window.console) console = {log: function() {}};
 		// Set cookie for retina screens... .htaccess then handles serving @2x images if they are available.
 		if((window.devicePixelRatio===undefined?1:window.devicePixelRatio)>1)
 			document.cookie='HTTP_IS_RETINA=1;path=/';
 	</script>
 	<?php echo jquery('1.10.2') ?>
-	<!--[if lte IE8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
 	<?php /* echo js('modernizr');
 		Remove html5 shiv if you're using modernizr. Also add `class="no-js"` to the html tag */ ?>
+	<!--[if lte IE8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
