@@ -72,7 +72,17 @@ fuel.fields.wysiwyg_field = function(context){
 			q += '&preview=' + escape($(elem).attr('data-preview'));
 		}
 		myMarkItUpSettings.previewParserPath = _previewPath + '?' + q;
-		$(elem).not('.markItUpEditor').markItUp(myMarkItUpSettings);
+		
+		if ($(elem).attr('data-markdown') == 1){
+			var config = myMarkItUpMarkdownSettings;
+		} else {
+			var config = myMarkItUpSettings;
+		}
+
+		// add custom configs
+		config = $.extend(config, $(elem).data());
+		$(elem).not('.markItUpEditor').markItUp(config);
+
 		
 		// set the width of the preview to match the width of the textarea
 		$('.markItUpPreviewFrame', context).each(function(){
@@ -310,7 +320,7 @@ fuel.fields.wysiwyg_field = function(context){
 					if (!previewOptions.length) previewOptions = 'width=1024,height=768';
 
 					var previewWindow = window.open('', 'preview', previewOptions);
-					var val = (CKEDITOR.instances[id] != undefined && $textarea.css('visibility') != 'visible') ? CKEDITOR.instances[id].getData() : $textarea.val();
+					var val = (typeof CKEDITOR != 'undefined' && CKEDITOR.instances[id] != undefined && $textarea.css('visibility') != 'visible') ? CKEDITOR.instances[id].getData() : $textarea.val();
 					var csrf = $('#csrf_test_name').val();
 					$.ajax( {
 						type: 'POST',
@@ -422,7 +432,7 @@ fuel.fields.asset_field = function(context, options){
 					} else {
 						assetVal = selectedVal;
 					}
-					$('#' + activeField).val(assetVal);
+					$('#' + activeField).val(assetVal).trigger("change");
 				}
 				return false;
 			});
@@ -929,6 +939,9 @@ fuel.fields.url_field = function(context, options){
 		if ($activeField.data('pdfs')){
 			url += '&pdfs=1';	
 		}
+		if ($activeField.data('filter')){
+			url += '&filter=' + $activeField.data('filter');	;	
+		}
 		var html = '<iframe src="' + url +'" id="url_inline_iframe" class="inline_iframe" frameborder="0" scrolling="no" style="border: none; width: 850px;"></iframe>';
 		$modal = fuel.modalWindow(html, 'inline_edit_modal', true);
 		
@@ -967,7 +980,7 @@ fuel.fields.url_field = function(context, options){
 						var selectedVal = $urlSelect.val();	
 					}
 					
-					$('#' + activeField).val(selectedVal);
+					$('#' + activeField).val(selectedVal).trigger("change");
 				}
 				return false;
 			});

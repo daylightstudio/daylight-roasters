@@ -404,7 +404,7 @@ class Pages extends Module {
 		$vars['actions'] = $actions;
 		$vars['error'] = $this->model->get_errors();
 		
-		if (!empty($data['last_modified']))
+		if (!empty($saved['last_modified']))
 		{
 			$vars['last_updated'] = lang('pages_last_updated_by', english_date($vars['data']['last_modified'], true), $vars['data']['email']);
 		}
@@ -712,6 +712,10 @@ class Pages extends Module {
 	{
 
 		$value = $this->input->get_post('selected', TRUE);
+		$filter = rawurldecode($this->input->get_post('filter', TRUE));
+
+		// Convert wild-cards to RegEx
+		$filter = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $filter));
 		$this->js_controller_params['method'] = 'select';
 	
 		$this->load->helper('array');
@@ -728,6 +732,13 @@ class Pages extends Module {
 		else
 		{
 			$options = array_combine($pages, $pages);
+		}
+
+		// apply filter
+		if (!empty($filter))
+		{
+			$filter_callback = create_function('$a', 'return preg_match(\'#^'.$filter.'$#\', $a);');
+			$options = array_filter($options, $filter_callback);
 		}
 		
 		// just return the options as json

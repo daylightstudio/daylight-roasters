@@ -478,7 +478,17 @@ class Form_builder {
 
 		$colspan = ($this->label_layout == 'top') ? '1' : '2';
 		
-		$str .= $this->_open_div(TRUE);
+		$first = reset($this->_fields);
+
+		$is_fieldset_first = FALSE;
+		if ($first['type'] != 'fieldset')
+		{
+			$str .= $this->_open_div();
+		}
+		else
+		{
+			$is_fieldset_first = TRUE;
+		}
 
 		$fieldset_on = FALSE;
 		
@@ -488,8 +498,14 @@ class Form_builder {
 			
 			if ($val['type'] == 'fieldset' OR !empty($val['fieldset']))
 			{
+				// don't close the table if it isn't opened earlier
+				if ($is_fieldset_first == FALSE)
+				{
+					$str .= $this->_close_div();
+				}
+				$is_fieldset_first = FALSE;
 				// close any existing field sets
-				$str .= $this->_close_div();
+				
 				if ($fieldset_on)
 				{
 					$fieldset_val['open'] = FALSE;
@@ -583,10 +599,10 @@ class Form_builder {
 		// close any open fieldsets
 		if ($fieldset_on)
 		{
-			$str .= $this->_close_table();
+			$str .= $this->_close_div();
 			$val['open'] = FALSE;
 			$str .= $this->create_fieldset($val);
-			$str .= $this->_open_table();
+			$str .= $this->_open_div();
 		}
 		
 		$str .= "<div class=\"actions\"><div class=\"actions_inner\">";
@@ -640,18 +656,33 @@ class Form_builder {
 		}
 
 		$colspan = ($this->label_layout == 'top') ? '1' : '2';
-		$str .= $this->_open_table(TRUE);
+		$first = reset($this->_fields);
+
+		$is_fieldset_first = FALSE;
+		if ($first['type'] != 'fieldset')
+		{
+			$str .= $this->_open_table();
+		}
+		else
+		{
+			$is_fieldset_first = TRUE;
+		}
 
 		$fieldset_on = FALSE;
-
 		foreach($this->_fields as $key => $val)
 		{
 			$val = $this->normalize_params($val);
 		
 			if ($val['type'] == 'fieldset' OR !empty($val['fieldset']))
-			{
+			{	
+				// don't close the table if it isn't opened earlier
+				if ($is_fieldset_first == FALSE)
+				{
+					$str .= $this->_close_table();
+				}
+				$is_fieldset_first = FALSE;
+
 				// close any existing field sets
-				$str .= $this->_close_table();
 				if ($fieldset_on)
 				{
 					$fieldset_val['open'] = FALSE;
@@ -911,7 +942,7 @@ class Form_builder {
 	protected function _open_table()
 	{
 		$str = '';
-		$str .= "<table>";
+		$str .= "<table>\n";
 		$str .= "<tbody>\n";
 		return $str;
 	}
@@ -1613,7 +1644,7 @@ class Form_builder {
 			'disabled' => $params['disabled'],
 			'autocomplete' => (!empty($params['autocomplete']) ? $params['autocomplete'] : NULL),
 			'placeholder' => (!empty($params['placeholder']) ? $params['placeholder'] : NULL),
-			'required' => (!empty($params['required']) ? $params['required'] : NULL),
+			'required' => (!empty($params['required']) ? TRUE : NULL),
 			'data' => $params['data'],
 			'style' => $params['style'],
 			'tabindex' => $params['tabindex'],
@@ -1665,7 +1696,7 @@ class Form_builder {
 			'class' => $params['class'], 
 			'readonly' => $params['readonly'], 
 			'disabled' => $params['disabled'],
-			'required' => (!empty($params['required']) ? $params['required'] : NULL),
+			'required' => (!empty($params['required']) ? TRUE : NULL),
 			'data' => $params['data'],
 			'style' => $params['style'],
 			'tabindex' => $params['tabindex'],
@@ -1749,7 +1780,7 @@ class Form_builder {
 			'readonly' => $params['readonly'], 
 			'autocomplete' => (!empty($params['autocomplete']) ? $params['autocomplete'] : NULL),
 			'placeholder' => (!empty($params['placeholder']) ? $params['placeholder'] : NULL),
-			'required' => (!empty($params['required']) ? $params['required'] : NULL),
+			'required' => (!empty($params['required']) ? TRUE : NULL),
 			'data' => $params['data'],
 			'style' => $params['style'],
 			'tabindex' => $params['tabindex'],
@@ -1843,12 +1874,13 @@ class Form_builder {
 	public function create_enum($params)
 	{
 		$defaults = array(
-			'checked' => FALSE, // for radio
-			'options' => array(),
-			'mode' => NULL,
-			'model' => NULL,
-			'wrapper_tag' => 'span',// for checkboxes
+			'checked'       => FALSE, // for radio
+			'options'       => array(),
+			'mode'          => NULL,
+			'model'         => NULL,
+			'wrapper_tag'   => 'span',// for checkboxes
 			'wrapper_class' => 'multi_field',
+			'spacer'        => "&nbsp;&nbsp;&nbsp;",
 		);
 
 		$params = $this->normalize_params($params, $defaults);
@@ -1870,7 +1902,7 @@ class Form_builder {
 					'tabindex' => ((is_array($params['tabindex']) AND isset($params['tabindex'][$i])) ? $params['tabindex'][$i] : NULL),
 				);
 
-				if (empty($params['null']) OR (!empty($params['null']) AND !empty($params['default'])))
+				if (empty($params['null']) OR (!empty($params['null']) AND (!empty($params['default']) OR !empty($params['value']))))
 				{
 					if (($i == 0 AND !$default) OR  ($default == $key))
 					{
@@ -1889,7 +1921,7 @@ class Form_builder {
 				$enum_params = array('label' => $label, 'name' => $enum_name);
 				
 				$str .= ' '.$this->create_label($enum_params);
-				$str .= "&nbsp;&nbsp;&nbsp;";
+				$str .= $params['spacer'];
 				$str .= '</'.$params['wrapper_tag'].'>';
 				$i++;
 			}
@@ -1914,10 +1946,11 @@ class Form_builder {
 	public function create_multi($params)
 	{
 		$defaults = array(
-			'options' => array(),
-			'mode' => NULL,
-			'wrapper_tag' => 'span',// for checkboxes
+			'options'       => array(),
+			'mode'          => NULL,
+			'wrapper_tag'   => 'span',// for checkboxes
 			'wrapper_class' => 'multi_field',
+			'spacer'        => "&nbsp;&nbsp;&nbsp;",
 		);
 
 		$params = $this->normalize_params($params, $defaults);
@@ -1955,7 +1988,7 @@ class Form_builder {
 					$label = ($lang = $this->label_lang($attrs['id'])) ? $lang : $val;
 					$enum_params = array('label' => $label, 'name' => $attrs['id']);
 					$str .= ' '.$this->create_label($enum_params);
-					$str .= "&nbsp;&nbsp;&nbsp;";
+					$str .= $params['spacer'];
 					$str .= '</'.$params['wrapper_tag'].'>';
 					$i++;
 				}
@@ -1998,7 +2031,7 @@ class Form_builder {
 			'class' => $params['class'], 
 			'readonly' => $params['readonly'], 
 			'disabled' => $params['disabled'],
-			'required' => (!empty($params['required']) ? $params['required'] : NULL),
+			'required' => (!empty($params['required']) ? TRUE : NULL),
 			'accept' => str_replace('|', ',', $params['accept']),
 			'tabindex' => $params['tabindex'],
 		);
@@ -2405,7 +2438,7 @@ class Form_builder {
 			'class' => $params['class'], 
 			'readonly' => $params['readonly'], 
 			'disabled' => $params['disabled'],
-			'required' => (!empty($params['required']) ? $params['required'] : NULL),
+			'required' => (!empty($params['required']) ? TRUE : NULL),
 			'min' => (isset($params['min']) ? $params['min'] : '0'),
 			'max' => (isset($params['max']) ? $params['max'] : NULL),
 			'step' => (isset($params['step']) ? $params['step'] : NULL),

@@ -52,7 +52,7 @@ class MY_Model extends CI_Model {
 	public $date_use_gmt = FALSE; // determines whether to use GMT time when storing dates and times
 	public $default_date = 0; // default date value that get's passed to the model on save. Using 0000-00-00 will not work if it is a required field since it is not seen as an empty value
 	public $auto_trim = TRUE; // will trim on clean
-	public $auto_encode_entities = TRUE; // determines whether to automatically encode html entities. An array can be set instead of a boolean value for the names of the fields to perform the xss_clean on
+	public $auto_encode_entities = TRUE; // determines whether to automatically encode html entities. An array can be set instead of a boolean value for the names of the fields to perform the safe_htmlentities on
 	public $xss_clean = FALSE; // determines whether automatically run the xss_clean. An array can be set instead of a boolean value for the names of the fields to perform the xss_clean on
 	public $readonly = FALSE; // sets the model to readonly mode where you can't save or delete data
 	public $hidden_fields = array(); // fields to hide when creating a form
@@ -1287,7 +1287,7 @@ class MY_Model extends CI_Model {
 					} 
 				}
 				
-				// safe_htmlspecialchars is buggy for unserialize so we use the cleanup_ms_word
+				// safe_htmlspecialchars is buggy for unserialize so we use the encode_and_clean
 				if (is_string($values[$key]))
 				{
 					$values[$key] = $this->encode_and_clean($values[$key], NULL, $key);
@@ -2734,7 +2734,7 @@ class MY_Model extends CI_Model {
 					
 					// important to sort by id ascending order in case a field type uses the saving order as how it should be returned (e.g. a sortable multi-select)
 					$singular_name = $this->singular_name(TRUE);
-					$field_values = (!empty($values[$key_field])) ? array_keys($lookup_model->find_all_array_assoc($singular_name.'_id', array($singular_name.'_id' => $values[$key_field]), 'id asc')) : array();
+					$field_values = (!empty($values[$key_field])) ? array_keys($CI->$lookup_name->find_all_array_assoc($singular_name.'_id', array($singular_name.'_id' => $values[$key_field]), 'id asc')) : array();
 					$fields[$key] = array('label' => ucfirst($related_name), 'type' => 'multi', 'module' => $key, 'options' => $options, 'value' => $field_values, 'mode' => 'multi');
 				}
 			}

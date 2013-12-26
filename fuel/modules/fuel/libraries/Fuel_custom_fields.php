@@ -107,6 +107,21 @@ class Fuel_custom_fields {
 			$params['data']['link_pdfs'] = 1;
 		}
 
+		// adds markdown controlls to the markItUp!  editor
+		if (isset($params['markdown']) AND $params['markdown'] === TRUE)
+		{
+			$params['data']['markdown'] = 1;
+		}
+
+		// set markitup config
+		if (isset($params['editor_config']) AND is_array($params['editor_config']))
+		{
+			foreach($params['editor_config'] as $key => $val)
+			{
+				$params['data'][$key] = $val;
+			}
+		}
+
 		// set ckeditor configs
 		if (isset($params['ckeditor_config']) AND is_array($params['ckeditor_config']))
 		{
@@ -1135,14 +1150,15 @@ class Fuel_custom_fields {
 		$form_builder =& $params['instance'];
 		
 		$defaults = array(
-			'sorting' => NULL,
-			'options' => array(),
-			'mode' => NULL,
-			'model' => NULL,
-			'model_params' => NULL,
-			'wrapper_tag' => 'span',// for checkboxes
+			'sorting'       => NULL,
+			'options'       => array(),
+			'mode'          => NULL,
+			'model'         => NULL,
+			'model_params'  => NULL,
+			'wrapper_tag'   => 'span',// for checkboxes
 			'wrapper_class' => 'multi_field',
-			'module' => NULL,
+			'module'        => NULL,
+			'spacer'        => "&nbsp;&nbsp;&nbsp;",
 		);
 
 		$params = $form_builder->normalize_params($params, $defaults);
@@ -1226,7 +1242,7 @@ class Fuel_custom_fields {
 					$label = ($lang = $form_builder->label_lang($attrs['id'])) ? $lang : $val;
 					$enum_params = array('label' => $label, 'name' => $attrs['id']);
 					$str .= ' '.$form_builder->create_label($enum_params);
-					$str .= "&nbsp;&nbsp;&nbsp;";
+					$str .= $params['spacer'];
 					$str .= '</'.$params['wrapper_tag'].'>';
 					$i++;
 				}
@@ -1298,7 +1314,10 @@ class Fuel_custom_fields {
 		{
 			$data['pdfs'] = 1;	
 		}
-
+		if (isset($params['filter']))
+		{
+			$data['filter'] = rawurlencode($params['filter']);	
+		}
 		if (!empty($params['data']))
 		{
 			$params['data'] = array_merge($params['data'], $data);	

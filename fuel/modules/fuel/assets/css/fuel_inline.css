@@ -99,7 +99,7 @@ div#__fuel_edit_bar__ { display: none; height: 28px; position: fixed; z-index: 9
 div#__fuel_edit_bar__ li.unpublished { text-align: center; height: 27px; background-color: #c30 !important; background-image: none !important; color: #fff; float: left;line-height: 22px; padding: 0 10px; }
 div#__fuel_edit_bar__ li { display: block; }
 
-div#__fuel_edit_bar__ li a { display: block !important; padding: 0 !important; height: 27px !important; min-width: 30px !important; }
+div#__fuel_edit_bar__ li a { display: block !important; padding: 0 !important; height: 27px !important; min-width: 27px !important; }
 div#__fuel_edit_bar__ li.txt { padding: 0 10px !important; }
 div#__fuel_edit_bar__ select { appearance: menu !important; -moz-appearance: menu !important; -webkit-appearance: menu !important; border: none !important; background: none !important; color: #000 !important; display: inline !important; width: auto !important; height: auto !important; padding: 0 !important; margin: 0 !important; }
 
@@ -125,7 +125,7 @@ div#__FUEL_modal__ a.modal_close { position: absolute !important; left: -11px !i
 	  a) supplying one via CSS
 	  b) passing the "zIndex" parameter. E.g.  (window).jqm({zIndex: 500}); */
 	
-.jqmWindow {
+.__fuel_inline__ .jqmWindow {
     display: none;
     position: fixed;
     top: 50px;
@@ -144,18 +144,4 @@ div#__FUEL_modal__ a.modal_close { position: absolute !important; left: -11px !i
 	box-shadow: 1px 0px 5px 1px rgba(0,0,0,0.3);
 }
 
-.jqmOverlay { background-color: #000; }
-
-/* Background iframe styling for IE6. Prevents ActiveX bleed-through (<select> form elements, etc.) */
-* iframe.jqm {position:absolute;top:0;left:0;z-index:-1;
-	width: expression(this.parentNode.offsetWidth+'px');
-	height: expression(this.parentNode.offsetHeight+'px');
-}
-
-/* Fixed posistioning emulation for IE6
-     Star selector used to hide definition from browsers other than IE6
-     For valid CSS, use a conditional include instead */
-* html .jqmWindow {
-     position: absolute;
-     top: expression((document.documentElement.scrollTop || document.body.scrollTop) + Math.round(8 * (document.documentElement.offsetHeight || document.body.clientHeight) / 100) + 'px');
-}
+.__fuel_inline__ .jqmOverlay { background-color: #000; }

@@ -364,6 +364,8 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>mode</strong>: Options are 'auto', 'radios' and 'select'. Auto will show radio buttons if there are 2 or less, and will use a single select field if there are more.</li>
 		<li><strong>wrapper_tag</strong>: The HTML tag to wrapper around the radio and label. Default is the 'span' tag.</li>
 		<li><strong>wrapper_class</strong>: The CSS class to add to the to wrapper HTML element. Default is 'multi_field'.</li>
+		<li><strong>spacer</strong>: The amount of space to put between each checkbox (if checkboxes are used). The default is 3 blank spaces.</li>
+		<li><strong>null</strong>: Set this to TRUE if you want want no radio buttons to be checked initially</li>
 	</ul>
 	
 	<h4>Example</h4>
@@ -397,7 +399,7 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>mode</strong>: Options are 'auto', 'checkbox' and 'multi'. Auto will show checkboxes if there are 5 or less, and will use a multi select field if there are more.</li>
 		<li><strong>wrapper_tag</strong>: The HTML tag to wrapper around the chexbox and label. Default is the 'span' tag.</li>
 		<li><strong>wrapper_class</strong>: The CSS class to add to the to wrapper HTML element. Default is 'multi_field'.</li>
-		
+		<li><strong>spacer</strong>: The amount of space to put between each checkbox (if checkboxes are used). The default is 3 blank spaces.</li>
 	</ul>
 	
 	<h4>Representations</h4>
@@ -818,6 +820,7 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>target</strong>: sets the target of the link. Options are <dfn>_self</dfn> or <dfn>_blank</dfn>. This field is not displayed by default</li>
 		<li><strong>title</strong>: sets the title attribute of the link. This field is not displayed by default</li>
 		<li><strong>pdfs</strong>: determines whether to display PDFs along with the list of URLs. Default it is set to not show PDFs (note that special logic will need to be created in the layouts to use either <dfn>site_url</dfn> or <dfn>pdf_path</dfn> functions)</li>
+		<li><strong>filter</strong>: a regular expression value that can be used to filter the page list down to only the pages you need</li>
 	</ul>
 	
 	<h4>Representations</h4>
@@ -844,8 +847,9 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>img_folder</strong>: the image folder to pull from when inserting an image</li>
 		<li><strong>img_order</strong>: the image order displayed in the dropdown select. Options are <dfn>name</dfn> and <dfn>last_updated</dfn>. Default is <dfn>name</dfn></li>
 		<li><strong>link_pdfs</strong>: a boolean value that determines whether to display PDFs along with the list of URLs when inserting a link. Default is set to FALSE which will not show PDFs (note that special logic will need to be created in the layouts to use either <dfn>site_url</dfn> or <dfn>pdf_path</dfn> functions)</li>
-		<li><strong>ckeditor_config</strong>: sets the CKEditor configuration values for a particular field. Camel-cased attributes need to be converted to lowercase with hyphens (e.g. extraPlugins should be extra-plugins). These configuration values are attached to the textarea field so you can use
-			Javascript to set more complex object values as long they are set on the textarea field before CKEditor initialization (e.g. $('.mytextarea').data('toolbar', [['Bold','Italic','Strike']]).</li>
+		<li><strong>editor_config</strong>: sets the editor's (markItUp! or CKEditor) configuration values for a particular field. Camel-cased attributes need to be converted to lowercase with hyphens (e.g. extraPlugins should be extra-plugins). These configuration values are attached to the textarea field so you can use
+			Javascript to set more complex object values as long they are set on the textarea field before markItUp! or CKEditor initialization (e.g. $('.mytextarea').data('toolbar', [['Bold','Italic','Strike']]).</li>
+		<li><strong>markdown</strong>: changes toolbar to use <a href="http://daringfireball.net/projects/markdown/" target="_blank">Markdown</a> formatting instead of HTML. Must have editor set to use markItUp!</li>
 	</ul>
 	
 	<h4>Example</h4>
