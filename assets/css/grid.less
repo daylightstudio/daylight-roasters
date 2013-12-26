@@ -46,12 +46,12 @@ body {
 	.clearfix;
 }
 .column_base() {
-	min-height: 1px; 
+	min-height: 1px;
 	display: inline;
 	float: left;
 	margin-left: (@total-width*((@gutter-width*.5)/@gridsystem-width));
 	margin-right: (@total-width*((@gutter-width*.5)/@gridsystem-width));
-} 
+}
 .column(@x,@columns:@columns) {
 	width: (@total-width*((((@gutter-width+@column-width)*@x)-@gutter-width) / @gridsystem-width));
 	// *width: @total-width*((((@gutter-width+@column-width)*@x)-@gutter-width) / @gridsystem-width)-@correction;
