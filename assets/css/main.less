@@ -16,8 +16,8 @@ MISC
 // Remove text-shadow in selection highlight: h5bp.com/i
 // These selection declarations have to be separate.
 // Customize the background color to match your design.
-::-moz-selection { background: fade(@c_red, 90%); text-shadow: none; color: @c_white; }
-::selection { background: fade(@c_red, 90%); text-shadow: none; color: @c_white; }
+::-moz-selection { background: fade(@accent, 90%); text-shadow: none; color: @white; }
+::selection { background: fade(@accent, 90%); text-shadow: none; color: @white; }
 
 // A better looking default horizontal rule
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
@@ -48,7 +48,7 @@ TYPOGRAPHY
 html { font-size: 62.5%; }
 .mainfont, html, body, button, input, select, textarea { font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; }
 body { .font-size(1.6); line-height: 1.5; }
-html, body, button, input, select, textarea { color: @c_copy; }
+html, body, button, input, select, textarea { color: @copy; }
 
 /** PARAGRAPH AND LIST MARGINS **/
 .first_last_margins {
@@ -61,7 +61,7 @@ ul, ol { margin: 1em 0;
 p:extend(.first_last_margins all) { margin: 0 0 1em 0; }
 
 /** BASE LINK STYLING **/
-a { color: @c_red; text-decoration: none;
+a { color: @accent; text-decoration: none;
 	&:hover { text-decoration: underline; }
 	// Use vertical-align:top on linked images when using
 	// border-bottom for link styling. Will hide border behind image.
