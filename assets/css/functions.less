@@ -153,12 +153,16 @@
 	filter: ~"alpha(opacity=@{ieOpacity})"; 
 	opacity: @opacity; 
 }
-.ie-fade(@hex, @fade) {
-	@value: ~"#@{fade}@{hex}";
-	.lt-ie9 & { 
+
+//For creating semi-transparent backgrounds for IE8
+.bg_fade(@hex, @fade) {
+	background: @hex;
+	background: fade(@hex, @fade);
+	//IE8/7 support: Color is expressed in #AARRGGBB - alpha is hexidecimal also. must be using IE conditionals in body class
+	@value: argb(fade(@hex, @fade));
+	.lt-ie9& { 
 		background:transparent;
 		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=~"@{value}",endColorstr=~"@{value}"); 
 		zoom: 1;
 	}
 }
-
