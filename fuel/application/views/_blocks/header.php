@@ -23,6 +23,7 @@
 	<?php endif ?>
 
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
+	<?php // also include apple-touch-icon.png at root, 152x152 ?>
 
 	<script>
 		// Set cookie for retina screens... .htaccess then handles serving @2x images if they are available.
