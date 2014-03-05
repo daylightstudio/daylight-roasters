@@ -1,0 +1,68 @@
+  //  BASICS (spacing, type, image)
+// ---------------------------------------- 
+// For using REM font-size values
+@mixin font-size ($sizeValue){
+	$remValue: $sizeValue;
+	$pxValue: ($sizeValue * 10);
+	font-size: #{$pxValue}px;
+	font-size: #{$remValue}rem;
+}
+
+ @mixin buffer($size) {
+ 	padding-top: $size;
+ 	padding-bottom: $size;
+ }
+
+//for inclusion in media queries
+ @mixin clearfix { *zoom:1;
+	&:before, &:after {content:""; display:table; }
+	&:after { clear:both; }
+}
+
+
+ //  RETINA IMAGE HELPER
+// ---------------------------------------- 
+// A helper mixin for applying high-resolution background images (http://www.retinajs.com)
+@mixin at2x($path, $ext: "jpg", $w: auto, $h: auto) {
+  $at1x_path: "#{$path}.#{$ext}";
+  $at2x_path: "#{$path}@2x.#{$ext}";
+  background-image: url("#{$at1x_path}");
+  @media all and (-webkit-min-device-pixel-ratio : 1.5),
+         all and (-o-min-device-pixel-ratio: 3/2),
+         all and (min--moz-device-pixel-ratio: 1.5),
+         all and (min-device-pixel-ratio: 1.5) {
+           background-image: url("#{$at2x_path}");
+           background-size: $w $h;
+  }
+}
+
+//  SVG Backgrounds //don't include extension
+@mixin svg ($path) {
+	background-image: url("#{$path}.svg");
+	$pngpath: "#{$path}.png";
+	.no-svg & { background-image: url("#{$pngpath}"); }
+}
+
+ //  IE8 Opacity Helpers
+// ---------------------------------------- 
+
+// Opacity, for IE too!
+@mixin opacity ($opacity: 1) {
+	$ieOpacity: ($opacity * 100); 
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=#{$ieOpacity})"; 
+	filter: "alpha(opacity=#{$ieOpacity})"; 
+	opacity: $opacity; 
+}
+
+//For creating semi-transparent backgrounds for IE8; fade = range from 1.0 to 0
+@mixin bg_fade($hex, $fade) {
+	$bgfade: rgba($hex, $fade);
+	background: $hex;
+	background: $bgfade;
+	//IE8/7 support: Color is expressed in #AARRGGBB
+	.lt-ie9 & { 
+		background:transparent;
+		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($bgfade)}',endColorstr='#{ie-hex-str($bgfade)}'); 
+		zoom: 1;
+	}
+}
