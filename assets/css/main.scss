@@ -60,9 +60,9 @@ textarea {
 }
 
 // Box sizing: http://paulirish.com/2012/box-sizing-border-box-ftw/
-*, :before, :after { 
-	box-sizing: border-box; 
-}
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
 
 // Set html/body max width
 html, body { 
