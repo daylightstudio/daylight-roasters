@@ -1,7 +1,9 @@
-@import url('normalize.less');
-@import url('functions.less');
-@import url('grid.less');
-@import url('variables.less');
+@import 'normalize';
+@import 'variables';
+@import 'mixins';
+@import 'grid';
+@import 'helpers';
+
 
 /* ========================================================================================================================
 ===========================================================================================================================
@@ -16,52 +18,96 @@ MISC
 // Remove text-shadow in selection highlight: h5bp.com/i
 // These selection declarations have to be separate.
 // Customize the background color to match your design.
-::-moz-selection { background: fade(@accent, 90%); text-shadow: none; color: @white; }
-::selection { background: fade(@accent, 90%); text-shadow: none; color: @white; }
+::selection { 
+	background: fade($accent, 90%); 
+	text-shadow: none; 
+	color: $white; 
+}
 
 // A better looking default horizontal rule
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+hr { 
+	display: block; 
+	height: 1px; 
+	border: 0; 
+	border-top: 1px solid #ccc; 
+	margin: 1em 0; 
+	padding: 0; 
+}
 
 // Remove the gap between images and the bottom of their containers: h5bp.com/i/440
-img {vertical-align: middle; }
+img {
+	vertical-align: middle; 
+}
 
 // Remove default fieldset styles.
-fieldset {border: 0; margin: 0; padding: 0; }
+fieldset {
+	border: 0; 
+	margin: 0; 
+	padding: 0; 
+}
 
 // Allow only vertical resizing of textareas.
-textarea {resize: vertical; }
+textarea {
+	resize: vertical; 
+}
 
 // Chromeframe styles
-.chromeframe { background: #ccc; color: #000; padding: 1em 0; text-align: center;  }
+.chromeframe { 
+	background: #ccc; 
+	color: #000; 
+	padding: 1em 0; 
+	text-align: center;  
+}
 
 // Box sizing: http://paulirish.com/2012/box-sizing-border-box-ftw/
-*, :before, :after { box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
 
 // Set html/body max width
-html, body { width: 100%; min-height: 100%; padding: 0; margin: 0; display: table; }
+html, body { 
+	width: 100%; 
+	min-height: 100%; 
+	padding: 0; 
+	margin: 0; 
+	display: table; 
+}
 
 
 /* ==============
 TYPOGRAPHY
 ============== */
-/* Set base font-sizes and fonts. Set base font-size to 10px. Then use .font-size() helper function to leverage rem sizing. */
-html { font-size: 62.5%; }
-.mainfont, html, body, button, input, select, textarea { font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; }
-body { .font-size(1.6); line-height: 1.5; }
-html, body, button, input, select, textarea { color: @copy; }
+/* Set base font-sizes and fonts. Set base font-size to 10px. Then use font-size() mixin to leverage rem sizing. */
+html { 
+	font-size: 62.5%; 
+}
+.mainfont, html, body, button, input, select, textarea { 
+	font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; 
+}
+body { 
+	@include font-size(1.6); 
+	line-height: 1.5; 
+}
+html, body, button, input, select, textarea { 
+	color: $copy; 
+}
 
 /** PARAGRAPH AND LIST MARGINS **/
-.first_last_margins {
+%first_last_margins {
 	&:first-child { margin-top: 0 }
 	// &:last-child { margin-bottom: 0 }
 }
-ul, ol { margin: 1em 0;
-	&:extend(.first_last_margins all);
+ul, ol { 
+	@extend %first_last_margins;
+	margin: 1em 0;
 }
-p:extend(.first_last_margins all) { margin: 0 0 1em 0; }
+p { 
+	@extend %first_last_margins;
+	margin: 0 0 1em 0; 
+}
 
 /** BASE LINK STYLING **/
-a { color: @accent; text-decoration: none;
+a { color: $accent; text-decoration: none;
 	&:hover { text-decoration: underline; }
 	// Use vertical-align:top on linked images when using
 	// border-bottom for link styling. Will hide border behind image.
@@ -70,44 +116,58 @@ a { color: @accent; text-decoration: none;
 
 
 /** HEADERS **/
-.header_global { margin: 0.5em 0;
+%header_global { margin: 0.5em 0;
 	&:first-child { margin-top: 0; }
 }
-h1, .h_headline    { .font-size(3); &:extend(.header_global all); }
-h2, .h_subheadline { .font-size(2.7); &:extend(.header_global all); }
-h3, .h_byline      { .font-size(2.2); &:extend(.header_global all); }
-h4, .h_standfirst  { .font-size(1.8); &:extend(.header_global all); }
-h5, .h_related     { .font-size(1.6); margin-bottom: 0.2em; &:extend(.header_global all); }
-h6, .h_promo       { .font-size(1.4); margin-bottom: 0.2em; text-transform: uppercase; &:extend(.header_global all); }
+h1, .h_headline { 
+	@extend %header_global;
+	@include font-size(3);
+}
+h2, .h_subheadline { 
+	@extend %header_global;
+	@include font-size(2.7);
+}
+h3, .h_byline {
+	@extend %header_global; 
+	@include font-size(2.2);
+}
+h4, .h_standfirst { 
+	@extend %header_global;
+	@include font-size(1.8);
+}
+h5, .h_related { 
+	@extend %header_global;
+	@include font-size(1.6); 
+	margin-bottom: 0.2em;
+}
+h6, .h_promo { 
+	@extend %header_global;
+	@include font-size(1.4); 
+	margin-bottom: 0.2em; 
+	text-transform: uppercase;
+}
 
 
 /** TYPE HELPER CLASSES **/
 big,
 .text_large,
-.text_intro { .font-size(2.4); line-height: 1.5; }
-.text_medium { .font-size(1.6); }
+.text_intro { @include font-size(2.4); line-height: 1.5; }
+.text_medium { @include font-size(1.6); }
 small,
-.text_small { .font-size(1.4); line-height: 1.2; }
+.text_small { @include font-size(1.4); line-height: 1.2; }
 
 
 /* ==============
 LAYOUT
 ============== */
-.wrapper:extend(.clearfix all) { max-width:960px; width: 90%; padding: 0; margin: 0 auto; }
-.buffer {
-	@s: 0.5em;
-	@m: 1em;
-	@l: 1.5em;
-	@xl: 2.5em;
-	// &_mar_s, &_s { margin-top: @s; margin-bottom: @s; }
-	// &_mar_m, &_m { margin-top: @m; margin-bottom: @m; }
-	// &_mar_l, &_l { margin-top: @l; margin-bottom: @l; }
-	// &_mar_xl, &_xl { margin-top: @xl; margin-bottom: @xl; }
-	&_pad_s { padding-top: @s; padding-bottom: @s; }
-	&_pad_m { padding-top: @m; padding-bottom: @m; }
-	&_pad_l, & { padding-top: @l; padding-bottom: @l; }
-	&_pad_xl { padding-top: @xl; padding-bottom: @xl; }
-}
+.wrapper { 
+	@include clearfix;
+ 	max-width:960px; 
+ 	width: 90%; 
+ 	padding: 0; 
+ 	margin: 0 auto; 
+ }
+ //use mixin buffer with $sm, $md, $lg, $xl for spacing
 
 
 /* ==============
@@ -182,8 +242,4 @@ img { max-width: 100%; height: auto; }
 /** ICONS
 ---------------------------------------- **/
 
-
-/** HELPERS IMPORT
----------------------------------------- **/
-@import url('helpers.less');
 

@@ -1,0 +1,55 @@
+/* ==========================================================================
+	GRID - basic left-to-right, symmetric grid
+============================================================================= */
+
+// MODIFIED FROM http://Semantic.gs
+//----------------------------------------
+
+// Defaults which you can freely override
+$column-width: 60;
+$gutter-width: 20;
+$columns: 12;
+
+// Utility variable — you should never need to modify this
+$gridsystem-width: ($column-width*$columns) + ($gutter-width*$columns);
+
+// Set $total-width to 100% for a fluid layout
+$total-width: 100%;
+// $total-width: $gridsystem-width;
+
+//////////
+// GRID //
+//////////
+
+body {
+	width: 100%;
+	@extend %clearfix;
+}
+@mixin column_base() {
+	min-height: 1px;
+	display: inline;
+	float: left;
+	margin-left: ($total-width*(($gutter-width*.5)/$gridsystem-width));
+	margin-right: ($total-width*(($gutter-width*.5)/$gridsystem-width));
+}
+@mixin row($columns:$columns) {
+	display: block;
+	width: ($total-width*(($gutter-width + $gridsystem-width)/$gridsystem-width));
+	margin: 0 ($total-width*((($gutter-width*.5)/$gridsystem-width)*-1));
+}
+@mixin column($x,$columns:$columns) {
+	width: ($total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / $gridsystem-width));
+	@include column_base();
+
+}
+@mixin push($offset:1) {
+	margin-left: ($total-width*((($gutter-width+$column-width)*$offset) / $gridsystem-width) + $total-width*(($gutter-width*.5)/$gridsystem-width));
+}
+@mixin pull($offset:1) {
+	margin-right: ($total-width*((($gutter-width+$column-width)*$offset) / $gridsystem-width) + $total-width*(($gutter-width*.5)/$gridsystem-width));
+}
+@mixin column_center($x,$columns:$columns) { 
+	width: ($total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / $gridsystem-width));
+	margin-left: auto;
+	margin-right: auto;
+}

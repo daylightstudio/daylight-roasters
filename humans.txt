@@ -29,12 +29,12 @@ DAYLIGHT STUDIO, PORTLAND OR - bydaylight.com
     David McReynolds -- Company Owner, Backend Development, FUEL CMS
     Jonathan Lee     -- Backend Development
     Kristin Wille    -- Front-end Development
-    Piet van Zoen    -- Front-end Development
+    Dan Gonzalez     -- Front-end Development
     Shawn Mann       -- Company Owner, Operations
     Tyler Davis      -- Design
 
 # TECHNOLOGY
 
     Standards: HTML5, CSS3
-    Components: jQuery, Modernizr, LESS CSS
+    Components: jQuery, Modernizr, SASS CSS
     Software: FUEL CMS (fuelcms.com), Sublime Text 2, Codekit

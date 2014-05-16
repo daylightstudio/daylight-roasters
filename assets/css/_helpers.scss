@@ -1,0 +1,132 @@
+// ==========================================================================
+//	HELPERS - USE WITH CAUTION = Generally, use @extend, rather then using classes in HTML
+//	********THEY ARE NOT SEMANTIC***********
+//============================================================================= 
+
+// IMAGE REPLACEMENT - Set your 'background-image',width and height. 
+.ir {
+	background-color: transparent; 
+	border: 0; 
+	overflow: hidden; 
+	/* IE 6/7 fallback */ *text-indent: -9999px;
+	&:before {
+		background-color: #ccc; 
+		content: ""; 
+		display: block; 
+		width: 0; 
+		height: 150%; 
+	}
+}
+
+%text_center { text-align: center; }
+
+// The micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
+@mixin clearfix { *zoom:1;
+	&:before, &:after {content:""; display:table; }
+	&:after { clear:both; }
+}
+%clearfix { *zoom:1;
+	&:before, &:after {content:""; display:table; }
+	&:after { clear:both; }
+}
+// HIDE STUFF //
+.hidden{ display: none; }
+.visuallyhidden { 
+	border:0;
+	clip:rect(0 0 0 0);
+	height:1px;
+	margin:-1px;
+	overflow:hidden;
+	padding:0;
+	position:absolute;
+	width:1px;
+}
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus {
+	clip:auto;
+	height:auto;
+	margin:0;
+	overflow:visible;
+	position:static;
+	width:auto;
+}
+.invisible{ visibility: hidden; }
+
+// FLOATS & CENTERING...TRY NOT TO USE THESE, NOT SEMANTIC //
+.float_left { float: left; }
+.float_right { float: right; }
+.img_right { 
+	float: right; 
+	margin: 0.2em 0 1em 1em;
+}
+.img_left { 
+	float: left; 
+	margin: 0.2em 1em 1em 0;
+}
+.img_center { 
+	float: none; 
+	display: block;  
+	margin: 1em auto;
+}
+.img_left, .img_right, .img_center {
+	&:first-child { margin-top: 0; }
+}
+//this is no longer valid html, but still run into it with FUEL
+img[align="left"] {
+	@extend .img_left;
+}
+img[align="middle"] {
+	@extend .img_center;
+}
+img[align="right"] {
+	@extend .img_right;
+}
+
+/** VERTICAL ALIGNMENT - http://css-tricks.com/centering-in-the-unknown/
+---------------------------------------- **/
+.align_middle {
+	&:before { display: inline-block; content: ""; height: 100%; vertical-align: middle; }
+	> * { display: inline-block; vertical-align: middle; float: none;  }
+}
+.align_bottom {
+	@extend .align_middle;
+	> * { vertical-align: bottom; }
+}
+.align_top {
+	@extend .align_middle;
+	> * { vertical-align: top; }
+}
+
+/** LISTS
+---------------------------------------- **/
+.unstyled_list { 
+	margin: 0; 
+	padding: 0; 
+	list-style-type: none;
+}
+.delimited_list {
+	@extend .unstyled_list;
+	li { display: inline-block;
+		&:before { content: ' | '; padding: 0 0.2em; }
+		&:first-child:before { display: none; }
+	}
+}
+
+/** TEXT
+---------------------------------------- **/
+.text_center { text-align: center }
+.text_left { text-align: left }
+.text_right { text-align: right }
+
+// PADDING
+.no_pad, .no_padding{ padding:0; }
+
+// MARGIN 
+.no_marg, .no_margin{ margin:0; }
+
+
+/* FUEL CLASSES */
+/* for form */
+div.error,li.error,ul.error{background-color:#c30;color:#fff;padding:2px 5px;}
+span.error_highlight input,span.error_highlight textarea,span.error_highlight select{border:2px solid #c30;}
+/* for ckeditor */
+.ckeditor{background:#fff;padding:5px 5px 171px 5px; color:#000;font-size:12px; font-family: 'Lucida Grande', 'Gill Sans', Arial, Helvetica, Sans-serif !important;}
