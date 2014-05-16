@@ -13,7 +13,7 @@
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<?php if (!empty($meta_keywords)): ?>
 	<meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" />
@@ -34,7 +34,7 @@
 
 	<?php /* echo js('modernizr');
 		Remove html5 shiv if you're using modernizr. Also add `class="no-js"` to the html tag */ ?>
-	<!--[if lte IE8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<!--[if lte IE 8]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
@@ -43,15 +43,11 @@
 	<?php echo $CI->fuel_blog->header()?>
 	<?php endif; ?>
 
-	<?php echo fuel_block('tracking')?>
-
 </head>
 
 <?php $bc = fuel_var('body_class', 'Body Class') ?>
 <!--[if lte IE 8]><body class="<?php echo $bc;?> lt-ie9"><![endif]-->
 <!--[if gt IE 8]><!--><body class="<?php echo $bc;?>"><!--<![endif]-->
-
-	<!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
 	<header class="header clearfix">
 		<div class="wrapper">

@@ -8,6 +8,6 @@
 	<?php /* JavaScript at the bottom for faster page loading */?>
 	<?php echo js('plugins, main'); ?>
 	<?php echo js($js); ?>
-
+	<?php echo fuel_block('tracking')?>
 </body>
 </html>
