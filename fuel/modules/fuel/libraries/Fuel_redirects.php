@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -34,7 +34,8 @@ class Fuel_redirects extends Fuel_base_library {
 	
 	public $http_code = 301; // The HTTP response code to return... 301 = permanent redirect
 	public $case_sensitive = TRUE; // Determines whether the pattern matching for the redirects is case sensitive
-	public $ssl = array(); // The paths to force SSL with
+	public $ssl = array(); // The paths to force SSL
+	public $non_ssl = array(); // The paths to force NON SSL
 	public $aggressive_redirects = array(); // The pages to redirect to regardless if it's found by FUEL. WARNING: Run on every request.
 	public $passive_redirects = array(); // The pages to redirect to only AFTER no page is found by FUEL
 	public $max_redirects = 2; // Sets the number of times the page can redirect before giving nup and displaying a 404
@@ -141,20 +142,9 @@ class Fuel_redirects extends Fuel_base_library {
 	 * @param	string	The name of the environment key that the redirect applies to (optional)
 	 * @return	array	
 	 */	
-	public function add_ssl($uri, $redirect = '')
+	public function add_ssl($uri, $environment = '')
 	{
-		if (is_array($uri))
-		{
-			if (!isset($this->ssl[$redirect]))
-			{
-				$this->ssl[$redirect] = array();
-			}
-			$this->ssl[$redirect] = array_merge($this->ssl[$redirect], $uri);
-		}
-		else if (is_string($uri))
-		{
-			$this->ssl[$environment][$uri] = $redirect;
-		}
+		$this->_add_ssl_type($uri, $environment, 'ssl');
 	}
 	
 	// --------------------------------------------------------------------
@@ -169,9 +159,85 @@ class Fuel_redirects extends Fuel_base_library {
 	 */	
 	public function remove_ssl($uri, $environment = 'production')
 	{
-		if (isset($this->ssl[$environment][$uri]))
+		$this->_add_ssl_type($uri, $environment, 'non_ssl');
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Adds to the NON ssl redirect list
+	 *
+	 * @access	public
+	 * @param	string	The URI location of the page to remove
+	 * @param	string	The page to redirect to or the name of the environment if the first parameter is an array(optional)
+	 * @param	string	The name of the environment key that the redirect applies to (optional)
+	 * @return	array	
+	 */	
+	public function add_non_ssl($uri, $environment = '')
+	{
+		$this->_add_ssl_type($uri, $environment, 'non_ssl');
+
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove from the NON ssl redirect list
+	 *
+	 * @access	public
+	 * @param	string	The URI location of the page to remove
+	 * @param	string	The name of the environment key that the redirect applies to (optional)
+	 * @return	array	
+	 */	
+	public function remove_non_ssl($uri, $environment = 'production')
+	{
+		$this->_remove_ssl_type($uri, $environment, 'non_ssl');
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Adds to the ssl redirect list
+	 *
+	 * @access	protected
+	 * @param	string	The URI location of the page to remove
+	 * @param	string	The page to redirect to or the name of the environment if the first parameter is an array(optional)
+	 * @param	string	The name of the environment key that the redirect applies to (optional)
+	 * @param	string	The type of SSL either redirect... either to https or http (optional)
+	 * @return	array	
+	 */	
+	protected function _add_ssl_type($uri, $redirect = '', $type = 'ssl')
+	{
+		if (is_array($uri))
 		{
-			unset($this->ssl[$environment][$uri]);
+			if (!isset($this->$type[$redirect]))
+			{
+				$this->$type[$redirect] = array();
+			}
+			$this->$type[$redirect] = array_merge($this->$type[$redirect], $uri);
+		}
+		else if (is_string($uri))
+		{
+			$this->$type[$environment][$uri] = $redirect;
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove from the ssl redirect list
+	 *
+	 * @access	protected
+	 * @param	string	The URI location of the page to remove
+	 * @param	string	The name of the environment key that the redirect applies to (optional)
+	 * @param	string	The type of SSL either redirect... either to https or http (optional)
+	 * @return	array	
+	 */	
+	protected function _remove_ssl_type($uri, $environment = 'production', $type = 'ssl')
+	{
+		if (isset($this->$type[$environment][$uri]))
+		{
+			unset($this->$type[$environment][$uri]);
 		}
 	}
 
@@ -385,7 +451,7 @@ class Fuel_redirects extends Fuel_base_library {
 			}
 			else
 			{
-				show_404();
+				show_404($uri);
 			}
 		}
 	}
@@ -433,6 +499,76 @@ class Fuel_redirects extends Fuel_base_library {
 					redirect( site_url($uri, TRUE), 'location', 301);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Loops through the ssl config to find a possible match to redirect to an NON SSL uri
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function non_ssl()
+	{
+		$config = $this->config();
+		$is_https = is_https();
+
+		if (!isset($config['non_ssl']) OR !$is_https)
+		{
+			return;
+		}
+
+		$non_ssl = $config['non_ssl'];
+		$ssl = $config['ssl'];
+
+		if ( ! empty($non_ssl[ENVIRONMENT]))
+		{
+			// get the diff since we don't want to include any SSL which would put us in an infinite loop
+			$non_ssl_redirects = $non_ssl[ENVIRONMENT];
+			if (!empty($ssl[ENVIRONMENT]))
+			{
+				$non_ssl_redirects = array_diff($non_ssl[ENVIRONMENT], $ssl[ENVIRONMENT]);
+			}
+
+			$uri = $this->_get_uri();
+
+			// Is there a literal match?  If so we're done
+			if (isset($non_ssl_redirects[$uri]) AND $is_https)
+			{
+				redirect( site_url($uri, FALSE) );
+			}
+
+			// check that it's not in the ssl already and if it is, just return (to prevent infinite loops)
+			if ( ! empty($ssl[ENVIRONMENT]))
+			{
+				foreach($ssl[ENVIRONMENT] as $s)
+				{
+					$s = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $s));
+
+					// Does the RegEx match?
+					$pattern = '#^'.$s.'$#';
+
+					// if there is already an SSL rule, then that takes precedence
+					if (preg_match($pattern, $uri))
+					{
+						return;
+					}
+				}
+			}
+
+			foreach ($non_ssl_redirects as $val)
+			{
+				// Convert wild-cards to RegEx
+				$val = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $val));
+
+				// Does the RegEx match?
+				$pattern = '#^'.$val.'$#';
+		
+				if (preg_match($pattern, $uri) AND $is_https)
+				{
+					redirect( site_url($uri, FALSE), 'location', 301);
+				}
+			}	
 		}
 	}
 
@@ -543,7 +679,7 @@ class Fuel_redirects extends Fuel_base_library {
 	{
 		$this->CI->load->library('curl');
 
-		if (empty($redirects))
+		if (empty($urls))
 		{
 			$config = $this->config();
 			$urls = array_keys(array_merge($config['passive_redirects'], $config['aggressive_redirects']));
@@ -556,7 +692,12 @@ class Fuel_redirects extends Fuel_base_library {
 		foreach($urls as $url)
 		{
 			$url = site_url($url);
-			$this->CI->curl->add_session($url, array(CURLOPT_FOLLOWLOCATION => TRUE, CURLOPT_MAXREDIRS => $this->max_redirects));
+			$sess_opts = array(CURLOPT_FOLLOWLOCATION => TRUE);
+			if ($this->max_redirects > 0)
+			{
+				$sess_opts[CURLOPT_MAXREDIRS] = $this->max_redirects;
+			}
+			$this->CI->curl->add_session($url, $sess_opts);
 		}
 		$this->CI->curl->exec_multi();
 		$infos = $this->CI->curl->info(NULL, TRUE);
@@ -565,6 +706,7 @@ class Fuel_redirects extends Fuel_base_library {
 			'valid' => array(),
 			'errors' => array(),
 			);
+
 		foreach($infos as $key => $info)
 		{
 			//echo $info['http_code'] .'<br />';
@@ -577,6 +719,7 @@ class Fuel_redirects extends Fuel_base_library {
 				$return['valid'][] = $urls[$key];
 			}
 		}
+		
 		return $return;
 	}
 

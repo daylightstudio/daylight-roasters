@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -34,6 +34,7 @@ class Fuel_pagevariables_model extends Base_module_model {
 	public $page_id; // The page ID of the most recently queried page
 	public $honor_page_status = FALSE; // Will look at the pages published status as well
 	public $serialized_fields = array('value'); // The "value" field is serialized using JSON
+	public $foreign_keys = array('page_id' => array(FUEL_FOLDER => 'fuel_pages_model')); // Add foreign key relationship to fuel_pages_model
 
 	// --------------------------------------------------------------------
 	
@@ -319,6 +320,11 @@ class Fuel_pagevariables_model extends Base_module_model {
 			if (isset($page->id))
 			{
 				$layout = $this->fuel->layouts->get($page->layout);
+
+				// grab values from entire set of layout vars to be used with merging (e.g. {page_id})
+				$page_vars = $this->find_all_by_page_id($values['page_id']);
+				$values = array_merge($page_vars, $values);
+				$layout->set_field_values($values);
 				$layout_fields = $layout->fields();
 				if (isset($layout_fields[$values['name']]))
 				{

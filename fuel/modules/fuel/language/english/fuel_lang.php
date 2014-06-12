@@ -278,7 +278,7 @@ $lang['form_label_view'] = 'View';
 */
 $lang['navigation_import'] = 'Import Navigation';
 $lang['navigation_instructions'] = 'Here you create and edit the top menu items of the page.';
-$lang['navigation_import_instructions'] = 'Select a navigation group and upload a file to import below. The file should contain the PHP array variable assigned in the variable field below (e.g. <strong>$nav</strong>). For a reference of the array format, please consult the <a href="http://www.getfuelcms.com/user_guide/modules/fuel/navigation" target="_blank">user guide</a>.';
+$lang['navigation_import_instructions'] = 'Select a navigation group and upload a file to import below. The file should contain the PHP array variable assigned in the variable field below (e.g. <strong>$nav</strong>). For a reference of the array format, please consult the <a href="http://docs.getfuelcms.com/general/navigation" target="_blank">user guide</a>.';
 $lang['navigation_success_upload'] = 'The navigation was successfully uploaded.';
 $lang['form_label_navigation_group'] = 'Navigation Group:';
 $lang['form_label_nav_key'] = 'Key';
@@ -566,6 +566,13 @@ $lang['action_create'] = 'Create';
 $lang['action_delete'] = 'Delete';
 $lang['action_upload'] = 'Upload';
 $lang['action_replace'] = 'Replace';
+
+/*
+|--------------------------------------------------------------------------
+| Migrations
+|--------------------------------------------------------------------------
+*/
+$lang['database_migration_success'] = 'Successful database migration to version %1s';
 
 //$lang['import'] = 'Import';
 

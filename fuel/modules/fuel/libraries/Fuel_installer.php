@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -301,6 +301,11 @@ class Fuel_installer extends Fuel_base_library {
 
 		if (is_file($path))
 		{
+			if (empty($this->CI->db))
+			{
+				$this->CI->load->database();	
+			}
+			
 			$this->CI->db->load_sql($path);
 		}
 	}
@@ -527,9 +532,11 @@ class Fuel_installer extends Fuel_base_library {
 	{
 		if (isset($this->config['compatibility']))
 		{
-			$compatibility = (float) $this->config['compatibility'];
-			$fuel_version = (float) FUEL_VERSION;
-			if ($compatibility < $fuel_version)
+			$compatibility = $this->config['compatibility'];
+			$fuel_version = $this->fuel->version();
+
+			// if the current version of FUEL is greater then or equal to the compatability version, the we are good to go
+			if (version_compare($compatibility, $fuel_version, '>='))
 			{
 				return FALSE;
 			}

@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -805,7 +805,7 @@ class Data_table {
 							}
 							return $return;');
 
-					// hacky but avoids 5.3 funcation syntax (which is nicer but doesn't work with 5.2)
+					// hacky but avoids 5.3 function syntax (which is nicer but doesn't work with 5.2)
 					$GLOBALS['__tmp_transient_columns__'] = $columns;
 					$action = preg_replace_callback('#^(.*)\{(.+)\}(.*)$#', $callback, $action);
 					$fields[] = new Data_table_field($key, $val, array(), $action);
@@ -936,13 +936,13 @@ class Data_table {
 						}
 						return $return;');
 
-				// hacky but avoids 5.3 funcation syntax (which is nicer but doesn't work with 5.2)
+				// hacky but avoids 5.3 function syntax (which is nicer but doesn't work with 5.2)
 				$GLOBALS['__tmp_transient_fields__'] = $fields;
 				$url = preg_replace_callback('#^(.*)\{(.+)\}(.*)$#', $callback, $val['url']);
 				
 
 				$attrs = (!empty($val['attrs'])) ? ' '.$this->_render_attrs($val['attrs']) : '';
-				$actions[] ='<a href="'.$url.'"'.$attrs.'>'.$key.'</a>';
+				$actions[] ='<a href="'.$url.'"'.$attrs.' class="action_'.url_title($key, 'underscore', TRUE).'">'.$key.'</a>';
 			}
 		}
 

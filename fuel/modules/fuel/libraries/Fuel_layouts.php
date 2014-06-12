@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -36,6 +36,7 @@ class Fuel_layouts extends Fuel_base_library {
 	public $layouts_folder = '_layouts'; // layout folder 
 	public $layouts = array(); // layout object initialization parameters
 	public $blocks = array(); // block object initialization parameters
+	public $hidden = array(); // an array of layouts to not display in the CMS dropdown
 
 	protected $_layouts = array(); // layout objects
 	
@@ -220,7 +221,7 @@ class Fuel_layouts extends Fuel_base_library {
 		// add all layouts without a group first
 		foreach($layouts as $k => $layout)
 		{
-			if (empty($layout->group))
+			if (empty($layout->group) AND !in_array($k, $this->hidden))
 			{
 				$options[$layout->name] = $layout->label;
 				// reduce array down
@@ -283,6 +284,8 @@ class Fuel_layouts extends Fuel_base_library {
 				if (!isset($init['class']) OR $init['class'] == $default_class)
 				{
 					$init['class'] = 'Fuel_block_layout';
+					$init['model'] =  (isset($init['model'])) ? $init['model'] : NULL;
+					$init['method'] = (isset($init['method'])) ? $init['method'] : NULL;
 				}
 				$init['folder'] = $this->fuel->blocks->blocks_folder;
 			}
@@ -296,6 +299,7 @@ class Fuel_layouts extends Fuel_base_library {
 			$init['hooks'] = (isset($init['hooks'])) ? $init['hooks'] : NULL;
 			$init['fields'] = (isset($init['fields'])) ? $init['fields'] : array();
 			$init['import_field'] = (isset($init['import_field'])) ? $init['import_field'] : NULL;
+			$init['module'] = (isset($init['module'])) ? $init['module'] : 'app';
 
 			// load custom layout classes
 			if (!empty($init['class']) AND !in_array($init['class'], $loaded_classes))
@@ -309,9 +313,16 @@ class Fuel_layouts extends Fuel_base_library {
 				{
 					$init['filepath'] = 'libraries';
 				}
-				$custom_class_path = APPPATH.$init['filepath'].'/'.$init['filename'];
 
-				require_once(APPPATH.$init['filepath'].'/'.$init['filename']);
+				if (isset($init['module']) AND ($init['module'] != 'app' AND $init['module'] != 'application'))
+				{
+					$custom_class_path = MODULES_PATH.$init['module'].'/'.$init['filepath'].'/'.$init['filename'];
+				}
+				else
+				{
+					$custom_class_path = APPPATH.$init['filepath'].'/'.$init['filename'];
+				}
+				require_once($custom_class_path);
 			}
 			$class = $init['class'];
 			$layout = new $class($init);
@@ -351,6 +362,7 @@ class Fuel_layout extends Fuel_base_library {
 	public $label = ''; // The label to display with the layout in the select list as seen in the CMS
 	public $description = ''; // A description of the layout which will be rendered as a copy field in the form
 	public $file = ''; // The layout view file name
+	public $module = 'app'; // The module that the layout's view file belongs to
 	public $hooks = array(); // Hooks to run before and after the rendering of a page. Options are "pre_render" and "post_render"
 	public $fields = array(); // The fields to associate with the layout. Must be in the Form_builder array format
 	public $field_values = array(); // The values to assign to the fields
@@ -623,6 +635,37 @@ class Fuel_layout extends Fuel_base_library {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Sets the module the layout belongs to
+	 *
+	 * @access	public
+	 * @param	string	The name of the folder
+	 * @return	void
+	 */	
+	public function set_module($module)
+	{
+		$this->module = $module;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns the module the layout belongs to
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	public function module()
+	{
+		if (empty($this->module))
+		{
+			$this->module = 'app';
+		}
+		return $this->module;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Sets the group the layout belongs to
 	 *
 	 * @access	public
@@ -811,7 +854,7 @@ class Fuel_layout extends Fuel_base_library {
 	 *
 	 * @access	public
 	 * @param	key		The type of hook (e.g. "pre_render" or "post_render")
-	 * @param	array	An array of hook information including the class/callback function. <a href="http://codeigniter.com/user_guide/general/hooks.html" target="blank">More here</a>
+	 * @param	array	An array of hook information including the class/callback function. <a href="http://ellislab.com/codeigniter/user-guide/general/hooks.html" target="blank">More here</a>
 	 * @return	void
 	 */
 	public function set_hook($type, $hook)
@@ -880,6 +923,33 @@ class Fuel_layout extends Fuel_base_library {
 		return $output;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Placeholder hook - used for processing the saved values of the layout
+	 *
+	 * @access	public
+	 * @param	array	process values array
+	 * @return	array
+	 */	
+	public function process_saved_values($values)
+	{
+		return $values;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Placeholder hook - used for processing the saved values of the layout after the page has been saved and has an ID
+	 *
+	 * @access	public
+	 * @param	array	process values array
+	 * @return	array
+	 */	
+	public function post_process_saved_values($values)
+	{
+		return $values;
+	}
 	// --------------------------------------------------------------------
 
 	/**
@@ -1124,6 +1194,9 @@ class Fuel_block_layout extends Fuel_layout
 {
 
 	public $context = NULL;
+	public $model = '';
+	public $method = '';
+	public $field = '';
 
 	// --------------------------------------------------------------------
 	
@@ -1149,6 +1222,58 @@ class Fuel_block_layout extends Fuel_layout
 	public function context()
 	{
 		return $this->context;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Sets the model o retrieve the value data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function set_model($model)
+	{
+		$this->model = $model;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns the model used to retrieve the value data
+	 *
+	 * @access	public
+	 * @return	mixed
+	 */
+	public function model()
+	{
+		return $this->model;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Sets the method used retrieve the data from the model
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function set_method($method)
+	{
+		$this->method = $method;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns the method used to retrieve the data from the model
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	public function method()
+	{
+		return $this->method;
 	}
 
 	// --------------------------------------------------------------------

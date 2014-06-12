@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -151,6 +151,38 @@ class Fuel extends Fuel_advanced_module {
 		}
 		$this->_config[$item] = $value;
 		$this->CI->config->set_item($module, $fuel_config);
+	}
+
+// --------------------------------------------------------------------
+	
+	/**
+	 * Returns the FUEL version 
+	 *
+	 * @access	public
+	 * @param	string	Value of what part of the version number to return. Options are "major", "minor", or "patch" (optional)
+	 * @return	void
+	 */	
+	public function version($part = NULL)
+	{
+		$version = FUEL_VERSION;
+		if (!empty($part))
+		{
+			$parts = explode('.', $version);
+			switch($part)
+			{
+				case 'major':
+					return $parts[0];
+					break;
+				case 'minor':
+					if (isset($parts[1])) return $parts[1];
+					break;
+				case 'patch':
+					if (isset($parts[2])) return $parts[2];
+					break;
+			}
+			return '0';
+		}
+		return $version;
 	}
 
 	// --------------------------------------------------------------------

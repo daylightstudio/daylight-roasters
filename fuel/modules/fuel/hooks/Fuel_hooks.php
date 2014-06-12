@@ -9,7 +9,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -24,7 +24,7 @@
  * @subpackage	Libraries
  * @category	Libraries
  * @author		David McReynolds @ Daylight Studio
- * @link		http://www.getfuelcms.com/user_guide
+ * @link		http://docs.getfuelcms.com
  */
 
 class Fuel_hooks
@@ -59,6 +59,7 @@ class Fuel_hooks
 		$CI =& get_instance();
 		$CI->fuel->redirects->enforce_host();
 		$CI->fuel->redirects->ssl();
+		$CI->fuel->redirects->non_ssl();
 
 		if (!USE_FUEL_ROUTES)
 		{

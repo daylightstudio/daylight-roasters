@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -357,11 +357,7 @@ class MY_Model extends CI_Model {
 	 * Get the key field(s)
 	 *
 	 <code>
-	$fields = $this->examples_model->fields(); 
-	foreach($fields as $field)
-	{
-		echo $field; // field name
-	}
+	$fields = $this->examples_model->key_field(); 
 	</code>
 	 *
 	 * @access	public
@@ -378,6 +374,11 @@ class MY_Model extends CI_Model {
 	 * Get the fields of the table
 	 *
 	 <code>
+	 $fields = $this->examples_model->fields(); 
+	 foreach($fields as $field)
+	{
+		echo $field; // field name
+	}
 	</code>
 	 *
 	 * @access	public
@@ -493,10 +494,9 @@ class MY_Model extends CI_Model {
 		$result_objects = array();
 		if (!empty($result))
 		{
-			$fields = $query->list_fields();
 			foreach ($result as $row) 
 			{
-				$record = $this->map_to_record_class($row, $fields);
+				$record = $this->map_to_record_class($row);
 				if (!empty($assoc_key))
 				{
 					$result_objects[$row[$assoc_key]] = $record;
@@ -649,12 +649,12 @@ class MY_Model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get one record result
 	 *
 	 <code>
-	$example = $this->examples_model->find_one(array('published' => 'yes'), ''asc'); 
+	$example = $this->examples_model->find_one(array('published' => 'yes'), ''asc');
 	</code>
 	 *
 	 * @access	public
@@ -662,18 +662,18 @@ class MY_Model extends CI_Model {
 	 * @param	string	the order by of the query (optional)
 	 * @param	string	return type (object, array, query, auto) (optional)
 	 * @return	array
-	 */	
+	 */
 	public function find_one($where = array(), $order_by = NULL, $return_method = NULL)
 	{
 		$where = $this->_safe_where($where);
-		if (!empty($where)) $this->db->where($where);
+		$this->_handle_where($where);
 		if (!empty($order_by)) $this->db->order_by($order_by);
 		$this->db->limit(1);
 		$query = $this->get(FALSE, $return_method);
 		if ($return_method == 'query') return $query;
-		
+
 		$data = $query->result();
-		
+
 		// unserialize any data
 		if ($return_method == 'array')
 		{
@@ -681,7 +681,7 @@ class MY_Model extends CI_Model {
 		}
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -702,12 +702,12 @@ class MY_Model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get the results of the query
 	 *
 	 <code>
-	$examples = $this->examples_model->find_all(array('published' => 'yes'), 'date_added desc'); 
+	$examples = $this->examples_model->find_all(array('published' => 'yes'), 'date_added desc');
 	</code>
 	 *
 	 * @access	public
@@ -718,28 +718,13 @@ class MY_Model extends CI_Model {
 	 * @param	string	return type (object, array, query, auto) (optional)
 	 * @param	string	the column to use for an associative key array (optional)
 	 * @return	array
-	 */	
+	 */
 	public function find_all($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
 		$where = $this->_safe_where($where);
-		
-		if (!empty($where)) 
-		{
-			if (is_array($where))
-			{
-				foreach($where as $key => $val)
-				{
-					// check for nested array values to use for wherein
-					$method = (!empty($val) AND is_array($val)) ? 'where_in' : 'where';
-					$this->db->$method($key, $val);
-				}
-			}
-			else
-			{
-				$this->db->where($where);
-			}
-		}
-		
+
+		$this->_handle_where($where);
+
 		$params = array('order_by', 'limit', 'offset');
 		foreach($params as $method)
 		{
@@ -747,7 +732,7 @@ class MY_Model extends CI_Model {
 		}
 		$query = $this->get(TRUE, $return_method, $assoc_key);
 		if ($return_method == 'query') return $query;
-		
+
 		$data = $query->result();
 
 		// unserialize any data if the return method is an array. If it is a custom object, then we let the object take care of it
@@ -757,7 +742,7 @@ class MY_Model extends CI_Model {
 		}
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -1224,6 +1209,11 @@ class MY_Model extends CI_Model {
 			{
 				$values[$key] = ($this->auto_trim AND is_string($original_values[$key])) ? trim($original_values[$key]) : $original_values[$key];
 			}
+			// add the date fields if they don't exist to the values array
+			elseif(is_array($original_values) AND !array_key_exists($key, $original_values) AND (in_array($key, $this->auto_date_add) OR in_array($key, $this->auto_date_update)))
+			{
+				$values[$key] = NULL;
+			}
 		}
 		
 		// process linked fields
@@ -1357,26 +1347,26 @@ class MY_Model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Returns number of query results
 	 *
 	 <code>
-	$where['published'] = 'yes'; 
+	$where['published'] = 'yes';
 	echo $this->examples_model->record_count($where); // dislays the number of records
 	</code>
 	 *
 	 * @access	public
 	 * @param	mixed	where condition (optional)
 	 * @return	int
-	 */	
+	 */
 	public function record_count($where = array())
 	{
-		$this->db->where($where);
+		$this->_handle_where($where);
 		$query = $this->db->get($this->table_name);
 		return $query->num_rows();
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -1477,12 +1467,13 @@ class MY_Model extends CI_Model {
 
 					// execute on_insert/update hook methods
 					$no_key = FALSE;
-					if (!$this->_has_key_field_value($values) AND $this->db->insert_id())
+					$insert_id = $this->db->insert_id();
+					if (!$this->_has_key_field_value($values) AND $insert_id)
 					{
 						$no_key = TRUE;
 						if (is_string($this->key_field))
 						{
-							$values[$this->key_field] = $this->db->insert_id();
+							$values[$this->key_field] = $insert_id;
 						}
 						$this->on_after_insert($values);
 					}
@@ -1514,9 +1505,10 @@ class MY_Model extends CI_Model {
 					$values = $this->serialize_field_values($values);
 					
 					$this->db->insert($this->table_name, $values);
+					$insert_id = $this->db->insert_id();
 					if (is_string($this->key_field))
 					{
-						$values[$this->key_field] = $this->db->insert_id();
+						$values[$this->key_field] = $insert_id;
 					}
 					$this->on_after_insert($values);
 					if ($record instanceof Data_record)
@@ -1552,9 +1544,9 @@ class MY_Model extends CI_Model {
 			}
 			
 			// returns the key value of the record upon save
-			if ($this->db->insert_id())
+			if (isset($insert_id) AND ! empty($insert_id))
 			{
-				$return = $this->db->insert_id();
+				$return = $insert_id;
 			}
 			else
 			{
@@ -1897,7 +1889,7 @@ class MY_Model extends CI_Model {
 		{
 			$data = $this->find_one_array(array($key => $val));
 		}
-		if (!empty($data)) return FALSE;
+		if (!empty($data) AND $data[$key] == $val) return FALSE;
 		return TRUE;
 	}
 
@@ -2613,13 +2605,13 @@ class MY_Model extends CI_Model {
 	 <code>
 	$form_info = $this->examples_model->form_fields(); 
 
-	echo $form_fields['id']['type']; // hidden 
-	echo $table_meta['email']['type']; // text 
-	echo $table_meta['email']['required']; // 1 (TRUE) 
-	echo $table_meta['first_name']['type']; // text 
-	echo $table_meta['description']['type']; // textfield 
-	echo $table_meta['active']['type']; // select or enum 
-	echo $table_meta['date_added']['type']; // datetime (a special field type in the form_builder class) 
+	echo $form_info['id']['type']; // hidden 
+	echo $form_info['email']['type']; // text 
+	echo $form_info['email']['required']; // 1 (TRUE) 
+	echo $form_info['first_name']['type']; // text 
+	echo $form_info['description']['type']; // textfield 
+	echo $form_info['active']['type']; // select or enum 
+	echo $form_info['date_added']['type']; // datetime (a special field type in the form_builder class) 
 	</code>
 	 *
 	 * @access	public
@@ -2699,7 +2691,7 @@ class MY_Model extends CI_Model {
 		{
 			foreach($this->foreign_keys as $key => $val)
 			{
-				$where = array();
+				$where = NULL;
 				$order = TRUE;
 				$model = $this->load_model($val);
 				if (is_array($val))
@@ -2707,11 +2699,12 @@ class MY_Model extends CI_Model {
 					if (!empty($val['where']))
 					{
 						$where = $val['where'];
+						$where = $this->_replace_placeholders($where, $values);
 						unset($val['where']);
 					}
 					if (!empty($val['order']))
 					{
-						$order = $val['order'];
+						$order = $val['order'];	
 						unset($val['order']);
 					}
 				}
@@ -2755,13 +2748,14 @@ class MY_Model extends CI_Model {
 			foreach ($this->has_many as $related_field => $rel_config)
 			{
 				$related_model = $this->load_related_model($rel_config);
-				$where = array();
+				$where = NULL;
 				$order = TRUE;
 				if (is_array($rel_config))
 				{
 					if (!empty($rel_config['where']))
 					{
-						$where = $rel_config['where'];	
+						$where = $rel_config['where'];
+						$where = $this->_replace_placeholders($where, $values);
 					}
 					
 					if (!empty($rel_config['order']))
@@ -2779,13 +2773,14 @@ class MY_Model extends CI_Model {
 		{
 			foreach ($this->belongs_to as $related_field => $rel_config)
 			{
-				$where = array();
+				$where = NULL;
 				$order = TRUE;
 				if (is_array($rel_config))
 				{
 					if (!empty($rel_config['where']))
 					{
-						$where = $rel_config['where'];	
+						$where = $rel_config['where'];
+						$where = $this->_replace_placeholders($where, $values);
 					}
 					
 					if (!empty($rel_config['order']))
@@ -3970,7 +3965,13 @@ class MY_Model extends CI_Model {
 			foreach($where as $key => $val)
 			{
 				$table_col = explode('.', $key);
-				if (empty($table_col[1])) $key = $this->table_name.'.'.$key;
+				// one less query if we use table_info instead of 
+				// fields method since it's already been called and cached
+				$fields = array_keys($this->table_info());
+				if (empty($table_col[1]) AND in_array($table_col[0], $fields))
+				{
+					$key = $this->table_name.'.'.$key;
+				}
 				$new_where[$key] = $val;
 			}
 			return $new_where;
@@ -3978,6 +3979,34 @@ class MY_Model extends CI_Model {
 		return $where;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handle the where params and use where_in when values are arrays
+	 *
+	 * @access	protected
+	 * @param	mixed	where condition
+	 */
+	protected function _handle_where($where = array())
+	{
+		if ( ! empty($where))
+		{
+			if (is_array($where))
+			{
+				foreach($where as $key => $val)
+				{
+					// check for nested array values to use for wherein
+					$method = (!empty($val) AND is_array($val)) ? 'where_in' : 'where';
+					$this->db->$method($key, $val);
+				}
+			}
+			else
+			{
+				$this->db->where($where);
+			}
+		}
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -4053,7 +4082,7 @@ class MY_Model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Determins if the value is an array of arrays
+	 * Determines if the value is an array of arrays
 	 *
 	 * @access	protected
 	 * @param	mixed
@@ -4062,6 +4091,39 @@ class MY_Model extends CI_Model {
 	protected function _is_nested_array($record)
 	{
 		return (is_array($record) AND (is_int(key($record)) AND is_array(current($record))));
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Replaces placeholder strings with values in an array
+	 *
+	 * @access	protected
+	 * @param	mixed
+	 * @return	boolean
+	 */	
+	protected function _replace_placeholders($str, $values)
+	{
+		if (is_string($str))
+		{
+			if (strpos($str, '{') !== FALSE)
+			{
+				if (!empty($values))
+				{
+					foreach($values as $key => $val)
+					{
+						$str = str_replace('{'.$key.'}', $val, $str);	
+					}
+				}
+				else
+				{
+					// returns nothing to prevent SQL errors
+					$str = '';
+				}
+			}
+		}
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
@@ -4151,7 +4213,7 @@ class MY_Model extends CI_Model {
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -4305,7 +4367,7 @@ class Data_set {
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -4468,7 +4530,26 @@ class Data_record {
 		if (!is_array($values)) return FALSE;
 		foreach($values as $key => $val)
 		{
-			if ($this->prop_exists($key)) $this->$key = $val;
+
+			if ($this->prop_exists($key))
+			{
+				if ($this->_parent_model->field_type($key) == 'number' AND is_numeric($val))
+				{
+					$field_info = $this->_parent_model->field_info($key);
+					if ($field_info['type'] == 'float' OR $field_info['type'] == 'decimal')
+					{
+						$this->$key = (float) $val;
+					}
+					else
+					{
+						$this->$key = (int) $val;
+					}
+				}
+				else
+				{
+					$this->$key = $val;
+				}
+			}
 		}
 	}
 	
@@ -5522,7 +5603,7 @@ class Data_record {
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */

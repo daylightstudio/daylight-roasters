@@ -58,6 +58,11 @@ class Module extends Fuel_base_controller {
 			$params = $this->module_obj->info();
 		}
 
+		// stop here if the module is disabled
+		if ($params['disabled'] === TRUE)
+		{
+			show_404();
+		}
 		foreach($params as $key => $val)
 		{
 			$this->$key = $val;
@@ -315,7 +320,7 @@ class Module extends Fuel_base_controller {
 				$edit_func .= 'if (isset($cols[$CI->model->key_field()]))
 				{
 					$url = fuel_url("'.$this->module_uri.'/edit/".$cols[$CI->model->key_field()]);
-					$link = "<a href=\"".$url."\">".lang("table_action_delete")."</a>";
+					$link = "<a href=\"".$url."\" class=\"action_delete\">".lang("table_action_delete")."</a>";
 					$link .= " <input type=\"checkbox\" name=\"delete[".$cols[$CI->model->key_field()]."]\" value=\"1\" id=\"delete_".$cols[$CI->model->key_field()]."\" class=\"multi_delete\"/>";
 				}';	
 			}
@@ -333,7 +338,7 @@ class Module extends Fuel_base_controller {
 				$delete_func .= 'if (isset($cols[$CI->model->key_field()]))
 				{
 					$url = fuel_url("'.$this->module_uri.'/delete/".$cols[$CI->model->key_field()]);
-					$link = "<a href=\"".$url."\">".lang("table_action_delete")."</a>";
+					$link = "<a href=\"".$url."\" class=\"action_delete\">".lang("table_action_delete")."</a>";
 					$link .= " <input type=\"checkbox\" name=\"delete[".$cols[$CI->model->key_field()]."]\" value=\"1\" id=\"delete_".$cols[$CI->model->key_field()]."\" class=\"multi_delete\"/>";
 				}';				
 			}
@@ -437,7 +442,11 @@ class Module extends Fuel_base_controller {
 			$col_txt = "'.$col_txt.'";
 
 			// boolean fields
-			if (!is_true_val($cols[$heading]))
+			if (is_null($cols[$heading]) OR $cols[$heading] == "")
+			{
+				return "";
+			}
+			else if (!is_true_val($cols[$heading]))
 			{
 				$text_class = ($can_publish) ? "publish_text unpublished toggle_on" : "unpublished";
 				$action_class = ($can_publish) ? "publish_action unpublished hidden" : "unpublished hidden";
@@ -933,7 +942,7 @@ class Module extends Fuel_base_controller {
 	function edit($id = NULL, $field = NULL, $redirect = TRUE)
 	{
 		// check that the action even exists and if not, show a 404
-		if (!$this->fuel->auth->module_has_action('save'))
+		if (!$this->fuel->auth->module_has_action('save') AND  $this->displayonly === FALSE)
 		{
 			show_404();
 		}
@@ -1196,9 +1205,9 @@ class Module extends Fuel_base_controller {
 		
 		// other variables
 		$vars['id'] = $id;
-		$vars['versions'] = $this->fuel_archives_model->options_list($id, $this->model->table_name());
+		$vars['versions'] = ($this->displayonly === FALSE) ? $this->fuel_archives_model->options_list($id, $this->model->table_name()) : array();
 		$vars['others'] = $this->model->get_others($this->display_field, $id);
-		$vars['action'] =  $action;
+		$vars['action'] = $action;
 		
 		$vars['module'] = $this->module;
 		$vars['notifications'] = $this->load->module_view(FUEL_FOLDER, '_blocks/notifications', $vars, TRUE);
@@ -2022,7 +2031,7 @@ class Module extends Fuel_base_controller {
 				if ($file_info['error'] == 0)
 				{
 					$posted[$file] = $file_info['name'];
-					
+
 					$file_tmp = current(explode('___', $file));
 					$field_name = $file_tmp;
 
@@ -2042,6 +2051,16 @@ class Module extends Fuel_base_controller {
 					{
 						$field_value = $file_info['name'];
 					}
+
+					// look for repeatable values that match
+					if (preg_match('#(.+)_(\d+)_(.+)#', $file_tmp, $matches))
+					{
+						if (isset($posted[$matches[1]][$matches[2]][$matches[3]]))
+						{
+							$posted[$matches[1]][$matches[2]][$matches[3]] = $posted[$file];
+						}
+					}
+
 					if (strpos($field_value, '{') !== FALSE )
 					{
 						//e modifier is deprecated so we have to do this
@@ -2053,7 +2072,7 @@ class Module extends Fuel_base_controller {
 								}
 								return $return;');
 
-						// hacky but avoids 5.3 funcation syntax (which is nicer but doesn't work with 5.2)
+						// hacky but avoids 5.3 function syntax (which is nicer but doesn't work with 5.2)
 						$GLOBALS['__tmp_transient_posted__'] = $posted;
 
 						$field_value = preg_replace_callback('#^(.*)\{(.+)\}(.*)$#', $callback, $field_value);
@@ -2101,31 +2120,67 @@ class Module extends Fuel_base_controller {
 				// transfer uploaded data the controller object as well
 				$this->upload_data =& $uploaded_data;
 
-				foreach($uploaded_data as $key => $val)
+				// now process the data related to upload a file including translated path names
+				if (!isset($field_name))
 				{
-					$file_tmp = current(explode('___', $key));
-
-					// if there is a field with the suffix of _upload, then we will overwrite that posted value with this value
-					if (substr($file_tmp, ($file_tmp - 7)) == '_upload')
-					{
-						$field_name = substr($file_tmp, 0, ($file_tmp - 7));
-					}
-
-					// get the file name field
-					// if the file name field exists AND there is no specified hidden filename field to assign to it AND...
-					// the model does not have an array key field AND there is a key field value posted
-					if (isset($field_name) AND isset($posted[$field_name]) AND !is_array($this->model->key_field()) AND isset($posted[$this->model->key_field()]))
-					{
-						$id = $posted[$this->model->key_field()];
-						$data = $this->model->find_one_array(array($this->model->table_name().'.'.$this->model->key_field() => $id));
-						$data[$field_name] = $val['file_name'];
-						$this->model->save($data);
-					}
+					$field_name = '';
 				}
+				$this->_process_upload_data($field_name, $uploaded_data, $posted);
 				
 			}
 		}
 		return !$errors;
+	}
+
+	protected function _process_upload_data($field_name, $uploaded_data, $posted)
+	{
+
+		$field_name = end(explode('--', $field_name));
+
+		foreach($uploaded_data as $key => $val)
+		{
+			$file_tmp = current(explode('___', $key));
+
+			// get the file name field
+			// if the file name field exists AND there is no specified hidden filename field to assign to it AND...
+			// the model does not have an array key field AND there is a key field value posted
+			if (isset($field_name) AND !is_array($this->model->key_field()) AND isset($posted[$this->model->key_field()]))
+			{
+				$id = $posted[$this->model->key_field()];
+				$data = $this->model->find_one_array(array($this->model->table_name().'.'.$this->model->key_field() => $id));
+
+				// if there is a field with the suffix of _upload, then we will overwrite that posted value with this value
+				if (substr($file_tmp, ($file_tmp - 7)) == '_upload')
+				{
+					$field_name = substr($file_tmp, 0, ($file_tmp - 7));
+				}
+
+				if (isset($posted[$field_name]))
+				{
+					$save = TRUE;
+				}
+
+				// look for repeatable values that match
+				if (preg_match('#(.+)_(\d+)_(.+)#', $file_tmp, $matches))
+				{
+					if (isset($posted[$matches[1]][$matches[2]][$matches[3]]) AND isset($data[$matches[1]][$matches[2]][$matches[3]]))
+					{
+						$data[$matches[1]][$matches[2]][$matches[3]] = $posted[$file_tmp];
+						$save = TRUE;
+					}
+				}
+
+				if ($save)
+				{
+
+					$data[$field_name] = $val['file_name'];
+
+					// reset any validation to prevent issues with saving again (e.g. unique fields and the is_new function is problematic)
+					$this->model->remove_all_validation($data);
+					$this->model->save($data);
+				}
+			}
+		}
 	}
 	
 	protected function _run_hook($hook, $params = array())

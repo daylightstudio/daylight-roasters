@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -655,6 +655,7 @@ class Fuel_module extends Fuel_base_library {
 				'language' => '',
 				'language_col' => 'language',
 				'hidden' => FALSE,
+				'disabled' => FALSE,
 				'icon_class' => '',
 				'folder' => '',
 				'exportable' => FALSE,
@@ -684,7 +685,7 @@ class Fuel_module extends Fuel_base_library {
 			}
 			
 			// localize certain fields
-			if ($module_name = lang('module_'.$this->module))
+			if (empty($info['module_name']) AND $module_name = lang('module_'.$this->module))
 			{
 				$info['module_name'] = $module_name;
 			}

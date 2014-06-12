@@ -16,7 +16,7 @@ dave@thedaylightstudio.com
 			removeButtonText : 'Remove',
 			repeatableSelector : '.repeatable',
 			repeatableParentSelector : '.repeatable_container',
-			removeSelector : '.remove_repeatable',
+			removeSelector : '.remove',
 			contentSelector : '.repeatable_content',
 			warnBeforeDelete : true,
 			warnBeforeDeleteMessage : 'Are you sure you want to delete this item?',
@@ -28,7 +28,8 @@ dave@thedaylightstudio.com
 			max : null,
 			min : null,
 			depth : 1,
-			allowCollapsingContent : true
+			allowCollapsingContent : true,
+			removeable : true
 		}, o || {});
 
 		// used for issue when renaming checkboxes
@@ -53,6 +54,7 @@ dave@thedaylightstudio.com
 				if (newId && newId.length){
 					newId = newId.replace(/\{index\}/g, i);
 					newId = newId.replace(/([-_a-zA-Z0-9]+_)\d+(_[-_a-zA-Z0-9]+)$/, '$1' + i + '$2');
+
 					$(elem).attr(attr, newId);
 				}
 			}
@@ -73,6 +75,9 @@ dave@thedaylightstudio.com
 				var newName = $(this).attr('name');
 				if (newName && newName.length){
 					newName = newName.replace(/([-_a-zA-Z0-9\[\]]+)\[\d+\]([-_a-zA-Z0-9\[\]]+)$/, '$1[' + i + ']$2');
+
+					// for file uploads
+					newName = newName.replace(/([-_a-zA-Z0-9]+)_\d+_([-_a-zA-Z0-9]+)$/, '$1_' + i + '_$2');
 
 					// required for jquery 
 					newName = newName.replace('[', '\[');
@@ -114,6 +119,10 @@ dave@thedaylightstudio.com
 						var newName = $(this).attr('name')
 						if (newName && newName.length && parentIndex != null){
 							newName = newName.replace(/([-_a-zA-Z0-9]+\[)\d+(\]\[[-_a-zA-Z0-9]+\]\[[-_a-zA-Z0-9]+\])/g, '$1' + parentIndex + '$2');
+
+							// for file uploads
+							newName = newName.replace(/([-_a-zA-Z0-9]+)_\d+_([-_a-zA-Z0-9]+_[-_a-zA-Z0-9]+)/g, '$1_' + parentIndex + '_$2');	
+							
 							// newName = newName.replace(/([-_a-zA-Z0-9]+\[)\d+(\][-_a-zA-Z0-9\[\]]+)$/, '$1' + parentIndex + '$2');
 							
 							// required for jquery 
@@ -140,16 +149,18 @@ dave@thedaylightstudio.com
 		}
 		
 		var createRemoveButton = function(elem){
+			if (!options.removeable) return;
 			$elem = $(elem);
-			if (!$elem.find(options.removeButtonClass).length) {
+			if (!$elem.find('.' + options.removeButtonClass).length) {
 				var $remove = $elem.find(options.removeSelector + ':first');
 				if ($remove.length && $remove.find(options.removeButtonClass).length == 0){
 					$remove.empty().append('<a href="#" class="' + options.removeButtonClass +'">' + options.removeButtonText +' </a>');
 				} else {
+					$remove.remove(options.removeSelector);
 					$elem.append('<a href="#" class="' + options.removeButtonClass +'">' + options.removeButtonText +' </a>');
 				}
 			}
-			
+
 			//$(options.repeatableSelector).on('click', ' .' + options.removeButtonClass, function(e){
 			$(document).on('click', options.repeatableSelector +' .' + options.removeButtonClass,  function(e){
 				//var $this = $(this).closest(options.repeatableSelector).parent();
@@ -303,10 +314,12 @@ dave@thedaylightstudio.com
 			
 			// parse the template
 			var $repeatables = $this.children(options.repeatableSelector);
-			$repeatables.each(function(i){
-				parseTemplate(this, i);
-				createRemoveButton(this);
-			});
+			if (!$this.is('.__applied__')){
+				$repeatables.each(function(i){
+					parseTemplate(this, i);
+					createRemoveButton(this);
+				});
+			}
 				
 			// add button
 			$parent = $this.parent();
@@ -328,11 +341,13 @@ dave@thedaylightstudio.com
 			if (options.initDisplay && !$this.is('.__applied__')){
 				$this.attr('data-init_display', options.init_display);
 				
+				$toDisplay = $repeatables.find(options.contentSelector).not(options.contentSelector + ' ' + options.contentSelector);
+
 				// hide all but the first
 				if (options.initDisplay == 'first'){
-					$repeatables.find(options.contentSelector).not(':first').hide();
+					$toDisplay.not(':first').hide();
 				} else if (options.initDisplay == 'none' || options.initDisplay == 'closed'){
-					$repeatables.find(options.contentSelector).hide();
+					$toDisplay.hide();	
 				}
 			}
 			if ($parent.find(options.addButtonClass).length == 0 && !$this.hasClass('__applied__')){

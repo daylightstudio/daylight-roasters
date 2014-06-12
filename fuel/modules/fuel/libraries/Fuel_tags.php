@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -48,7 +48,7 @@ class Fuel_tags extends Fuel_module {
 		$where['slug'] = $tag;
 		if (!empty($category))
 		{
-			$categories_table = $model->tables('categories');
+			$categories_table = $model->tables('fuel_categories');
 			$where[$categories_table.'.slug'] = $category;
 		}
 		$tag = $model->find_one($where);
@@ -66,10 +66,10 @@ class Fuel_tags extends Fuel_module {
 	 */	
 	public function find_by_category($category)
 	{
-		$this->CI->load->module_model(FUEL_FOLDER, 'relationships_model');
+		$this->CI->load->module_model(FUEL_FOLDER, 'fuel_relationships_model');
 		$model =& $this->model();
-		$categories_table = $model->tables('categories');
-		$tags_table = $model->tables('tags');
+		$categories_table = $model->tables('fuel_categories');
+		$tags_table = $model->tables('fuel_tags');
 		if (is_int($category))
 		{
 			$where[$tags_table.'.category_id'] = $category;

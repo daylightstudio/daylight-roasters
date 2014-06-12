@@ -49,24 +49,37 @@ class Pages extends Module {
 
 				// run before_save hook
 				$this->_run_hook('before_save', $posted);
+				
+				// grab the layout
+				$layout = $this->fuel->layouts->get($this->input->post('layout', TRUE));
 
-				if ($id = $this->model->save($posted))
+				// grab the page variable fields
+				$fields = $this->_page_var_fields($layout, $posted);
+
+				// grab the variables
+				$vars = $this->_process_page_vars(NULL, $posted, $fields, $layout);
+
+				// check that vars validated first to throw any errors before saving the record
+				if ($vars AND $id = $this->model->save($posted))
 				{
+					// run this again to include saved ID value
+					$vars['page_id'] = $id;
+					$vars = $layout->post_process_saved_values($vars);
 
 					if (empty($id) OR $this->model->get_errors())
 					{
 						show_error(lang('error_saving'));
 					}
 				
-					$this->_process_uploads();
-				
 					if (!$this->fuel->auth->has_permission($this->permission, 'publish'))
 					{
 						unset($_POST['published']);
 					}
 				
-					if ($this->_save_page_vars($id, $posted))
+					if ($this->_save_page_vars($id, $vars, $fields))
 					{
+						$this->_process_uploads($vars);
+
 						$data = $this->model->find_one_array(array($this->model->table_name().'.id' => $id));
 				
 						// run after_create hook
@@ -90,7 +103,6 @@ class Pages extends Module {
 							redirect($url);
 						}
 					}
-					
 				}
 			}
 			
@@ -129,12 +141,25 @@ class Pages extends Module {
 			// run before_save hook
 			$this->_run_hook('before_save', $posted);
 
-			if ($this->model->save($posted))
+			// grab the layout
+			$layout = $this->fuel->layouts->get($this->input->post('layout', TRUE));
+
+			// grab the page variable fields
+			$fields = $this->_page_var_fields($layout, $posted);
+
+			// grab the variables
+			$vars = $this->_process_page_vars($id, $posted, $fields, $layout);
+
+			// check that vars validated first to throw any errors before saving the record
+			if ($vars AND $this->model->save($posted))
 			{
-				$this->_process_uploads();
-				
-				if ($this->_save_page_vars($id, $posted))
+				$vars = $layout->post_process_saved_values($vars);
+
+				if ($this->_save_page_vars($id, $vars, $fields))
 				{
+
+					$this->_process_uploads($vars);
+
 					$data = $this->model->find_one_array(array($this->model->table_name().'.id' => $id));
 				
 					// run after_edit hook
@@ -151,6 +176,7 @@ class Pages extends Module {
 					{
 						$url .= '?lang='.$this->input->post('language');
 					}
+
 					redirect($url);
 				}
 			}
@@ -215,11 +241,11 @@ class Pages extends Module {
 		// num uri params
 		$fields['cache']['class'] = 'advanced';
 		
-		
 		$field_values = (!empty($_POST)) ? $_POST : $saved;
 		$field_values['layout'] = $layout;
-		
-		if (!empty($field_values['location'])) $this->preview_path = $field_values['location'];
+
+		// substitute data values into preview path
+		$this->preview_path = $this->module_obj->url($field_values);
 		
 		$sort_arr = (empty($fields['navigation_label'])) ? array('location', 'layout', 'published', 'cache') : array('location', 'layout', 'navigation_label', 'published', 'cache');
 		
@@ -246,18 +272,6 @@ class Pages extends Module {
 		$this->form_builder->submit_value = lang('btn_save');
 		$this->form_builder->cancel_value = lang('btn_cancel');
 		
-		// page variables
-		$layout =  $this->fuel->layouts->get($layout);
-		if (!empty($layout))
-		{
-			$fields = $layout->fields();
-			$import_field = $layout->import_field();
-		}
-
-		if (!empty($import_field))
-		{
-			$this->js_controller_params['import_field'] = $import_field;
-		}
 
 		/*****************************************************************************
 		// check for twin view file, controller and extra routing to generate warnings
@@ -266,9 +280,11 @@ class Pages extends Module {
 		$import_view = FALSE;
 		$routes = array();
 		$uses_controller = FALSE;
-		if (!empty($field_values['location'])) {
+		if (!empty($field_values['location']))
+		{
 			$view_twin = APPPATH.'views/'.$field_values['location'].EXT;
 			$import_view = FALSE;
+
 			if (file_exists($view_twin))
 			{
 				$view_twin_info = get_file_info($view_twin);
@@ -341,17 +357,9 @@ class Pages extends Module {
 				}
 			}
 		}
-		
-		$this->form_builder->id = 'layout_fields';
-		$this->form_builder->name_prefix = 'vars';
-		$this->form_builder->set_fields($fields);
-		
+
 		$page_vars = array();
-		if (!empty($id))
-		{
-			$page_vars = $this->fuel_pagevariables_model->find_all_by_page_id($id);
-		}
-		else if (!empty($_POST))
+		if (!empty($_POST))
 		{
 			$page_vars = array();
 			foreach($_POST as $key => $val)
@@ -360,22 +368,58 @@ class Pages extends Module {
 				$page_vars[$key] = $val;
 			}
 		}
+		if (!empty($id))
+		{
+			$lang = $this->input->get('lang');
+			if (!$lang) $lang = $this->fuel->language->default_option();
+			$page_vars = array_merge($this->fuel_pagevariables_model->find_all_by_page_id($id, $lang), $page_vars);
+
+			// the following will pre-populate fields of a different language to the default values
+			if (empty($page_vars) AND $this->fuel->language->has_multiple() AND $lang != $this->fuel->language->default_option())
+			{
+				$page_vars = $this->fuel_pagevariables_model->find_all_by_page_id($id, $this->fuel->language->default_option());
+			}
+
+		}
+
 		
+		// page variables
+		$layout =  $this->fuel->layouts->get($layout);
+
+		if (!empty($layout))
+		{
+			$layout->set_field_values($page_vars);
+			$fields = $layout->fields();
+			$import_field = $layout->import_field();
+		}
+
+		if (!empty($import_field))
+		{
+			$this->js_controller_params['import_field'] = $import_field;
+		}
+
+		// since the form builder is cleared above, we'll add in a script tag to make sure that the initialize code gets executed again
+		$this->form_builder->add_js('<script></script>');
+
+		$this->form_builder->id = 'layout_fields';
+		$this->form_builder->name_prefix = 'vars';
+		$this->form_builder->set_fields($fields);
 		$this->form_builder->set_field_values($page_vars);
-		
+
 		$conflict = $this->_has_conflict($fields);
 
 		if (!empty($conflict))
 		{
 			$vars['layout_fields'] = $conflict;
 		}
-		else if (empty($id))
-		{
-			$vars['layout_fields'] = $this->form_builder->render();
-		}
+		// else if (empty($id))
+		// {
+		// 	$vars['layout_fields'] = $this->form_builder->render();
+		// }
 		else
 		{
-			$vars['layout_fields'] = '';
+			//$vars['layout_fields'] = '';
+			$vars['layout_fields'] = $this->form_builder->render();
 		}
 
 		// other variables
@@ -429,11 +473,12 @@ class Pages extends Module {
 		}
 		return $vars;
 	}
-	
-	public function _save_page_vars($id, $posted)
+
+	public function _process_page_vars($id, $posted, $fields, $layout)
 	{
 		//$vars = $this->input->post('vars');
 		$vars = array();
+		$vars['page_id'] = $id;
 
 		// process post vars... can't use an array because of file upload complications'
 		foreach($posted as $key => $val)
@@ -444,143 +489,192 @@ class Pages extends Module {
 				$vars[$new_key] = $val;
 			}
 		}
-		
-		if (!empty($vars) && is_array($vars))
+
+		$this->form_builder->load_custom_fields(APPPATH.'config/custom_fields.php');
+		$this->form_builder->set_fields($fields);
+		$this->form_builder->set_field_values($vars);
+		$vars = $this->form_builder->post_process_field_values($vars);// manipulates the $_POST values directly
+
+		// run layout variable processing
+		$vars = $layout->process_saved_values($vars);
+
+		// validate before deleting
+		if (!$layout->validate($vars))
 		{
+			add_errors($layout->errors());
+			return FALSE;
+		}
 
-			// run any form field post processing hooks
+		return $vars;
+	}
 
-			$layout = $this->fuel->layouts->get($this->input->post('layout', TRUE));
-			$fields = $layout->fields();
+	public function _page_var_fields($layout, $posted)
+	{
+		// run any form field post processing hooks
+		$fields = $layout->fields();
 
-			// add in block fields
-			foreach($fields as $key => $val)
+		// add in block fields
+		foreach($fields as $key => $val)
+		{
+			// check blocks for post processing of variables
+			if (isset($val['type']) AND $val['type'] == 'block' AND isset($posted[$key]['block_name']))
 			{
-				if (isset($val['type']) AND $val['type'] == 'block' AND isset($posted[$key]['block_name']))
+
+				$block_layout = $this->fuel->layouts->get($posted[$key]['block_name'], 'block');
+				if ($block_layout)
 				{
-					$block_layout = $this->fuel->layouts->get($posted[$key]['block_name'], 'block');
-					if ($block_layout)
-					{
-						$block_fields = $block_layout->fields();
-						$fields = array_merge($fields, $block_fields);
-					}
+					$block_fields = $block_layout->fields();
+					$fields = array_merge($fields, $block_fields);
 				}
 			}
 
-			$this->form_builder->load_custom_fields(APPPATH.'config/custom_fields.php');
-			
-			$this->form_builder->set_fields($fields);
-			$this->form_builder->set_field_values($vars);
-			
-			$vars = $this->form_builder->post_process_field_values($vars);// manipulates the $_POST values directly
-
-			$save = array();
-			
-			$lang = $this->input->post('language', TRUE);
-			
-			// clear out all other variables
-			$delete = array('page_id' => $id);
-			if ($this->input->post('language'))
+			// check for template layouts that may have nested fields... this is really ugly
+			if (!empty($val['fields']) AND is_array($val['fields']))
 			{
-				$delete['language'] = $this->input->post('language', TRUE);
-			}
-			
-			$this->fuel_pagevariables_model->delete($delete);
-			$pagevariable_table = $this->db->table_info($this->fuel_pagevariables_model->table_name());
-			$var_types = $pagevariable_table['type']['options'];
-			$page_variables_archive = array();
-			
-			// field types that shouldn't be saved
-			$non_recordable_fields = array('section', 'copy', 'fieldset');
-			
-			foreach($fields as $key => $val)
-			{
-				if (!isset($val['type']))
+				//$fields = array_merge($fields, $val['fields']);
+				foreach($val['fields'] as $k => $v)
 				{
-					$val['type'] = 'string';
-				}
-
-				if (!in_array($val['type'], $non_recordable_fields))
-				{
-					$value = (!empty($vars[$key])) ? $vars[$key] : NULL;
-					if (is_array($value) OR $val['type'] == 'array' OR $val['type'] == 'multi')
+					if (isset($v['type']) AND $v['type'] == 'block' AND isset($posted[$key]))
 					{
-						//$value = array_map('zap_gremlins', $value);
-						//$value = serialize($value);
-						$val['type'] = 'array'; // force the type to be an array
+						if (is_array($posted[$key]) AND is_int(key($posted[$key])))
+						{
+							foreach($posted[$key] as $a => $b)
+							{
+								if (is_array($b))
+								{
+									foreach($b as $c => $d)
+									{
+										if (isset($d['block_name']))
+										{
+											$block_layout = $this->fuel->layouts->get($d['block_name'], 'block');
+											if ($block_layout)
+											{
+												$block_fields = $block_layout->fields();
+
+												// now switch out the key to allow it to trigger the post_process_callback...
+												foreach($block_fields as $e => $f)
+												{
+													$block_fields[$e]['subkey'] = $k;
+													$block_fields[$e]['key'] = $key;
+												}
+												$fields = array_merge($fields, $block_fields);
+											}
+										}
+									}
+								}
+							}
+						}
 					}
-
-					if (!in_array($val['type'], $var_types)) $val['type'] = 'string';
-					
-					$save = array('page_id' => $id, 'name' => $key, 'value' => $value, 'type' => $val['type']);
-					$where = array('page_id' => $id, 'name' => $key, 'language' => $lang);
-					if ($lang)
-					{
-						$save['language'] = $lang;
-						$where['language'] = $lang;
-					}
-					$where = (!empty($id)) ? $where : array();
-
-					if (!$layout->validate($vars))
-					{
-						add_errors($layout->errors());
-						return FALSE;
-					}
-
-					if (!$this->fuel_pagevariables_model->save($save, $where))
-					{
-						add_error(lang('error_saving'));
-						return FALSE;
-					}
-
-				}
-			}
-
-			$page_variables_archive = $this->fuel_pagevariables_model->find_all_array(array('page_id' => $id));
-
-			// archive
-			$archive = $this->model->cleaned_data();
-			$archive[$this->model->key_field()] = $id;
-			$archive['variables'] = $page_variables_archive;
-			
-			$this->model->archive($id, $archive);
-			
-			// save to navigation if config allows it
-			if ($this->input->post('navigation_label')) {
-					
-				$this->fuel->load_model('fuel_navigation');
-				
-				$save = array();
-				$save['label'] = $this->input->post('navigation_label', TRUE);
-				$save['location'] = $this->input->post('location', TRUE);
-				$save['group_id'] = $this->fuel->config('auto_page_navigation_group_id');
-				$save['parent_id'] = 0;
-				$save['published'] = $this->input->post('published', TRUE);
-				if (!$this->fuel->auth->has_permission($this->permission, 'publish'))
-				{
-				     $save['published'] = 'no';
-				}
-				// reset $where and create where clause to try and find an existing navigation item
-				$where = array();
-				$where['location'] = $save['location'];
-				$where['group_id'] = $save['group_id'];
-				$where['parent_id'] = $save['parent_id'];
-				$does_it_exist_already = $this->fuel_navigation_model->record_exists($where);
-				if (!$does_it_exist_already)
-				{
-					// determine parent based off of location
-					$location_arr = explode('/', $this->input->post('location', TRUE));
-					$parent_location = implode('/', array_slice($location_arr, 0, (count($location_arr) -1)));
-				
-					if (!empty($parent_location)) $parent = $this->fuel_navigation_model->find_by_location($parent_location);
-					if (!empty($parent)) {
-						$save['parent_id'] = $parent['id'];
-					}
-					$this->fuel_navigation_model->add_validation('parent_id', array(&$this->fuel_navigation_model, 'no_location_and_parent_match'), lang('error_location_parents_match'), '{location}');
-					$this->fuel_navigation_model->save($save, array('location' => $this->input->post('location', TRUE), 'group_id' => $save['group_id']));
 				}
 			}
 		}
+		return $fields;
+	}
+
+	public function _save_page_vars($id, $vars, $fields)
+	{
+		$save = array();
+		
+		$lang = $this->input->post('language', TRUE);
+		
+		// clear out all other variables
+		$delete = array('page_id' => $id);
+		if ($this->input->post('language'))
+		{
+			$delete['language'] = $this->input->post('language', TRUE);
+		}
+		
+
+		$this->fuel_pagevariables_model->delete($delete);
+		$pagevariable_table = $this->db->table_info($this->fuel_pagevariables_model->table_name());
+		$var_types = $pagevariable_table['type']['options'];
+		$page_variables_archive = array();
+		
+		// field types that shouldn't be saved
+		$non_recordable_fields = array('section', 'copy', 'fieldset');
+		
+		foreach($fields as $key => $val)
+		{
+			if (!isset($val['type']))
+			{
+				$val['type'] = 'string';
+			}
+
+			if (!in_array($val['type'], $non_recordable_fields))
+			{
+				$value = (!empty($vars[$key])) ? $vars[$key] : NULL;
+				if (is_array($value) OR $val['type'] == 'array' OR $val['type'] == 'multi')
+				{
+					//$value = array_map('zap_gremlins', $value);
+					//$value = serialize($value);
+					$val['type'] = 'array'; // force the type to be an array
+				}
+
+				if (!in_array($val['type'], $var_types)) $val['type'] = 'string';
+				
+				$save = array('page_id' => $id, 'name' => $key, 'value' => $value, 'type' => $val['type']);
+				$where = array('page_id' => $id, 'name' => $key, 'language' => $lang);
+				if ($lang)
+				{
+					$save['language'] = $lang;
+					$where['language'] = $lang;
+				}
+				$where = (!empty($id)) ? $where : array();
+
+				
+				if (!$this->fuel_pagevariables_model->save($save, $where))
+				{
+					add_error(lang('error_saving'));
+					return FALSE;
+				}
+			}
+		}
+
+		$page_variables_archive = $this->fuel_pagevariables_model->find_all_array(array('page_id' => $id));
+
+		// archive
+		$archive = $this->model->cleaned_data();
+		$archive[$this->model->key_field()] = $id;
+		$archive['variables'] = $page_variables_archive;
+		
+		$this->model->archive($id, $archive);
+		
+		// save to navigation if config allows it
+		if ($this->input->post('navigation_label')) {
+				
+			$this->fuel->load_model('fuel_navigation');
+			
+			$save = array();
+			$save['label'] = $this->input->post('navigation_label', TRUE);
+			$save['location'] = $this->input->post('location', TRUE);
+			$save['group_id'] = $this->fuel->config('auto_page_navigation_group_id');
+			$save['parent_id'] = 0;
+			$save['published'] = $this->input->post('published', TRUE);
+			if (!$this->fuel->auth->has_permission($this->permission, 'publish'))
+			{
+			     $save['published'] = 'no';
+			}
+			// reset $where and create where clause to try and find an existing navigation item
+			$where = array();
+			$where['location'] = $save['location'];
+			$where['group_id'] = $save['group_id'];
+			$where['parent_id'] = $save['parent_id'];
+			$does_it_exist_already = $this->fuel_navigation_model->record_exists($where);
+			if (!$does_it_exist_already)
+			{
+				// determine parent based off of location
+				$location_arr = explode('/', $this->input->post('location', TRUE));
+				$parent_location = implode('/', array_slice($location_arr, 0, (count($location_arr) -1)));
+			
+				if (!empty($parent_location)) $parent = $this->fuel_navigation_model->find_by_location($parent_location);
+				if (!empty($parent)) {
+					$save['parent_id'] = $parent['id'];
+				}
+				$this->fuel_navigation_model->add_validation('parent_id', array(&$this->fuel_navigation_model, 'no_location_and_parent_match'), lang('error_location_parents_match'), '{location}');
+				$this->fuel_navigation_model->save($save, array('location' => $this->input->post('location', TRUE), 'group_id' => $save['group_id']));
+			}
+		}
+
 		$this->fuel->admin->set_notification(lang('data_saved'), Fuel_admin::NOTIFICATION_SUCCESS);
 		
 		// reset cache for that page only
@@ -599,9 +693,26 @@ class Pages extends Module {
 		{
 			return;
 		}
+
+		$pagevars = array();
+		if (!empty($id))
+		{
+			$pagevars = $this->fuel_pagevariables_model->find_all_by_page_id($id, $lang);
+
+			// the following will pre-populate fields of a different language to the default values
+			if (empty($pagevars) AND $this->fuel->language->has_multiple() AND $lang != $this->fuel->language->default_option())
+			{
+				$pagevars = $this->fuel_pagevariables_model->find_all_by_page_id($id, $this->fuel->language->default_option());
+			}
+
+			$pagevars = array_merge($pagevars, $vars);
+			$layout->set_field_values($pagevars);
+		}
+		
 		$fields = $layout->fields();
 
 		$fields['__layout__'] = array('type' => 'hidden', 'value' => $layout_name);
+		$fields['__page_id__'] = array('type' => 'hidden', 'value' => $id);
 
 		$conflict = $this->_has_conflict($fields);
 		if (!empty($conflict))
@@ -619,22 +730,8 @@ class Pages extends Module {
 		$this->form_builder->name_prefix = 'vars';
 		$this->form_builder->set_fields($fields);
 		$this->form_builder->display_errors = FALSE;
-		
-		if (!empty($id))
-		{
-			$pagevars = $this->fuel_pagevariables_model->find_all_by_page_id($id, $lang);
+		$this->form_builder->set_field_values($pagevars);
 
-			// the following will pre-populate fields of a different language to the default values
-			if (empty($pagevars) AND $this->fuel->language->has_multiple() AND $lang != $this->fuel->language->default_option())
-			{
-				$pagevars = $this->fuel_pagevariables_model->find_all_by_page_id($id, $this->fuel->language->default_option());
-			}
-
-			$pagevars = array_merge($pagevars, $vars);
-
-			$this->form_builder->set_field_values($pagevars);
-		}
-		
 		$form = $this->form_builder->render();
 		$this->output->set_output($form);
 	}
@@ -842,7 +939,8 @@ class Pages extends Module {
 				'application/x-httpd-php', 
 				'application/php', 
 				'application/x-php', 
-				'text/php', 
+				'text/php',
+				'text/html', 
 				'text/x-php', 
 				'application/x-httpd-php-source', 
 				'text/plain');
@@ -999,6 +1097,55 @@ class Pages extends Module {
 			}
 			
 			$this->output->set_output($output);
+		}
+	}
+
+	protected function _process_upload_data($field_name, $uploaded_data, $posted)
+	{
+		$field_name = end(explode('--', $field_name));
+
+		foreach($uploaded_data as $key => $val)
+		{
+			$file_tmp = current(explode('___', $key));
+
+			// get the file name field
+			// if the file name field exists AND there is no specified hidden filename field to assign to it AND...
+			// the model does not have an array key field AND there is a key field value posted
+			if (isset($field_name) AND !is_array($this->model->key_field()) AND isset($posted['page_id']))
+			{
+				
+				$id = $posted['page_id'];
+				$where = array($this->fuel_pagevariables_model->table_name().'.page_id'=> $id, 'name' => $field_name);
+				$data = $this->fuel_pagevariables_model->find_one_array($where);
+
+				// if there is a field with the suffix of _upload, then we will overwrite that posted value with this value
+				if (substr($file_tmp, ($file_tmp - 7)) == '_upload')
+				{
+					$field_name = substr($file_tmp, 0, ($file_tmp - 7));
+				}
+
+				if (isset($posted[$field_name]))
+				{
+					$save = TRUE;
+				}
+
+				// look for repeatable values that match
+				if (preg_match('#(.+)_(\d+)_(.+)#', $file_tmp, $matches))
+				{
+					if (isset($posted[$matches[1]][$matches[2]][$matches[3]]) AND isset($data[$matches[1]][$matches[2]][$matches[3]]))
+					{
+						$data['value'] = $posted[$file_tmp];
+						$save = TRUE;
+					}
+				}
+
+				if ($save)
+				{
+
+					$data['value'] = $val['file_name'];
+					$this->fuel_pagevariables_model->save($data);
+				}
+			}
 		}
 	}
 	

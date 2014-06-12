@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -107,6 +107,12 @@ class Fuel_custom_fields {
 			$params['data']['link_pdfs'] = 1;
 		}
 
+		// set the image folder for inserting assets
+		if (isset($params['link_filter']))
+		{
+			$params['data']['link_filter'] = $params['link_filter'];
+		}
+
 		// adds markdown controlls to the markItUp!  editor
 		if (isset($params['markdown']) AND $params['markdown'] === TRUE)
 		{
@@ -150,12 +156,129 @@ class Fuel_custom_fields {
 	 */
 	public function file($params)
 	{
+		$this->CI->load->helper('file');
 		$form_builder =& $params['instance'];
+
+		$file_params = $params;
 		if (!empty($params['multiple']))
 		{
-			$params['class'] = 'multifile '.$params['class'];
+			$file_params['class'] = 'multifile '.$params['class'];
 		}
-		return $form_builder->create_file($params);
+		$file_params['name'] = str_replace(array('[', ']', '__'), array('_', '', '_'), $params['name']);
+		$file_params['id'] = $file_params['name'].'_upload';
+
+
+		$str = '';
+		$preview = '';
+		$asset_folder = '';
+
+		if ((!isset($params['display_preview']) OR $params['display_preview'] === TRUE))
+		{
+
+			// set the image preview containing class
+			if (empty($params['img_container_styles']))
+			{
+				$params['img_container_styles'] = 'overflow: auto; height: 200px; width: 400px; margin-top: 5px;';
+			}
+
+			// set the styles specific to the image
+			if (!isset($params['img_styles']))
+			{
+				$params['img_styles'] = 'float: left; width: 100px;';
+			}
+
+			if (empty($params['value'])) 
+			{
+				$params['value'] = '';
+			}
+			if (isset($params['folder']) OR isset($params['upload_path']))
+			{
+				if (isset($params['folder']))
+				{
+					$asset_folder = trim($params['folder'], '/').'/';
+					$asset_path = $asset_folder.$params['value'];
+					$asset_path = assets_path($asset_path);
+				}
+				else
+				{
+					$asset_folder = assets_server_to_web_path($params['upload_path']).'/';
+					$asset_path = $asset_folder.$params['value'];
+				}
+
+				if (!empty($params['replace_values']))
+				{
+					foreach($params['replace_values'] as $key => $val)
+					{
+						if (is_string($val))
+						{
+							$asset_path = str_replace('{'.$key.'}', $val, $asset_path);
+							$asset_folder = str_replace('{'.$key.'}', $val, $asset_folder);
+						}
+					}
+				}
+				
+			}
+			$preview = '';
+			if (!empty($asset_path) AND !empty($params['value']))
+			{
+				$preview .= ' ';
+				$preview .= '<a href="'.$asset_path.'" target="_blank" class="noclone">';
+				if (isset($params['is_image']) OR (!isset($params['is_image']) AND is_image_file($asset_path)))
+				{
+					$preview .= '<br><img src="'.$asset_path.'" style="'.$params['img_styles'].'"/>';
+				}
+				else
+				{
+					$preview .= $asset_path;
+				}
+				$preview .= '</a>';
+			}
+
+		}
+
+		$params['after_html'] = $preview;
+		$str .= $form_builder->create_file($file_params);
+		
+		if (!empty($params['display_input']))
+		{
+			$params['data'] = array(
+			'folder' => $asset_folder,
+			);
+			$asset_class = '';
+			if (!isset($params['select']) OR (isset($params['select']) AND $params['select'] !== FALSE))
+			{
+				$asset_class = 'asset_select';
+			}
+			$params['class'] = (!empty($params['class'])) ? $params['class'].' '.$asset_class : $asset_class;
+			$params['type'] = '';
+			$str .= '<br><br>'.$form_builder->create_field($params); 
+		}
+		else
+		{
+			$params['type'] = 'hidden';
+			$str .= $form_builder->create_field($params); 
+		}
+
+		// add image altering hidden field values
+		$img_params = array('create_thumb',
+						'thumb_marker',
+						'maintain_ratio',
+						'master_dim', 
+						'width', 
+						'height', 
+						'resize_and_crop',
+						'resize_method');
+
+		foreach($img_params as $img_p)
+		{
+			if (isset($params[$img_p]))
+			{
+
+				$str .= $this->CI->form->hidden($file_params['name'].'_'.$img_p, $params[$img_p]);
+			}
+
+		}
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
@@ -180,7 +303,12 @@ class Fuel_custom_fields {
 			$params['folder'] = 'images';
 		}
 		
-		$asset_class = 'asset_select';
+		$asset_class = '';
+		if (!isset($params['select']) OR (isset($params['select']) AND $params['select'] !== FALSE))
+		{
+			$asset_class .= ' asset_select';
+		}
+
 		if (!isset($params['upload']) OR (isset($params['upload']) AND $params['upload'] !== FALSE))
 		{
 			$asset_class .= ' asset_upload';
@@ -317,17 +445,42 @@ class Fuel_custom_fields {
 					{
 						if (isset($val["'.$process_key.'"]))
 						{
-							$val = trim($val["'.$process_key.'"]);
+							$z = "";
+							if (is_string($val["'.$process_key.'"]))
+							{
+								$z = $val["'.$process_key.'"];
+							}
+							else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+							{
+								$z = $val["'.$process_key.'"]["'.$params['name'].'"];
+							}
+							$z = trim($z);
 							$assets = array();
-							$assets_arr = preg_split("#\s*,\s*|\n#", $val);
-							if (count($assets_arr) > 1)
+							$assets_arr = preg_split("#\s*,\s*|\n#", $z);
+
+							if (is_string($val["'.$process_key.'"]))
 							{
-								$value[$key]["'.$process_key.'"] = json_encode($assets_arr);
+								if (count($assets_arr) > 1)
+								{
+									$value[$key]["'.$process_key.'"] = json_encode($assets_arr);
+								}
+								else
+								{
+									$value[$key]["'.$process_key.'"] = $z;
+								}
 							}
-							else
+							else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
 							{
-								$value[$key]["'.$process_key.'"] = $val;
+								if (count($assets_arr) > 1)
+								{
+									$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = json_encode($assets_arr);
+								}
+								else
+								{
+									$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = $z;
+								}
 							}
+							
 						}
 					}
 					return $value;
@@ -427,49 +580,48 @@ class Fuel_custom_fields {
 	public function inline_edit($params)
 	{
 		$form_builder =& $params['instance'];
-		if (!empty($params['module']))
-		{
-			// hackalicious... used to check for a model's module
-			$modules = $this->CI->fuel->modules->get(NULL, FALSE);
-			foreach($modules as $key => $mod)
-			{
-				$mod_name = preg_replace('#(\w+)_model$#', '$1', strtolower($mod->info('model_name')));
-				if (strtolower($params['module']) == $mod_name)
-				{
-					$params['module'] = $key;
-					break;
-				}
-			}
-
-			if (strpos($params['module'], '/') === FALSE)
-			{
-				$CI =& get_instance();
-				$module = $CI->fuel->modules->get($params['module'], FALSE);
-				$uri = (!empty($module)) ? $module->info('module_uri') : '';
-			}
-			else
-			{
-				$uri = $params['module'];
-			}
-
-			$permission = (!empty($module)) ? $module->permission : $uri;
-			if ($this->fuel->auth->has_permission($permission))
-			{
-				$inline_class = 'add_edit '.$uri;
-				$params['class'] = (!empty($params['class'])) ? $params['class'].' '.$inline_class : $inline_class;
-				$params['data'] = array(
-					'module' => $uri,
-					);
-			}
-		}
-		
 		if (!empty($params['multiple']))
 		{
-			$params['mode'] = 'multi';
-			$field = $form_builder->create_multi($params);
+			$field = $this->multi($params);
 		}
 		else
 		{
+			if (!empty($params['module']))
+			{
+				// hackalicious... used to check for a model's module
+				$modules = $this->CI->fuel->modules->get(NULL, FALSE);
+				foreach($modules as $key => $mod)
+				{
+					$mod_name = preg_replace('#(\w+)_model$#', '$1', strtolower($mod->info('model_name')));
+					if (strtolower($params['module']) == $mod_name)
+					{
+						$params['module'] = $key;
+						break;
+					}
+				}
+
+				if (strpos($params['module'], '/') === FALSE)
+				{
+					$CI =& get_instance();
+					$module = $CI->fuel->modules->get($params['module'], FALSE);
+					$uri = (!empty($module)) ? $module->info('module_uri') : '';
+				}
+				else
+				{
+					$uri = $params['module'];
+				}
+
+				$permission = (!empty($module)) ? $module->permission : $uri;
+				if ($this->fuel->auth->has_permission($permission))
+				{
+					$inline_class = 'add_edit '.$uri;
+					$params['class'] = (!empty($params['class'])) ? $params['class'].' '.$inline_class : $inline_class;
+					$params['data'] = array(
+						'module' => $uri,
+						);
+				}
+			}
+		
 			$field = $form_builder->create_select($params);
 		}
 		
@@ -592,6 +744,12 @@ class Fuel_custom_fields {
 		{
 			$params['display_sub_label']  = TRUE;
 		}
+
+		if (!isset($params['removeable']))
+		{
+			$params['removeable']  = TRUE;
+		}
+
 		if ($num == 0) $num = 1;
 		
 		$_f = array();
@@ -636,15 +794,16 @@ class Fuel_custom_fields {
 					$index = (!isset($params['index'])) ? $i : $params['index'];
 
 					// set file name field types to not use array syntax for name so they can be processed automagically
-					if (isset($field['type']) AND $field['type'] == 'file')
-					{
-						$field['name'] = $params[$field_name_key].'_'.$index.'_'.$key;
-					}
-					else
-					{
-						$field['name'] = $params[$field_name_key].'['.$index.']['.$key.']';
-					}
-					
+					// if (isset($field['type']) AND $field['type'] == 'file')
+					// {
+					// 	$field['name'] = $params[$field_name_key].'_'.$index.'_'.$key;
+					// }
+					// else
+					// {
+					// 	$field['name'] = $params[$field_name_key].'['.$index.']['.$key.']';
+					// }
+					$field['name'] = $params[$field_name_key].'['.$index.']['.$key.']';
+
 					// set the key to be the same of the parent... so post processing will work
 					$field['key'] = $params['key'];
 					$field['subkey'] = $key;
@@ -738,7 +897,17 @@ class Fuel_custom_fields {
 		
 		if (empty($params['template']) AND !empty($params['view']))
 		{
-			$str = $this->CI->load->view($params['view'], $vars, TRUE);
+			$module = 'app';
+			if (is_array($params['view']))
+			{
+				$module = key($params['view']);
+				$view = current($params['view']);
+			}
+			else
+			{
+				$view = $params['view'];
+			}
+			$str = $this->CI->load->module_view($module, $view, $vars, TRUE, '__TEMPLATE_FIELD__');
 		}
 		else if (!empty($params['template']))
 		{
@@ -778,7 +947,7 @@ class Fuel_custom_fields {
 				$dblclick = (!empty($params['dblclick'])) ? $params['dblclick'] : 0;
 				$init_display = (!empty($params['init_display'])) ? $params['init_display'] : '';
 				$title_field = (!empty($params['title_field'])) ? $params['title_field'] : '';
-				$str .= '<div class="'.implode(' ', $container_class).'" data-depth="'.$params['depth'].'" data-max="'.$params['max'].'" data-min="'.$params['min'].'" data-dblclick="'.$dblclick.'" data-init_display="'.$init_display.'" data-title_field="'.$title_field.'">';
+				$str .= '<div class="'.implode(' ', $container_class).'" data-depth="'.$params['depth'].'" data-max="'.$params['max'].'" data-min="'.$params['min'].'" data-dblclick="'.$dblclick.'" data-init_display="'.$init_display.'" data-title_field="'.$title_field.'" data-removeable="'.$params['removeable'].'">';
 				$i = 0;
 
 
@@ -839,7 +1008,10 @@ class Fuel_custom_fields {
 					$str .= '</div>';
 					$i++;
 				}
-				$str .= '<div class="clear"></div></div>';
+				if (empty($params['float']))
+				{
+					$str .= '<div class="clear"></div></div>';	
+				}
 			}
 			else
 			{
@@ -928,24 +1100,44 @@ class Fuel_custom_fields {
 			{
 				foreach($value as $key => $val)
 				{
-					$curval = $val;
-					if ($val["'.$process_key.'"] == "")
+					if (isset($val["'.$process_key.'"]))
 					{
-						$val = NULL;
-					}
-					else
-					{
-						$value_parts = explode("'.$params['decimal'].'", $val["'.$process_key.'"]);
-						$curval = current($value_parts);
-						$decimal = "00";
-						if (count($value_parts) > 1)
+						$z = "";
+						if (is_string($val["'.$process_key.'"]))
 						{
-							$decimal = end($value_parts);
+							$z = $val["'.$process_key.'"];
 						}
-						$curval = str_replace("'.$params['separator'].'", "", $curval);
-						$curval = (float) $curval.".".$decimal;
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$z = $val["'.$process_key.'"]["'.$params['name'].'"];
+						}
+
+						if ($z == "")
+						{
+							$val = NULL;
+						}
+						else
+						{
+							$value_parts = explode("'.$params['decimal'].'", $z);
+							$curval = current($value_parts);
+							$decimal = "00";
+							if (count($value_parts) > 1)
+							{
+								$decimal = end($value_parts);
+							}
+							$curval = str_replace("'.$params['separator'].'", "", $curval);
+							$curval = (float) $curval.".".$decimal;
+						}
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$value[$key]["'.$process_key.'"] = $curval;
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = $curval;
+						}
+						
 					}
-					$value[$key]["'.$process_key.'"] = $curval;
 				}
 				return $value;
 			}
@@ -1055,10 +1247,19 @@ class Fuel_custom_fields {
 			{
 				foreach($value as $key => $val)
 				{
+
 					if (isset($val["'.$params['linked_to'].'"]))
 					{
 						$v = url_title($val["'.$params['linked_to'].'"], "dash", TRUE);
-						$value[$key]["'.$process_key.'"] = $v;
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$value[$key]["'.$process_key.'"] = $v;
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = $v;
+						}
+						
 					}
 				}
 				return $value;
@@ -1113,10 +1314,27 @@ class Fuel_custom_fields {
 				{
 					if (isset($val["'.$process_key.'"]))
 					{
-						$lis = explode("\n", $value);
+						$z = "";
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$z = $val["'.$process_key.'"];
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$z = $val["'.$process_key.'"]["'.$params['name'].'"];
+						}
+						$lis = explode("\n", $z);
 						$lis = array_map("trim", $lis);
-						$val = '.$list_type.'($lis, "'.$output_class.'");
-						$value[$key]["'.$process_key.'"] = $val;
+						$newval = '.$list_type.'($lis, "'.$output_class.'");
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$value[$key]["'.$process_key.'"] = $newval;
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = $newval;
+						}
+						
 					}
 				}
 				return $value;
@@ -1209,6 +1427,7 @@ class Fuel_custom_fields {
 					);
 			}
 		}
+
 		
 		$str = '';
 		$mode = (!empty($params['mode'])) ? $params['mode'] : $form_builder->multi_select_mode;
@@ -1221,8 +1440,15 @@ class Fuel_custom_fields {
 			
 			if (!empty($params['options']))
 			{
+				if (!empty($inline_class))
+				{
+					$data_value = (is_array($params['value'])) ? implode(',', $params['value']) : $params['value'];
+					$str .= ' <span class="'.$inline_class.'" data-module="'.$uri.'" id="'.$params['orig_name'].'" data-value="'.$data_value.'">';
+				}
+
 				foreach($params['options'] as $key => $val)
 				{
+
 					$str .= '<'.$params['wrapper_tag'].' class="'.$params['wrapper_class'].'">';
 					$attrs = array(
 											'readonly' => $params['readonly'], 
@@ -1246,6 +1472,12 @@ class Fuel_custom_fields {
 					$str .= '</'.$params['wrapper_tag'].'>';
 					$i++;
 				}
+
+				if (!empty($inline_class))
+				{
+					'</span>';
+				}
+
 			}
 		}
 		else
@@ -1263,15 +1495,14 @@ class Fuel_custom_fields {
 				$sorting_params['class'] = 'sorting';
 				$str .= $form_builder->create_hidden($sorting_params);
 			}
-
-			// needed to detect when none exists
-			$exists_params['name'] = 'exists_'.$params['orig_name'];
-			$exists_params['value'] = 1;
-			$exists_params['type'] = 'hidden';
-			$exists_params['ignore_representative'] = TRUE;
-			$str .= $form_builder->create_field($exists_params);
-
 		}
+
+		// needed to detect when none exists
+		$exists_params['name'] = 'exists_'.$params['orig_name'];
+		$exists_params['value'] = 1;
+		$exists_params['type'] = 'hidden';
+		$exists_params['ignore_representative'] = TRUE;
+		$str .= $form_builder->create_field($exists_params);
 		
 		return $str;
 	}
@@ -1372,7 +1603,7 @@ class Fuel_custom_fields {
 			$params['delimiter'] = ":";
 		}
 
-		if (!isset($params['numeric_indexes']))
+		if (!isset($params['allow_numeric_indexes']))
 		{
 			$params['allow_numeric_indexes'] = FALSE;
 		}
@@ -1386,19 +1617,64 @@ class Fuel_custom_fields {
 
 		$process_key = (isset($params['subkey'])) ? $params['subkey'] : $params['key'];
 
+	
 		// create an array with the key being the image name and the value being the caption (if it exists... otherwise the image name is used again)
 		$func_str = '
 			if (is_array($value))
 			{
-				
 				foreach($value as $key => $val)
 				{
 					if (isset($val["'.$process_key.'"]))
 					{
+						$z = "";
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$z = $val["'.$process_key.'"];
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$z = $val["'.$process_key.'"]["'.$params['name'].'"];
+						}
 
 						$json = array();
-						$rows = preg_split("\s*#\n|,\s*#", $val);
+						$rows = preg_split("#\s*\n|,\s*#", $z);
 						foreach($rows as $r)
+						{
+							$vals = preg_split("#'.$split_delimiter.'#", $r);
+							if (isset($vals[1]))
+							{
+								$v = $vals[1];
+								$k = $vals[0];
+								$json[$k] = $v;
+							}
+							else
+							{
+								$json[] = $vals[0];
+							}
+						}
+						$first_item = current($json);
+						if (is_string($val["'.$process_key.'"]))
+						{
+							$value[$key]["'.$process_key.'"] = (!empty($first_item)) ? json_encode($json) : "";
+						}
+						else if (is_array($val["'.$process_key.'"]) AND isset($val["'.$process_key.'"]["'.$params['name'].'"]))
+						{
+							$value[$key]["'.$process_key.'"]["'.$params['name'].'"] = (!empty($first_item)) ? json_encode($json) : "";
+						}
+					}
+				}
+				return $value;
+			}
+			else
+			{
+				$json = array();
+
+				if (is_string($value))
+				{
+					$rows = preg_split("#\s*\n|,\s*#", $value);
+					foreach($rows as $r)
+					{
+						if (is_string($r))
 						{
 							$vals = preg_split("#'.$split_delimiter.'#", $r);
 							if (isset($vals[1]))
@@ -1412,35 +1688,13 @@ class Fuel_custom_fields {
 								$json[] = $vals[0];
 							}
 						}
-						$first_item = current($json);
-						$value[$key]["'.$process_key.'"] = (!empty($first_item)) ? json_encode($json) : "";
 					}
+					$first_item = current($json);
+					return  (!empty($first_item)) ? json_encode($json) : "";
 				}
-				return $value;
-			}
-			else
-			{
-				$json = array();
-				$rows = preg_split("#\s*\n|,\s*#", $value);
-				foreach($rows as $r)
-				{
-					$vals = preg_split("#'.$split_delimiter.'#", $r);
-					if (isset($vals[1]))
-					{
-						$val = $vals[1];
-						$key = $vals[0];
-						$json[$key] = $val;
-					}
-					else
-					{
-						$json[] = $vals[0];
-					}
-				}
-				$first_item = current($json);
-				return  (!empty($first_item)) ? json_encode($json) : "";
+				
 			}
 			';
-		
 		$func = create_function('$value', $func_str);
 		$form_builder->set_post_process($params['key'], $func);
 
@@ -1450,7 +1704,6 @@ class Fuel_custom_fields {
 			{
 				$params['value'] = json_decode($params['value'], TRUE);
 			}
-
 			if (is_array($params['value']))
 			{
 				$new_value = array();
@@ -1483,9 +1736,8 @@ class Fuel_custom_fields {
 			$params['value'] = '';
 		}
 
-		$params['type'] = 'textarea';
 		$params['class'] = 'no_editor';
-		return $form_builder->create_field($params);
+		return $form_builder->create_textarea($params);
 
 	}
 
