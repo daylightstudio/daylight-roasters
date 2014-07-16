@@ -41,6 +41,8 @@
 	<?php if (!empty($is_blog)) : ?>
 	<?php echo $CI->fuel_blog->header()?>
 	<?php endif; ?>
+	
+	<?php //fuel_block('ga');?>
 </head>
 
 <?php $bc = fuel_var('body_class', 'Body Class') ?>
