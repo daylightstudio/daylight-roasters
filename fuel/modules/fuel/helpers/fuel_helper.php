@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -126,6 +126,7 @@ function fuel_block($params, $vars = array(), $check_db = TRUE, $scope = NULL)
 		<li><strong>container_tag_attrs</strong>: html attributes for the container tag</li>
 		<li><strong>container_tag_id</strong>: html container id</li>
 		<li><strong>container_tag_class</strong>: html container class</li>
+		<li><strong>subcontainer_tag_class</strong>: an array of css classes to apply to subcontainers</li>
 		<li><strong>cascade_selected</strong>: cascade the selected items. Default is TRUE</li>
 		<li><strong>include_hidden</strong>: include menu items with the hidden attribute. Default is FALSE</li>
 		<li><strong>item_tag</strong>: the html list item element. Default is 'li'</li>
@@ -447,13 +448,13 @@ function fuel_edit($id, $label = NULL, $module = 'pagevariables', $is_published 
 {
 	$CI =& get_instance();
 	$page = $CI->fuel->pages->active();
+	$permission = $module;
 	if (empty($page))
 	{
 		$page = $CI->fuel->pages->create();
 	}
 	if (!empty($id) AND (!defined('FUELIFY') OR defined('FUELIFY') AND FUELIFY !== FALSE))
 	{
-		
 		if (is_object($id) AND is_a($id, 'Data_record') AND isset($id->id))
 		{
 			$ref_id = $id->id;
@@ -471,6 +472,7 @@ function fuel_edit($id, $label = NULL, $module = 'pagevariables', $is_published 
 				if (!empty($mod))
 				{
 					$module = $mod->info('module_uri');
+					$permission = $mod->info('permission');
 				}
 			}
 			
@@ -505,6 +507,7 @@ function fuel_edit($id, $label = NULL, $module = 'pagevariables', $is_published 
 		$marker['id'] = $ref_id;
 		$marker['label'] = $label;
 		$marker['module'] = $module;
+		$marker['permission'] = $permission;
 		$marker['published'] = $is_published;
 		$marker['xoffset'] = $xoffset;
 		$marker['yoffset'] = $yoffset;

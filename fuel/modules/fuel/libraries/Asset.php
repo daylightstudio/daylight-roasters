@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -938,7 +938,7 @@ class Asset {
 			$path = (array) $path;
 			$files_arr = array();
 			$default_module = $module;
-			
+
 			foreach($path as $key => $val)
 			{
 				if ($ignore_if_loaded AND $this->is_used($type, $val))
@@ -947,6 +947,11 @@ class Asset {
 				}
 				
 				$module = (is_string($key)) ? $key : $default_module;
+				
+				if ($module == 'app' OR $module =='application')
+				{
+					$module = NULL;
+				}
 
 				if (is_array($val))
 				{
@@ -1392,9 +1397,13 @@ class Asset {
 					CURLOPT_FOLLOWLOCATION => 0
 				));
 
-				if (curl_error($ch) == '')
+				if (curl_error($ch) == '' )
 				{
-					$output = curl_exec($ch);	
+					$result = curl_exec($ch);
+					if (!empty($result))
+					{
+						$output = $result;
+					}
 				}
 				else
 				{

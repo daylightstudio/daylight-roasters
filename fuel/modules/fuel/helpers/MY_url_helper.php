@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -197,6 +197,19 @@ function is_home()
 // --------------------------------------------------------------------
 
 /**
+ * Determines if the page is 404
+ *
+ * @access	public
+ * @return	boolean
+ */
+function is_404()
+{
+	return (http_response_code() == 404);
+}
+
+// --------------------------------------------------------------------
+
+/**
  * Returns the last page you visited
  *
  * @access	public
@@ -243,10 +256,18 @@ function link_target($link, $exts = array())
 	
 	$test_domain = $_SERVER['SERVER_NAME'];
 	$domain = '';
+
+	// get the extension to check
+	if (is_string($exts))
+	{
+		$exts = array($exts);
+	}
+	$link_parts = explode('.', $link);
+	$ext = end($link_parts);
+
 	if (isset($url_parts['host']))
 	{
-		
-		if ($url_parts['host'] == $test_domain)
+		if ($url_parts['host'] == $test_domain AND !in_array($ext, $exts))
 		{
 			return '';
 		}
@@ -266,13 +287,7 @@ function link_target($link, $exts = array())
 		}
 	}
 
-	// get the extension to check
-	if (is_string($exts))
-	{
-		$exts = array($exts);
-	}
-	$ext = end(explode('.', $link));
-	
+
 	// check if an http path and that it is from a different domain
 	if (is_http_path($link) AND $test_domain != $domain OR (!empty($exts) AND in_array($ext, $exts)))
 	{

@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -35,7 +35,7 @@ class Fuel_pages_model extends Base_module_model {
 	public $unique_fields = array('location'); // The location field is unique
 	public $hidden_fields = array('last_modified', 'last_modified_by'); // The Last modified and Last modified by are hidden fields
 	public $ignore_replacement = array('location'); // The location value will be ignored upon replacement
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -61,7 +61,13 @@ class Fuel_pages_model extends Base_module_model {
 	public function related_items($values = array())
 	{
 		$CI =& get_instance();
+
+		// don't display if it is disabled
+		if ($CI->fuel->modules->get('navigation')->info('disabled') === TRUE) return '';
+
 		$CI->load->module_model(FUEL_FOLDER, 'fuel_navigation_model');
+		
+
 		$where['location'] = $values['location'];
 		$related_items = $CI->fuel_navigation_model->find_all_array_assoc('id', $where);
 		$return = array();
@@ -221,11 +227,35 @@ class Fuel_pages_model extends Base_module_model {
 			if ($just_published === TRUE || $just_published == 'yes') $where['published'] = 'yes';
 		}
 		$data = $this->find_one_array($where, 'location desc');
+
+		// case sensitive check
+		if (empty($data) OR $data['location'] != $location)
+		{
+			return array();
+		}
+
 		return $data;
 	}
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Returns all the children pages basd on the location URI
+	 *
+	 * @access	public
+	 * @param  string URI path to start from (e.g. about would find about/history, about/contact, etc)
+	 * @return	void
+	 */	
+	function children($root)
+	{
+		$root = trim($root, '/').'/';
+		$this->db->like('location', $root, 'after');
+		$children = $this->find_all_assoc('location');
+		return $children;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Page form fields
 	 *
@@ -233,7 +263,7 @@ class Fuel_pages_model extends Base_module_model {
 	 * @param	array Values of the form fields (optional)
 	 * @param	array An array of related fields. This has been deprecated in favor of using has_many and belongs to relationships (deprecated)
 	 * @return	array An array to be used with the Form_builder class
-	 */	
+	 */
 	public function form_fields($values = array(), $related = array())
 	{
 		$CI =& get_instance();
@@ -243,11 +273,11 @@ class Fuel_pages_model extends Base_module_model {
 		$fields['date_added']['type'] = 'hidden';
 		$fields['layout']['type'] = 'select';
 		$fields['layout']['options'] = $CI->fuel->layouts->options_list();
-		
+
 		$yes = lang('form_enum_option_yes');
 		$no = lang('form_enum_option_no');
 		$fields['cache']['options'] = array('yes' => $yes, 'no' => $no);
-		
+
 		// set language field
 		if ($CI->fuel->language->has_multiple())
 		{
@@ -257,17 +287,38 @@ class Fuel_pages_model extends Base_module_model {
 		{
 			$fields['language'] = array('type' => 'hidden', 'value' => $this->fuel->language->default_option());
 		}
-		
-		
+
 		// easy add for navigation
 		if (empty($values['id']))
 		{
 			$fields['navigation_label'] = array('comment' => lang('navigation_quick_add'));
 		}
-		
+
+		// when the fuel mode is views, use a drop-down of views instead of manually entering locations
+		if ($CI->fuel->config('fuel_mode') == 'views')
+		{
+			$views = $CI->fuel->pages->views();
+			$view_options = array_combine($views, $views);
+			$fields['location'] = array('type' => 'select', 'first_option' => 'Choose one...', 'options' => $view_options, 'required' => TRUE);
+
+			// disable existing locations to prevent duplicate entries
+			$disabled_options = $this->list_locations();
+			if ( ! empty($values['location']) AND in_array($values['location'], $disabled_options))
+			{
+				// prevent the current page from being disabled so it doesn't cause problems when saving
+				$disabled_options = array_flip($disabled_options);
+				unset($disabled_options[$values['location']]);
+				$disabled_options = array_flip($disabled_options);
+			}
+			$fields['location']['disabled_options'] = $disabled_options;
+
+			$fields['cache']['type'] = 'hidden';
+			unset($fields['navigation_label'], $fields['published']);
+		}
+
 		return $fields;
 	}
-	
+
 		// --------------------------------------------------------------------
 	
 	/**
@@ -445,4 +496,14 @@ class Fuel_pages_model extends Base_module_model {
 }
 
 class Fuel_page_model extends Base_module_record {
+	
+	function get_variables($language = NULL)
+	{
+		$params =array();
+		if (!empty($language))
+		{
+			$params['where'] = array('language' => $language);
+		}
+		return $this->lazy_load(array('page_id' => $this->id), array(FUEL_FOLDER => 'fuel_pages_model'), TRUE, $params);
+	}
 }

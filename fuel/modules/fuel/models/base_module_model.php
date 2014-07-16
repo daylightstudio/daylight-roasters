@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -86,7 +86,7 @@ class Base_module_model extends MY_Model {
 															'underscore',
 															'camelize',
 															'upper'			=> 'strtoupper',
-															'lower'			=> 'strtlower',
+															'lower'			=> 'strtolower',
 															),
 								'number'			=> array(
 															'currency',
@@ -417,7 +417,7 @@ class Base_module_model extends MY_Model {
 	 * Returns a tree array structure that can be used by a public "tree" method on models inheriting from this class 
 	 *
 	 * @access	protected
-	 * @param	string The name of the model's property to use to generate the tree. Options are 'foreign_fields', 'has_many' or 'belongs_to'
+	 * @param	string The name of the model's property to use to generate the tree. Options are 'foreign_keys', 'has_many' or 'belongs_to'
 	 * @return	array An array that can be used by the Menu class to create a hierachical structure
 	 */	
 	protected function _tree($prop = NULL)
@@ -445,6 +445,7 @@ class Base_module_model extends MY_Model {
 			}
 
 			$key_field = key($p);
+			$loc_field = $key_field;
 
 			// get related model info
 			$rel_module = current($p);
@@ -463,7 +464,7 @@ class Base_module_model extends MY_Model {
 			$rel_display_field = $rel_module_obj->info('display_field');
 
 
-			$module = $this->table_name();
+			$module = strtolower(get_class($this));
 			$module_obj =  $CI->fuel->modules->get($module, FALSE);
 			if (!$module_obj)
 			{
@@ -478,7 +479,8 @@ class Base_module_model extends MY_Model {
 			{
 				$groups = $rel_model->find_all_array(array(), $rel_model->key_field().' asc');
 				$children = $this->find_all_array(array(), $key_field.' asc');
-				$g_key_field = $key_field;
+				$g_key_field = $rel_model->key_field();
+				$loc_field = $g_key_field;
 			}
 			else if ($prop == 'has_many')
 			{
@@ -488,6 +490,7 @@ class Base_module_model extends MY_Model {
 				$key_field = 'foreign_id';
 				$g_key_field = 'candidate_id';
 				$display_field = 'candidate_'.$display_field;
+				$loc_field = $key_field;
 			}
 			else if ($prop == 'belongs_to')
 			{
@@ -497,6 +500,7 @@ class Base_module_model extends MY_Model {
 				$key_field = 'candidate_id';
 				$g_key_field = 'foreign_id';
 				$display_field = 'foreign_'.$display_field;
+				$loc_field = $key_field;
 			}
 
 			// now get this models records
@@ -504,7 +508,7 @@ class Base_module_model extends MY_Model {
 			{
 				$used_groups[$child[$key_field]] = $child[$key_field];
 				$attributes = ((isset($child['published']) AND $child['published'] == 'no') OR (isset($child['active']) AND $child['active'] == 'no')) ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
-				$return['g'.$child[$g_key_field].'_c_'.$child[$key_field]] = array('parent_id' => $child[$key_field], 'label' => $child[$display_field], 'location' => fuel_url($module_obj->name().'/edit/'.$child[$key_field]), 'attributes' => $attributes);
+				$return['g'.$child[$g_key_field].'_c_'.$child[$key_field]] = array('parent_id' => $child[$key_field], 'label' => $child[$display_field], 'location' => fuel_url($module_obj->info('module_uri').'/edit/'.$child[$loc_field]), 'attributes' => $attributes);
 			}
 
 			foreach($groups as $group)
@@ -512,7 +516,7 @@ class Base_module_model extends MY_Model {
 				if (isset($used_groups[$group[$rel_key_field]]))
 				{
 					$attributes = ((isset($group['published']) AND $group['published'] == 'no') OR (isset($group['active']) AND $group['active'] == 'no')) ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
-					$return[$group[$rel_key_field]] = array('id' => $group[$rel_key_field], 'parent_id' => 0, 'label' => $group[$rel_display_field], 'location' => fuel_url($rel_module_obj->name().'/edit/'.$group[$rel_key_field]), 'attributes' => $attributes);	
+					$return[$group[$rel_key_field]] = array('id' => $group[$rel_key_field], 'parent_id' => 0, 'label' => $group[$rel_display_field], 'location' => fuel_url($rel_module_obj->info('module_uri').'/edit/'.$group[$rel_key_field]), 'attributes' => $attributes);	
 				}
 				
 			}
@@ -791,7 +795,7 @@ class Base_module_model extends MY_Model {
 	 * Returns CSV data that will be downloaded automatically. Overwrite this method for more specific output
 	 *
 	 * @access	public
-	 * @param	array An array that contains "col", "order", "offset", "limit", "searh_term" to help with the formatting of the output. By default only the "col" and "order" parameters are used (optional)
+	 * @param	array An array that contains "col", "order", "offset", "limit", "search_term" to help with the formatting of the output. By default only the "col" and "order" parameters are used (optional)
 	 * @return	string
 	 */	
 	public function export_data($params = array())
@@ -899,7 +903,8 @@ class Base_module_model extends MY_Model {
 	 */	
 	protected function _publish_status()
 	{
-		$fields = $this->fields();
+		//$fields = $this->fields();
+		$fields = $fields = array_keys($this->table_info()); // used to prevent an additional query that the fields() method would create
 
 		if (in_array('published', $fields))
 		{
@@ -927,7 +932,7 @@ class Base_module_model extends MY_Model {
 
 		if (in_array('publish_date', $fields))
 		{
-			$this->db->where(array('publish_date <=' => datetime_now()));
+			$this->db->where(array($this->table_name.'.publish_date <=' => datetime_now()));
 		}
 	}
 	

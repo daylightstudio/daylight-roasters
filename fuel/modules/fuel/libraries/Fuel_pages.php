@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -176,15 +176,20 @@ class Fuel_pages extends Fuel_base_library {
 	 * Returns an array of view files pages used with opt-in controller method
 	 *
 	 * @access	public
+	 * @param	string name of view subfolder to search
 	 * @return	array
 	 */	
-	public function views()
+	public function views($subfolder = '')
 	{
 		$this->CI->load->helper('directory');
-		$views_path = APPPATH.'views/';
+		if (!empty($subfolder))
+		{
+			$subfolder = trim($subfolder, '/').'/';
+		}
+		$views_path = APPPATH.'views/'.$subfolder;
 		$view_pages = directory_to_array($views_path, TRUE, '/^_(.*)|\.html$/', FALSE, TRUE);
+		sort($view_pages);
 		return $view_pages;
-		
 	}
 	
 	// --------------------------------------------------------------------
@@ -238,6 +243,37 @@ class Fuel_pages extends Fuel_base_library {
 		return $page;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns an array of children page objects based on the root page
+	 *
+	 * @access	public
+	 * @param	string	The root page location value to search from
+	 * @param	boolean	Determines whether to return objects or not
+	 * @return	array
+	 */	
+	public function children($root, $objectify = FALSE)
+	{
+		$this->fuel->load_model('fuel_pages');
+		$cms_children = array_keys($this->CI->fuel_pages_model->children($root));
+
+		$view_children = $this->views($root);
+
+		$children = array_merge($view_children, $cms_children);
+		if (!$objectify)
+		{
+			return $children;
+		}
+		$children_objs = array();
+		foreach($children as $child)
+		{
+			$child = trim($child, '/');
+			$children_objs[$child] = $this->get($child);
+		}
+		return $children_objs;
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -772,10 +808,8 @@ class Fuel_page extends Fuel_base_library {
 			$vars = $this->layout->pre_process($vars);
 			$layout_vars = $vars;
 			$layout_vars['CI'] =& $this->CI;
-			$output = $this->CI->load->view($this->layout->view_path(), $layout_vars, TRUE);
 
-			// now parse any template like syntax...
-			$output = $this->CI->parser->parse_string($output, $vars, TRUE);
+			$output = $this->CI->load->module_view($this->layout->module(), $this->layout->view_path(), $layout_vars, TRUE);
 			unset($layout_vars);
 
 			// check if the content should be double parsed
@@ -788,7 +822,7 @@ class Fuel_page extends Fuel_base_library {
 				$ci_vars = $this->CI->load->get_vars();
 
 				// then parse again to get any variables that were set from within a block
-				$output = $this->CI->load->view($this->layout->view_path(), $ci_vars, TRUE);
+				$output = $this->CI->load->module_view($this->layout->module(), $this->layout->view_path(), $ci_vars, TRUE);
 				$output = $this->CI->parser->parse_string($output, $ci_vars, TRUE);
 				unset($ci_vars);
 			}
@@ -976,7 +1010,7 @@ class Fuel_page extends Fuel_base_library {
 				{
 					$layout = $layout_dir.'/'.$layout;
 				}
-				$output = $this->CI->load->view($layout, $vars, TRUE);
+				$output = $this->CI->load->module_view($this->layout->module(), $layout, $vars, TRUE);
 			}
 			else
 			{
@@ -1124,6 +1158,7 @@ class Fuel_page extends Fuel_base_library {
 			'assetsPath' => assets_path(''),
 			);
 		
+		$orig_asset_path = $this->CI->asset->assets_path;
 		$this->CI->asset->assets_path = $this->fuel->config('fuel_assets_path');
 		$this->CI->load->helper('ajax');
 		$this->CI->load->library('form');
@@ -1142,6 +1177,7 @@ class Fuel_page extends Fuel_base_library {
 			$this->CI->config->set_item('assets_path', $this->CI->config->item('assets_path'));
 		}
 		$this->_fuelified_processed = TRUE;
+		$this->CI->asset->assets_path = $orig_asset_path;
 		return $output;
 	}
 	
@@ -1207,7 +1243,7 @@ class Fuel_page extends Fuel_base_library {
 		extract($marker);
 
 		// fix for pages permission
-		$perm = ($module == 'pagevariables') ? 'pages' : $module;
+		$perm = ($permission == 'pagevariables') ? 'pages' : $permission;
 		
 		if ($this->fuel->config('admin_enabled') AND 
 			is_fuelified() AND 
@@ -1290,7 +1326,7 @@ class Fuel_page extends Fuel_base_library {
 				if (!empty($matches[1]))
 				{
 					$head_markers = implode("\n", array_unique($matches[1]));
-					$output = preg_replace('/(<body[^>]*>)/e', '"\\1\n".\$head_markers', $output);
+					$output = preg_replace('/(<body[^>]*>)/', "\\1\n".$head_markers, $output);
 				}
 				// remove the markers from the head now that we've captured them'
 				$cleaned_head = preg_replace('/('.$marker_reg_ex.')/', '', $head[1][0]);

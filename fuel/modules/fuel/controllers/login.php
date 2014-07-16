@@ -90,7 +90,7 @@ class Login extends CI_Controller {
 						
 						$forward = $this->input->post('forward');
 						$forward_uri = uri_safe_decode($forward);
-						if ($forward AND $forward_uri != fuel_uri('dashboard'))
+						if ($forward AND $forward_uri != $this->fuel->config('login_redirect'))
 						{
 							redirect($forward_uri);
 						}
@@ -184,9 +184,7 @@ class Login extends CI_Controller {
 				if (!empty($user['email']))
 				{
 					$users = $this->fuel->users;
-					
 					$new_pwd = $this->fuel->users->reset_password($user['email']);
-					
 					if ($new_pwd !== FALSE)
 					{
 						$url = 'reset/'.md5($user['email']).'/'.md5($new_pwd);
@@ -205,6 +203,7 @@ class Login extends CI_Controller {
 						else
 						{
 							$this->session->set_flashdata('error', lang('error_pwd_reset'));
+							$this->fuel->logs->write($this->fuel->notification->last_error(), 'debug');
 						}
 						redirect(fuel_uri('login'));
 					}
@@ -261,7 +260,7 @@ class Login extends CI_Controller {
 				add_error(lang('error_invalid_login'));
 			}
 		}
-		$fields['password'] = array('type' => 'password', 'size' => 25);
+		$fields['password'] = array('type' => 'password', 'placeholder' => 'password', 'display_label' => FALSE, 'size' => 25);
 		$fields['forward'] = array('type' => 'hidden', 'value' => fuel_uri_segment(2));
 		$this->form_builder->show_required = FALSE;
 		$this->form_builder->submit_value = 'Login';

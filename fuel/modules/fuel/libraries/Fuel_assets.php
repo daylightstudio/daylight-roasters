@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -134,7 +134,6 @@ class Fuel_assets extends Fuel_base_library {
 		// used later
 		$has_empty_filename = (empty($params['file_name'])) ? TRUE : FALSE;
 
-
 		// set defaults
 		foreach($valid as $param => $default)
 		{
@@ -168,6 +167,8 @@ class Fuel_assets extends Fuel_base_library {
 			
 				$non_multi_key = current(explode('___', $key));
 
+				$posted_filename = FALSE;
+
 				// get params based on the posted variables
 				if (empty($params['override_post_params']))
 				{
@@ -177,6 +178,12 @@ class Fuel_assets extends Fuel_base_library {
 						if ($param != 'posted')
 						{
 							$input_key = $non_multi_key.'_'.$param;
+							$input_key_arr = explode('--', $input_key);
+							$input_key = end($input_key_arr);
+
+							$field_name_arr = explode('--', $field_name);
+							$field_name = end($field_name_arr);
+
 							// decode encrypted file path values
 							if (isset($params['posted'][$input_key]))
 							{
@@ -185,20 +192,22 @@ class Fuel_assets extends Fuel_base_library {
 									$posted['upload_path'] = $this->CI->encrypt->decode($params['posted'][$input_key]);
 									foreach($params['posted'] as $k => $p)
 									{
-										if (is_string($p))
+										if (!is_array($p))
 										{
-											$posted['upload_path'] = str_replace('{'.$k.'}', $p ,$posted['upload_path']);	
+											$posted['upload_path'] = str_replace('{'.$k.'}', $p, $posted['upload_path']);
 										}
 									}
+
+									// security check to make sure that no crazy paths are being generated
+									$posted['upload_path'] = str_replace('..'.DIRECTORY_SEPARATOR, '', $posted['upload_path']);
 								}
 								else
 								{
 									$posted[$param] = $params['posted'][$input_key];
 								}
-
 								if ($param == 'file_name')
 								{
-									$has_empty_filename = FALSE;
+									$posted_filename = TRUE;
 								}
 							}
 						}
@@ -206,6 +215,7 @@ class Fuel_assets extends Fuel_base_library {
 					$params = array_merge($params, $posted);
 					unset($params['override_post_params'], $params['posted']);
 				}
+
 				$asset_dir = trim(str_replace(assets_server_path(), '', $params['upload_path']), '/');
 
 				// set restrictions 
@@ -251,14 +261,17 @@ class Fuel_assets extends Fuel_base_library {
 				}
 
 				// set file name
-				if ($has_empty_filename AND !empty($params[$field_name.'_file_name']))
+				if (!$posted_filename)
 				{
-					$params['file_name'] = $params[$field_name.'_file_name'];
-				}
-				else if ($has_empty_filename)
-				{
-					$file_name = pathinfo($file['name'], PATHINFO_FILENAME);
-					$params['file_name'] = url_title($file_name, 'underscore', FALSE);	
+					if ($has_empty_filename AND !empty($params[$field_name.'_file_name']) )
+					{
+						$params['file_name'] = $params[$field_name.'_file_name'];
+					}
+					else if ($has_empty_filename)
+					{
+						$file_name = pathinfo($file['name'], PATHINFO_FILENAME);
+						$params['file_name'] = url_title($file_name, 'underscore', FALSE);	
+					}
 				}
 			
 				// set overwrite
@@ -322,6 +335,9 @@ class Fuel_assets extends Fuel_base_library {
 
 				$params['source_image']	= $file['full_path'];
 
+				// cast
+				$params['maintain_ratio'] = (bool) $params['maintain_ratio'];
+
 				// to fix issues with resize and crop
 				if (empty($params['create_thumb']))
 				{
@@ -337,6 +353,7 @@ class Fuel_assets extends Fuel_base_library {
 				}
 				else
 				{
+
 					$resize = $this->CI->image_lib->resize();
 				}
 				
@@ -345,7 +362,6 @@ class Fuel_assets extends Fuel_base_library {
 					$this->_add_error($this->CI->image_lib->display_errors());
 				}
 			}
-			
 			// unzip any zip files
 			else if (is_true_val($params['unzip']) AND $file['file_ext'] == '.zip')
 			{
@@ -368,7 +384,7 @@ class Fuel_assets extends Fuel_base_library {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Returns the <a href="http://codeigniter.com/user_guide/libraries/file_uploading.html" target="_blank">uploaded file information</a>.
+	 * Returns the <a href="http://ellislab.com/codeigniter/user-guide/libraries/file_uploading.html" target="_blank">uploaded file information</a>.
 	 *
 	 * @access	public
 	 * @param	string	The uploaded $_FILE key value (optional)
@@ -386,7 +402,7 @@ class Fuel_assets extends Fuel_base_library {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Normalizes the $_FILES array so that the <a href="http://codeigniter.com/user_guide/libraries/file_uploading.html" target="_blank">CI File Upload Class</a> will work correctly
+	 * Normalizes the $_FILES array so that the <a href="http://ellislab.com/codeigniter/user-guide/libraries/file_uploading.html" target="_blank">CI File Upload Class</a> will work correctly
 	 *
 	 * @access	public
 	 * @return	void
@@ -598,7 +614,9 @@ class Fuel_assets extends Fuel_base_library {
 	public function dir_files($folder, $recursive = FALSE, $append_path = FALSE)
 	{
 		$dir = assets_server_path($folder);
-		return directory_to_array($dir, $recursive, array(), $append_path);
+		$files = directory_to_array($dir, $recursive, array(), $append_path);
+		sort($files);
+		return $files;
 	}
 	
 	// --------------------------------------------------------------------

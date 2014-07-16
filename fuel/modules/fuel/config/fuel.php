@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -136,8 +136,8 @@ $config['languages'] = array(
 						);
 
 // specifies the method in which to look for pages with different languages.
-// values can be "segment", "query_string" or "both"
-$config['language_mode'] = 'segment';
+// values can be "domain", "segment", "query_string" or "both" (which means both "segment" and "query_string")
+$config['language_mode'] = 'domain';
 
 // append the current language value to the site URL automatically
 $config['add_language_to_site_url'] = FALSE;
@@ -198,6 +198,7 @@ $config['assets_upload_max_height']  = '768';
 
 $config['fuel_javascript'] = array(
 /*
+	'fuel' => array(
 	'jquery/plugins/jquery-ui-1.8.17.custom.min',
 	'jquery/plugins/jquery.easing',
 	'jquery/plugins/jquery.bgiframe',
@@ -228,10 +229,10 @@ $config['fuel_javascript'] = array(
 	// http://stackoverflow.com/questions/10251272/what-could-cause-this-randomly-appearing-error-inside-jquery-itself
 	'jquery/plugins/chrome_pushstack_fix.js',
 	'jqx/plugins/util.js',
-	'fuel/global',*/
+	'fuel/global')*/
 
 
-	'fuel/fuel.min'
+	'fuel' => 'fuel/fuel.min'
 );
 
 

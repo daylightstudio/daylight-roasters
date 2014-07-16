@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -51,6 +51,11 @@ function required($var)
 	else if (is_array($var))
 	{
 		return !empty($var);
+	}
+	// automatically set integer values to TRUE
+	else if (is_int($var))
+	{
+		return TRUE;
 	}
 	return FALSE;
 
@@ -749,7 +754,7 @@ function display_errors($ERRORS = NULL, $class = 'error')
 		}
 		$str .= "</ul>\n";
 	}
-	$str .= "<script language=\"JavaScript\" type=\"text/javascript\">\n";
+	$str .= "<script type=\"text/javascript\">\n";
 	$str .= "// <![CDATA[\n";
 	$str .= "try { $(function(){ \$('.".$error_class." input:first').focus(); }); } catch(e){};\n";
 	$str .= "// ]]>\n";

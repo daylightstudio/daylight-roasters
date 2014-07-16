@@ -46,7 +46,7 @@ on the key value specified in the config (e.g. example):</p>
 		</tr>
 		<tr>
 			<td><strong>module_name</strong></td>
-			<td>The default value is a <a href="http://codeigniter.com/user_guide/helpers/inflector_helper.html" target="_blank">humanized</a> version of the module key (e.g. a key of example = Example)</td>
+			<td>The default value is a <a href="http://ellislab.com/codeigniter/user-guide/helpers/inflector_helper.html" target="_blank">humanized</a> version of the module key (e.g. a key of example = Example)</td>
 			<td>None</td>
 			<td>the friendly name of the module.</td>
 		</tr>
@@ -258,6 +258,12 @@ on the key value specified in the config (e.g. example):</p>
 			<td>FALSE</td>
 			<td>Boolean Value TRUE/FALSE</td>
 			<td>If set to TRUE, it will hide the module in the admin menu</td>
+		</tr>
+		<tr>
+			<td><strong>disabled</strong></td>
+			<td>FALSE</td>
+			<td>Boolean Value TRUE/FALSE</td>
+			<td>If set to TRUE, it will hide the module in the admin menu as well as show a 404</td>
 		</tr>
 		<tr>
 			<td><strong>icon_class</strong></td>

@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  */
@@ -135,7 +135,7 @@ class Fuel_assets_model extends CI_Model {
 				$key = $tmpfiles[$i];
 				if (empty($this->filters['name']) || 
 					(!empty($this->filters['name']) AND 
-					(strpos($files[$key]['name'], $this->filters['name']) !== FALSE || strpos($key, $this->filters['name']) !== FALSE)))
+					(stripos($files[$key]['name'], $this->filters['name']) !== FALSE || stripos($key, $this->filters['name']) !== FALSE)))
 				{
 
 					$file['id'] = uri_safe_encode(assets_server_to_web_path($files[$tmpfiles[$i]]['server_path'], TRUE));
@@ -144,7 +144,7 @@ class Fuel_assets_model extends CI_Model {
 					$file['name'] = $key;
 					$file['preview/kb'] = $files[$key]['size'];
 					$file['link'] = NULL;
-					$file['last_updated'] = english_date($files[$key]['date'], true);
+					$file['last_updated'] = date('Y-m-d H:i:s', $files[$key]['date']);
 					$return[] = $file;
 				}
 			}

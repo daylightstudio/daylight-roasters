@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2013, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2014, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -1095,6 +1095,19 @@ class Fuel_advanced_module extends Fuel_base_library {
 		{
 			$this->_config = $module_config;
 		}
+
+		// special case for tables so that they are loaded into the static Base_module_model variable
+		if ($this->CI->config->item('tables'))
+		{
+			if (!class_exists('Base_module_model'))
+			{
+				require_once(BASEPATH.'core/Model.php');
+				require_once(FUEL_PATH.'models/base_module_model.php');
+			}
+			
+			Base_module_model::$tables = array_merge(Base_module_model::$tables, $this->CI->config->item('tables'));
+		}
+
 	}
 
 	// --------------------------------------------------------------------

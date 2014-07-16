@@ -1,5 +1,5 @@
 //fuel = top.window.initFuelNamespace();
-if (window.fuel == undefined){
+if (typeof(window.fuel) == 'undefined'){
 	window.fuel = {};
 }
 fuel.fields = {};
@@ -15,9 +15,18 @@ fuel.fields.datetime_field = function(context){
 		showButtonPanel : false,
 		showOn: 'button',
 	    buttonText: 'Click to show the calendar',
-	    buttonImageOnly: true, 
-	    buttonImage: jqx_config.imgPath + 'calendar.png'
+	    buttonImageOnly: true
 	}
+
+	// first look for jqx variable
+	if (typeof(jqx_config) != 'undefined') {
+		o.buttonImage = jqx_config.imgPath + 'calendar.png'
+
+	// then look for a generic imgPath variable
+	} else if (typeof(imgPath) != 'undefined'){
+		 o.buttonImage = imgPath + 'calendar.png';
+	}
+
 	$('.datepicker', context).each(function(i){
 		var options = {
 			dateFormat : $(this).attr('data-date_format'),
@@ -27,7 +36,8 @@ fuel.fields.datetime_field = function(context){
 			firstDay : $(this).attr('data-first_day')
 		};
 		var opts = $.extend(o, options);
-		$.datepicker.regional[o.region];
+		$.datepicker.regional[o.region];	
+		
 		$(this).datepicker(opts);
 	})
 }
@@ -62,6 +72,7 @@ fuel.fields.multi_field = function(context, inline_edit){
 
 // markItUp! and CKeditor field
 fuel.fields.wysiwyg_field = function(context){
+
 	$editors = $ckEditor = $('textarea', context).not('.no_editor, .markItUpEditor');
 	var module = fuel.getModule();
 	var _previewPath = myMarkItUpSettings.previewParserPath;
@@ -107,13 +118,15 @@ fuel.fields.wysiwyg_field = function(context){
 		var sourceButton = '<a href="#" id="' + ckId + '_viewsource" class="btn_field editor_viewsource">' + fuel.lang('btn_view_source') + '</a>';
 		
 		// used in cases where repeatable fields cause issues
-		if ($(elem).hasClass('ckeditor_applied')) {
+		if ($(elem).hasClass('ckeditor_applied') || $('#cke_' + ckId).length != 0) {
 			return;
 		}
+
 		
 		// cleanup
 		if (CKEDITOR.instances[ckId]) {
 			CKEDITOR.remove(CKEDITOR.instances[ckId]);
+			//$('#cke_' + ckId).remove();
 			//CKEDITOR.instances[ckId].destroy();
 		}
 		var config = jqx_config.ckeditorConfig;
@@ -121,8 +134,8 @@ fuel.fields.wysiwyg_field = function(context){
 		// add custom configs
 		config = $.extend(config, $(elem).data());
 		var hasCKEditorImagePlugin = (config.extraPlugins && config.extraPlugins.indexOf('fuelimage') != -1);
+		config.height = $(elem).height();
 
-		
 		CKEDITOR.replace(ckId, config);
 
 		// add this so that we can set that the page has changed
@@ -309,7 +322,6 @@ fuel.fields.wysiwyg_field = function(context){
 	
 		// add preview to make it noticable and consistent
 		if ($textarea.parent().find('.editor_preview').length == 0){
-		
 			var $previewBtn = $textarea.parent('.markItUpContainer').find('.markItUpHeader .preview');
 			if ($previewBtn){
 				$textarea.parent().append(previewButton);
@@ -354,7 +366,7 @@ fuel.fields.wysiwyg_field = function(context){
 		var _this = this;
 		var ckId = $(this).attr('id');
 		if ((jqx_config.editor.toLowerCase() == 'ckeditor' && !$(this).hasClass('markitup')) || $(this).hasClass('wysiwyg')){
-			// createCKEditor(this);
+			//createCKEditor(this);
 			setTimeout(function(){
 				createCKEditor(_this);
 			}, 250) // hackalicious... to prevent CKeditor errors when the content is ajaxed in... this patch didn't seem to work http://dev.ckeditor.com/attachment/ticket/8226/8226_5.patch
@@ -388,8 +400,9 @@ fuel.fields.file_upload_field = function(context){
 		$multiFile.addClass('accept-' + acceptTypes); // accepts from class as well as attribute so we'll use the class instead
 		$multiFile.removeAttr('accept');// for Chrome bug
 		$multiFile.MultiFile({ namePattern: '$name___$i'});
-	}, 500)
-	
+	}, 500);
+
+	fuel.fields.asset_field(context);
 }
 
 // asset select field
@@ -420,6 +433,7 @@ fuel.fields.asset_field = function(context, options){
 			$assetPreview = $('#asset_preview', iframeContext);
 			$('.cancel', iframeContext).add('.modal_close').click(function(){
 				$modal.jqmHide();
+
 				if ($(this).is('.save')){
 					var $activeField = $('#' + activeField);
 					var assetVal = jQuery.trim($activeField.val());
@@ -448,7 +462,7 @@ fuel.fields.asset_field = function(context, options){
 
 			// legacy code
 			if (!assetFolder) {
-				var assetTypeClasses = ($(this).attr('class') != undefined) ? $(this).data('folder').split(' ') : [];
+				var assetTypeClasses = ($(this).attr('class')) ? $(this).attr('class').split(' ') : [];
 				var assetFolder = (assetTypeClasses.length > 1) ? assetTypeClasses[assetTypeClasses.length - 1] : 'images';
 			}
 			var btnLabel = '';
@@ -470,7 +484,7 @@ fuel.fields.asset_field = function(context, options){
 	});
 
 	$('.asset_select_button', context).click(function(e){
-		activeField = $(e.target).parent().find('input,textarea:first').attr('id');
+		activeField = $(e.target).parent().find('input[type="text"],textarea').filter(':first').attr('id');
 		selectedAssetFolder = $(e.target).data('folder');
 
 		// legacy code
@@ -487,7 +501,6 @@ fuel.fields.asset_field = function(context, options){
 	var showAssetUpload = function(url){
 		var html = '<iframe src="' + url +'" id="add_edit_inline_iframe" class="inline_iframe" frameborder="0" scrolling="no" style="border: none; height: 0px; width: 0px;"></iframe>';
 		$modal = fuel.modalWindow(html, 'inline_edit_modal', true);
-		
 		// // bind listener here because iframe gets removed on close so we can't grab the id value on close
 		$modal.find('iframe#add_edit_inline_iframe').bind('load', function(){
 			var iframeContext = this.contentDocument;
@@ -560,16 +573,18 @@ fuel.fields.inline_edit_field = function(context){
 		var fieldId = $field.attr('id');
 		var $form = $field.closest('form');
 		var module = $field.data('module');
-		
+
 		var isMulti = ($field.attr('multiple')) ? true : false;
 		
 		var parentModule = fuel.getModuleURI(context);
 		var url = jqx_config.fuelPath + '/' + module + '/inline_';
 		
-		if (!$field.parent().find('.add_inline_button').length) $field.after('&nbsp;<a href="' + url + 'create" class="btn_field add_inline_button">' + fuel.lang('btn_add') + '</a>');
-		if (!$field.parent().find('.edit_inline_button').length) $field.after('&nbsp;<a href="' + url + 'edit/" class="btn_field edit_inline_button">' + fuel.lang('btn_edit') + '</a>');
+		var btnClasses = ($field.attr('multiple')) ? 'btn_field btn_field_right ' : 'btn_field';
+		if (!$field.parent().find('.edit_inline_button').length) $field.after('&nbsp;<a href="' + url + 'edit/" class="' + btnClasses+ ' edit_inline_button">' + fuel.lang('btn_edit') + '</a>');
+		if (!$field.parent().find('.add_inline_button').length) $field.after('&nbsp;<a href="' + url + 'create" class="' + btnClasses+ ' add_inline_button">' + fuel.lang('btn_add') + '</a>');
 		
 		var refreshField = function($field){
+
 			//$field = (field != undefined) ? field : $field;
 			
 			// redeclared here in case $field is set
@@ -597,14 +612,16 @@ fuel.fields.inline_edit_field = function(context){
 
 			// for sortable fields
 			var fieldName = $field.attr('name');
-			fieldName = fieldName.replace('[', '\\[');
-			fieldName = fieldName.replace(']', '\\]');
+			if (fieldName){
+				fieldName = fieldName.replace('[', '\\[');
+				fieldName = fieldName.replace(']', '\\]');
+				var selector = '[name=' + fieldName + ']';
+			}
 
 			var $form = $field.closest('form');
 
 			$fieldContainer = $('#' + fieldId, context).closest('td.value');
 			$field.closest('form').trigger('form-pre-serialize');
-			var selector = '[name=' + fieldName + ']';
 
 			// refresh value
 			$field = $(selector);
@@ -651,9 +668,9 @@ fuel.fields.inline_edit_field = function(context){
 				if ($this.is('select') && $this.find('option').length == 0){
 					$this.hide();
 				}
-				if ($this.is('input, select')) $this.next('.btn_field').hide();
+				if ($this.is('input, select')) $this.parent().find('.edit_inline_button').hide();
 			} else {
-				$this.next('.btn_field').show();
+				$this.parent().find('.edit_inline_button').show();
 			}	
 		}
 		
@@ -665,22 +682,37 @@ fuel.fields.inline_edit_field = function(context){
 		});
 
 		$('.edit_inline_button', context).unbind().click(function(e){
-			var $elem = $(this).parent().find('select');
-			var val = $elem.val();
-
-			var fieldName = $elem.attr('name')
-			fieldName = fieldName.replace('[', '');
-			fieldName = fieldName.replace(']', '');
-			var sortName = 'sorting_' + fieldName;
-			var form = $(this).parents('form');
-
+			var $elem = $(this).parent().find('select, input[type="checkbox"], input[type="radio"]');
+			if ($elem.length){
+				if ($elem.is('input[type="checkbox"]')){
+					var valArr = [];
+					$elem.each(function(i){
+						if ($(this).prop('checked')){
+							valArr.push($(this).val());
+						}
+					})
+					val = valArr.join(',');
+				} else {
+					var val = $elem.val();	
+				}
+				
+				var fieldName = $elem.attr('name')
+				fieldName = fieldName.replace('[', '');
+				fieldName = fieldName.replace(']', '');
+				var sortName = 'sorting_' + fieldName;
+				var form = $(this).parents('form');
+			} else {
+				$elem = $(this);
+				var val = $elem.data('value');
+			}
+			
 			if (!val){
 				alert(fuel.lang('edit_multi_select_warning'));
 				return false;
 			}
 			var editIds = val.toString().split(',');
 			var $selected = $elem.parent().find('.supercomboselect_right li.selected:first');
-			
+
 			if ((!editIds.length || editIds.length > 1) && (!$selected.length || $selected.length > 1)) {
 				alert(fuel.lang('edit_multi_select_warning'));
 			} else {
@@ -855,6 +887,7 @@ fuel.fields.template_field = function(context, options){
 			options.min = $attrElem.attr('data-min');
 			options.dblClickBehavior = $attrElem.attr('data-dblclick');
 			options.initDisplay = $attrElem.attr('data-init_display');
+			options.removeable = $attrElem.attr('data-removeable');
 			options.addButtonText = fuel.lang('btn_add_another');
 			options.removeButtonText = fuel.lang('btn_remove');
 			options.warnBeforeDeleteMessage = fuel.lang('warn_before_delete_msg');

@@ -135,6 +135,7 @@ would need to be created on the frontend (e.g. jqx.config.fuelPath, jqx.config.i
 	</li>
 	<li><strong>row_class</strong>: sets a class on the containing table row or container div (depending on the rendering method)</li>
 	<li><strong>tabindex</strong>: sets the tabindex value of a field. If using a mutli select, datetime, time, or enum, the value needs to be an array</li>
+	<li><strong>attributes</strong>: a generic string value of attributes for the form field (e.g. 'class="myclass"'). WARNING... this may clash with other attributes specified above</li>
 </ul>
 
 <h2 id="form_field_types">Form Field Types</h2>
@@ -433,6 +434,23 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>file_name</strong>: the new file name you want to assign</li>
 		<li><strong>encrypt_name</strong>: determines whether to encrypt the uploaded file name to give it a unique value. The default is FALSE</li>
 		<li><strong>multiple</strong>: determines whether to allow multiple files to be uploaded by the same field. The default is FALSE</li>
+		<li><strong>display_preview</strong>: determines whether to to display a preview of the asset</li>
+		<li><strong>replace_values</strong>: an array of key/value pairs that can be used to replace any placeholder values in the upload path</li>
+	</ul>
+
+	<h4>Image Specific</h4>
+	<ul>
+		<li><strong>is_image</strong>: will provide an image preview no matter if the image does not end with jpg, png, gif etc.</li>
+		<li><strong>img_container_styles</strong>: styles to associate with the image preview container (only applies to image assets)</li>
+		<li><strong>img_styles</strong>: styles applied to the actual image that is being previewed</li>
+		<li><strong>create_thumb</strong>: determines whether to create a thumbnail</li>
+		<li><strong>width</strong>: sets the width of the uploaded image</li>
+		<li><strong>height</strong>: sets the height of the uploaded image</li>
+		<li><strong>maintain_ratio</strong>: determines whether to maintain the images aspect ratio when resizing</li>
+		<li><strong>resize_and_crop</strong>: determines whether to crop the image to be forced into the dimensions</li>
+		<li><strong>resize_method</strong>: values can be "maintain_ratio" or "resize_and_crop". This value will trump any value set for the "maintain_ratio" and "resize_and_crop"</li>
+		<li><strong>master_dim</strong>: sets the dimension (height or width) to be the master dimension when resizing and maintaining aspect ratio</li>
+
 	</ul>
 	
 	<h4>Representations</h4>
@@ -694,6 +712,7 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>display_sub_label</strong>: determines whether to display the labels for the fields in the the sub form created (if no view is specified and it is using a nested form_builder instance)</li>
 		<li><strong>condensed</strong>: if TRUE, this will update there repeatable field to use a condensed styling</li>
 		<li><strong>non_sortable</strong>: if TRUE, this will hide the sorting grabber for repeatable fields</li>
+		<li><strong>removeable</strong>: if determines whether the repeatable sets can be removed</li>
 	</ul>
 
 	<h4>Example</h4>
@@ -847,6 +866,7 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		<li><strong>img_folder</strong>: the image folder to pull from when inserting an image</li>
 		<li><strong>img_order</strong>: the image order displayed in the dropdown select. Options are <dfn>name</dfn> and <dfn>last_updated</dfn>. Default is <dfn>name</dfn></li>
 		<li><strong>link_pdfs</strong>: a boolean value that determines whether to display PDFs along with the list of URLs when inserting a link. Default is set to FALSE which will not show PDFs (note that special logic will need to be created in the layouts to use either <dfn>site_url</dfn> or <dfn>pdf_path</dfn> functions)</li>
+		<li><strong>link_filter</strong>: a regular expression value that can be used to filter the page list down to only the pages you need</li>
 		<li><strong>editor_config</strong>: sets the editor's (markItUp! or CKEditor) configuration values for a particular field. Camel-cased attributes need to be converted to lowercase with hyphens (e.g. extraPlugins should be extra-plugins). These configuration values are attached to the textarea field so you can use
 			Javascript to set more complex object values as long they are set on the textarea field before markItUp! or CKEditor initialization (e.g. $('.mytextarea').data('toolbar', [['Bold','Italic','Strike']]).</li>
 		<li><strong>markdown</strong>: changes toolbar to use <a href="http://daringfireball.net/projects/markdown/" target="_blank">Markdown</a> formatting instead of HTML. Must have editor set to use markItUp!</li>
@@ -961,7 +981,7 @@ $this->form_builder->register_custom_field($key, $custom_field);
 
 <h3 id="slug" class="toggle">slug</h3>
 <div class="toggle_block_off">
-	<p>This field type can be used for creating slug or permalink values for a field using the <a href="http://codeigniter.com/user_guide/helpers/url_helper.html" target="_blank">url_title</a> function.
+	<p>This field type can be used for creating slug or permalink values for a field using the <a href="http://ellislab.com/codeigniter/user-guide/helpers/url_helper.html" target="_blank">url_title</a> function.
 	The following additional parameter can be passed to this field type:</p>
 	<ul>
 		<li><strong>linked_to</strong>: the field whose value to use if no value is provided.
@@ -1029,6 +1049,8 @@ $this->form_builder->register_custom_field($key, $custom_field);
 		post-processed result is a JSON encoded string:</p>
 	<ul>
 		<li><strong>delimiter</strong>: the delimiter used to separate between a key and a value. The default is a ":" (colon).</li>
+		<li><strong>allow_numeric_indexes</strong>: determines whether to display numeric indexes or not.</li>
+		<li><strong>allow_empty_values</strong>: determines whether to display items that may have no value.</li>
 	</ul>
 	
 	<h4>Example</h4>
