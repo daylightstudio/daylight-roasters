@@ -76,7 +76,7 @@ html {
 	font-size: 62.5%; 
 }
 .mainfont, html, body, button, input, select, textarea { 
-	font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif; 
+	font-family: $font-main;
 }
 body { 
 	@include font-size(1.6); 

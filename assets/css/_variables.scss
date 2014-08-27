@@ -4,17 +4,24 @@
 
 /** COLORS
 ---------------------------------------- **/
-// Base Colors
+//Base Colors
 $red: #ff0000;
 $black: #000;
 $dark: #0C0C0C;
 $gray: #666666;
 $white: #fff;
 $copy: #666666;
+//End Base Colors
 
 // Component Colors
 $copy: $dark;
 $accent: $red;
+
+/** FONTS
+---------------------------------------- **/
+//Base Type
+$font-main: 'Arial', sans-serif;
+//End Base Type
 
 
 /** RESPONSIVE WIDTHS

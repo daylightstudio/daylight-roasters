@@ -35,6 +35,7 @@
 		Remove html5 shiv if you're using modernizr. Also add `class="no-js"` to the html tag */ ?>
 	<!--[if lte IE 8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
+	<?=fuel_block('type')?>
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
 
