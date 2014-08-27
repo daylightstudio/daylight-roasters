@@ -125,7 +125,10 @@ class Fuel_modules extends Fuel_base_library {
 		{
 			foreach($overwrites as $module => $val)
 			{
-				$module_init[$module] = array_merge($module_init[$module], $val);
+				if (isset($module_init[$module]))
+				{
+					$module_init[$module] = array_merge($module_init[$module], $val);	
+				}
 			}
 		}
 		return $module_init;
@@ -212,7 +215,11 @@ class Fuel_modules extends Fuel_base_library {
 			$fuel_module = new Fuel_module();
 		}
 		$fuel_module->initialize($mod, $init);
-		$this->_modules[$mod] = $fuel_module;
+
+		if (empty($init['disabled']))
+		{
+			$this->_modules[$mod] = $fuel_module;
+		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -236,12 +243,12 @@ class Fuel_modules extends Fuel_base_library {
 		}
 
 		// allows you to get a module based on the model name
-		if (!empty($module) AND is_string($module) AND preg_match('#\w+_model$#', $module))
+		if (!empty($module) AND is_string($module) AND preg_match('#\w+_model$#', $module) OR $has_uri = (strpos($module, '/') !== FALSE))
 		{
 			$modules = $this->get(NULL, FALSE);
 			foreach($modules as $key => $mod)
 			{
-				if (strtolower($mod->info('model_name')) == $module)
+				if (strtolower($mod->info('model_name')) == $module OR (!empty($has_uri) AND $mod->info('module_uri') == $module))
 				{
 					$module = $key;
 					break;
@@ -507,7 +514,27 @@ class Fuel_modules extends Fuel_base_library {
 		
 	}
 
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Options list for simple modules
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	public function options_list($advanced = FALSE)
+	{
+		if ($advanced)
+		{
+			$modules = array_keys($this->advanced(FALSE));
+		}
+		else
+		{
+			$modules = array_keys(self::get_all_module_configs());
+		}
+		$options = array_combine($modules, $modules);
+		return $options;
+	}
 }
 
 
@@ -827,25 +854,32 @@ class Fuel_module extends Fuel_base_library {
 
 		foreach($records as $record)
 		{
-			// need to put in global namesapce for preg_replace_callback to access
-			preg_match_all('#{(\w+)}#', $info['preview_path'], $matches);
-			$page = $info['preview_path'];
-			$replaced = FALSE;
-			if (!empty($matches[1]))
+			if (is_callable($info['preview_path']))
 			{
-				foreach($matches[1] as $match)
+				$pages[$page] = $info['preview_path']($record);
+			}
+			else
+			{
+				preg_match_all('#{(\w+)}#', $info['preview_path'], $matches);
+				$page = $info['preview_path'];
+				$replaced = FALSE;
+				if (!empty($matches[1]))
 				{
-					if (!empty($record[$match]))
+					foreach($matches[1] as $match)
 					{
-						$page = str_replace('{'.$match.'}', $record[$match], $page);
-						$replaced = TRUE;
+						if (!empty($record[$match]))
+						{
+							$page = str_replace('{'.$match.'}', $record[$match], $page);
+							$replaced = TRUE;
+						}
 					}
 				}
+				if (!empty($replaced))
+				{
+					$pages[$page] = $page;
+				}
 			}
-			if (!empty($replaced))
-			{
-				$pages[$page] = $page;
-			}
+
 		}
 		
 		return $pages;
@@ -869,16 +903,24 @@ class Fuel_module extends Fuel_base_library {
 			return FALSE;
 		}
 		
-		// substitute data values into preview path
-		preg_match_all('#\{(.+)\}+#U', $preview_path, $matches);
-		
-		if (!empty($matches[1]))
+		// check if it is a callable function first		
+		if (is_callable($preview_path))
 		{
-			foreach($matches[1] as $match)
+			$preview_path = $preview_path($data);
+		}
+		else
+		{
+			// substitute data values into preview path
+			preg_match_all('#\{(.+)\}+#U', $preview_path, $matches);
+			
+			if (!empty($matches[1]))
 			{
-				if (!empty($data[$match]))
+				foreach($matches[1] as $match)
 				{
-					$preview_path = str_replace('{'.$match.'}', $data[$match], $preview_path);
+					if (!empty($data[$match]))
+					{
+						$preview_path = str_replace('{'.$match.'}', $data[$match], $preview_path);
+					}
 				}
 			}
 		}
