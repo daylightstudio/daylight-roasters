@@ -20,14 +20,25 @@
 body {margin: 0;}
 
 .sg-header {
-  background: #000;
-  color: #fff;
-  zoom: 1; /* IE6 Fix */
+  background: #f1f1f1;
+  color: #323232;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  border-bottom: 1px solid #b2b2b2;
+}
+
+.sg-body.wrapper {
+  margin-top: 100px;
 }
 
 @media screen and (max-width: 650px) {
   .sg-header {
     text-align: center;
+    position: relative;
+  }
+  .sg-body.wrapper {
+    margin-top: 1em;
   }
 }
 
@@ -117,7 +128,6 @@ body {margin: 0;}
 .sg-h1,
 .sg-h2,
 .sg-h3 {
-  font-family: "proxima-nova", "Helvetica", Arial, sans-serif;
   font-weight: normal;
   margin-bottom: 1em;
   margin-top: 0;
@@ -130,28 +140,40 @@ body {margin: 0;}
 }
 
 .sg-h2 {
-  background: black;
-  color: white;
+  background: #f1f1f1;
+  color: #323232;
   padding: 0.5em 1em;
   font-size: 1.5em;
   margin: 0.5em 0 ;
   text-transform: capitalize; 
+  border-bottom: 1px solid #b2b2b2;
 }
-.sg-h2 a { padding: 0 ;}
+.sg-h2 a { padding: 0; color: #323232; }
 
 .sg-h3 {
   font-size: 1.2em;
+}
+
+.sg-htmlview {
+  margin: 0 1em;
 }
 
 
 /* Buttons
 ---------------------------------------------------------------------------- */
 .sg-btn {
-  background: #cbcbcb;
+  background: #dbdbdb;
   color: #222;
-  float: left;
   padding: .5em .9em;
   text-decoration: none;
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.sg-btn:hover {
+  background: ;
 }
 
 .sg-btn--top {
@@ -159,7 +181,6 @@ body {margin: 0;}
 }
 
 .sg-btn--select {
-  border-radius: 0 0.3em;
   position: absolute;
   right: 1px;
   top: 14px;
@@ -168,7 +189,6 @@ body {margin: 0;}
 .sg-btn--select.is-active:hover:after{
   background:#111;
   background:rgba(0,0,0,.8);
-  border-radius:5px;
   top:45px;
   color:#fff;
   content:"Selected code ready to be copied";
@@ -218,13 +238,13 @@ body {margin: 0;}
   margin-bottom: 32px; /* For older browsers */ 
   margin-bottom: 3rem;
   overflow: hidden;
+  border: 1px solid #b2b2b2;
 }
 
   .sg-anchor {
     display: block;
     padding-top: 1em;
   }
-
 
 /* Colors
 ---------------------------------------------------------------------------- */
@@ -306,15 +326,16 @@ body {margin: 0;}
 
 .sg-source {
   position: relative;
+  background: #dbdbdb;
 }
 
 .sg-source pre {
   background: #333;
-  border-radius: .5em;
   border: 1px solid #ddd;
   color: #fff;
   overflow-x: scroll;
   padding: .5em .3em;
+  margin: 0;
 }
 
 .sg-source pre code {

@@ -21,9 +21,10 @@
     echo '<div class="sg-markup sg-section">';
     echo '<div class="sg-display">';
     echo '<h2 class="sg-h2"><a id="sg-'.$filename.'" class="sg-anchor">'.$title.'</a></h2>';
+    echo '<div class="sg-htmlview">';
     echo fuel_block(array('view' => $block, 'module' => $blockmodule, 'vars' => $args));
-    echo '</div>';
-    echo '<div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a> <a class="sg-btn--top" href="#top">Back to Top</a> </div>';
+    echo '</div></div>';
+    echo '<div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a></div>';
     echo '<div class="sg-source sg-animated">';
     echo '<a class="sg-btn sg-btn--select" href="#">Copy Source</a>';
     echo '<pre class="prettyprint linenums"><code>';
@@ -146,18 +147,20 @@
   </form><!--/.sg-nav-->
 </div><!--/.sg-header-->
 
-<div class="sg-body sg-container">
+<div class="sg-body sg-container wrapper">
   <div class="sg-info">               
     <div class="sg-colors sg-section">
       <h2 class="sg-h2"><a id="sg-colors" class="sg-anchor">Colors</a></h2>
-      <?php echo getColors() ?>
-        <div class="sg-markup-controls"><a class="sg-btn--top" href="#top">Back to Top</a></div>
+      <div class="sg-htmlview">
+        <?php echo getColors() ?>
+      </div>
     </div><!--/.sg-colors-->
     
     <div class="sg-font-stacks sg-section">
       <h2 class="sg-h2"><a id="sg-fontStacks" class="sg-anchor">Font Stacks</a></h2>
-      <?php echo getFonts() ?>
-      <div class="sg-markup-controls"><a class="sg-btn--top" href="#top">Back to Top</a></div>
+       <div class="sg-htmlview">
+        <?php echo getFonts() ?>
+      </div>
     </div><!--/.sg-font-stacks-->
   </div><!--/.sg-info-->    
 
