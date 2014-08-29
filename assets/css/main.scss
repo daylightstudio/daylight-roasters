@@ -140,15 +140,12 @@ h6, .h_promo {
 big,
 .text_large,
 .text_intro { 
-	@include font-size(2.4); 
+	font-size: 2em;
 	line-height: 1.5; 
-}
-.text_medium { 
-	@include font-size(1.6); 
 }
 small,
 .text_small { 
-	@include font-size(1.4); 
+	font-size: 0.5em;
 	line-height: 1.2; 
 }
 
