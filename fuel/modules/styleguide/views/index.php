@@ -38,7 +38,7 @@
   function listMarkupAsOptions ($type, $files) {
     sort($files[$type]);
     foreach ($files[$type] as $file):
-        $filename = preg_replace("/\.html$/i", "", $file); 
+        $filename = preg_replace("/\.php$/i", "", $file); 
         echo '<option value="#sg-'.$filename.'">'.humanize($filename).'</option>';
     endforeach;
   }
