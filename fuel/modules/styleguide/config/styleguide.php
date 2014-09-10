@@ -4,9 +4,9 @@
 | FUEL NAVIGATION: An array of navigation items for the left menu
 |--------------------------------------------------------------------------
 */
-$config['nav']['styleguide'] = array(
-		'styleguide' => 'Styleguide',
-	);
+// $config['nav']['styleguide'] = array(
+// 		'styleguide' => 'Styleguide',
+// 	);
 
 
 /*

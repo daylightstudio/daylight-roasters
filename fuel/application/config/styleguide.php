@@ -5,3 +5,4 @@ $config['styleguide']['blocks'] = array(
 	),
 	'module' => array('breadcrumbs')
 );
+$config['styleguide']['updated_time'] = '2014-08-29 11:34';
