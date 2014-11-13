@@ -60,7 +60,7 @@
     foreach ($files['base'] as $file):
         $filename = preg_replace("/\.php$/i", "", $file);
         $title = humanize($filename);
-        $filecontents = MODULES_PATH.'styleguide/views/_blocks/base/'.$file;
+        $filecontents = STYLEGUIDE_PATH.'views/_blocks/base/'.$file;
         $block = 'base/'.$filename;
         outputSection($filename, $title, $filecontents, $block, 'styleguide');
     endforeach;
@@ -78,7 +78,7 @@
     foreach ($s_blocks as $file):
       $filename = $file;
       $title = humanize($filename);
-      $filecontents = MODULES_PATH.'styleguide/views/blocks/'.$file.'.php';
+      $filecontents = STYLEGUIDE_PATH.'views/_blocks/'.$file.'.php';
       outputSection($filename, $title, $filecontents, $file, 'styleguide');
     endforeach;
   }
