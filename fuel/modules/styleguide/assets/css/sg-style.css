@@ -29,6 +29,7 @@ body {
   top: 0;
   width: 100%;
   border-bottom: 1px solid #b2b2b2;
+  z-index: 9999;
 }
 
 .sg-body.wrapper {
