@@ -18,7 +18,8 @@ function markitupLanguage(key)
 	}
 	else if (typeof(window['jqx']) != 'undefined')
 	{
-		return jqx.config.localized['markitup_' + key];
+		console.log(jqx_config.localized)
+		return jqx_config.localized['markitup_' + key];
 	}
 }
 
@@ -405,7 +406,7 @@ myMarkItUpSettings.displayLinkEditWindow = function(selected, attrs, callback){
 	url += '&title=' + ((attrs.title) ? attrs.title : '');
 	url += '&class=' + ((attrs.className) ? attrs.className : '');
 	url += '&pdfs=' + ((attrs.linkPdfs) ? attrs.linkPdfs : '');
-	url += '&filter=' + ((attrs.linkFilter) ? attrs.linkFilter : '');
+	url += '&filter=' + ((attrs.linkFilter) ? encodeURIComponent(attrs.linkFilter) : '');
 
 	var html = '<iframe src="' + url +'" id="url_inline_iframe" class="inline_iframe" frameborder="0" scrolling="no" style="border: none; width: 850px;"></iframe>';
 	$modal = fuel.modalWindow(html, 'inline_edit_modal', true);
@@ -453,7 +454,7 @@ myMarkItUpSettings.displayLinkEditWindow = function(selected, attrs, callback){
 				if ($class.length && $class.val().length){
 					replace += ' class="' + $class.val() + '"';
 				}
-				replace += '>' + $selected.val() + '</a>';
+				replace += '>' + unescape($selected.val()) + '</a>';
 
 				callback(replace);
 			}

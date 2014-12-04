@@ -36,6 +36,9 @@ fuel.fields.datetime_field = function(context){
 			firstDay : $(this).attr('data-first_day'),
 			showOn : $(this).attr('data-show_on')
 		};
+		if ($(this).attr('data-button_image')){
+			options.buttonImage = $(this).attr('data-button_image');
+		}
 		var opts = $.extend(o, options);
 		$.datepicker.regional[o.region];	
 		
@@ -321,8 +324,13 @@ fuel.fields.wysiwyg_field = function(context){
 	var createPreview = function(id){
 
 		var $textarea = $('#' + id);
+
+		if ($textarea.data('preview') != undefined && $textarea.data('preview').length == 0){
+			return;
+		}
+
 		var previewButton = '<a href="#" id="' + id + '_preview" class="btn_field editor_preview">' + fuel.lang('btn_preview') + '</a>';
-	
+
 		// add preview to make it noticable and consistent
 		if ($textarea.parent().find('.editor_preview').length == 0){
 			var $previewBtn = $textarea.parent('.markItUpContainer').find('.markItUpHeader .preview');
@@ -436,7 +444,6 @@ fuel.fields.asset_field = function(context, options){
 			$assetPreview = $('#asset_preview', iframeContext);
 			$('.cancel', iframeContext).add('.modal_close').click(function(){
 				$modal.jqmHide();
-
 				if ($(this).is('.save')){
 					var $activeField = $('#' + activeField);
 					var assetVal = jQuery.trim($activeField.val());
@@ -449,7 +456,11 @@ fuel.fields.asset_field = function(context, options){
 					} else {
 						assetVal = selectedVal;
 					}
-					$('#' + activeField).val(assetVal).trigger("change");
+					$activeField.val(assetVal).trigger("change");
+
+					refreshImage($activeField);
+
+
 				}
 				return false;
 			});
@@ -508,21 +519,24 @@ fuel.fields.asset_field = function(context, options){
 		$modal.find('iframe#add_edit_inline_iframe').bind('load', function(){
 			var iframeContext = this.contentDocument;
 			selected = $('#uploaded_file_name', iframeContext).val();
+
 			if (selected && selected.length){
 				var $activeField = $('#' + activeField);
-				if ($activeField.data('multiple') == '1'){
-					var selectedAssetValue = jQuery.trim($('#' + activeField).val());
+				var multiple = parseInt($activeField.attr('data-multiple')) == 1;
+				if (multiple){
+					var selectedAssetValue = jQuery.trim($activeField.val());
 					var selectedAssets = [];
 					if (selectedAssetValue.length){
 						selectedAssets = selectedAssetValue.split(',');
 					}
 					selectedAssets.push(selected);
-					$('#' + activeField).val(selectedAssets.join(','))
+					$activeField.val(selectedAssets.join(','))
 				} else {
-					$('#' + activeField).val(selected);	
+					$activeField.val(selected);	
 				}
 				
 				$modal.jqmHide();
+				refreshImage($activeField);
 			}
 		})
 		return false;
@@ -556,6 +570,49 @@ fuel.fields.asset_field = function(context, options){
 		return false;
 		
 	});
+
+	// refresh any images
+	var refreshImage = function(activeField){
+		$activeField = $(activeField);
+		var folder = $activeField.data('folder')
+		var imgPath = jqx_config.assetsPath + folder + '/';
+		var $preview = $activeField.parent().find('.img_preview');
+		var value =  $activeField.val();
+		var imgValues = value.split(',');
+		var imgStyles = $preview.data('imgstyles');
+		$preview.empty();
+		var previewHTML = '';
+		$.each(imgValues, function(img){
+
+			// check if it is an image 
+			if (this.length && this.toLowerCase().match(/\.jpg$|\.jpeg$|\.gif$|\.png$/)){
+				var newSrc = (this.toLowerCase().match(/^http(s)?:\/\//)) ? '' : imgPath;
+				newSrc += $.trim(this) + '?c=' + new Date().getTime()
+				previewHTML += '<a href="' + newSrc + '" target="_blank">';
+				previewHTML += '<img src="' + newSrc + '" style="' + imgStyles + '" class="img_bg">';
+				previewHTML += '</a>';
+			}
+
+			if (value && $activeField.data('orig') != value){
+				previewHTML += '<br clear="both"><p class="warning" style="white-space: normal;">' + fuel.lang('assets_need_to_save') + '</p>';
+			}
+		})
+
+		if (previewHTML.length){
+			$preview.show().html(previewHTML);	
+		} else {
+			$preview.hide();
+		}
+		
+	}
+
+	$('.asset_select, .asset_upload', context).each(function(){
+		$(this).on('change', function(e){
+			refreshImage(this);	
+		})
+		refreshImage(this);
+	});
+	
 }
 
 // inline editing of another module
@@ -588,15 +645,15 @@ fuel.fields.inline_edit_field = function(context){
 		var fieldId = $field.attr('id');
 		var $form = $field.closest('form');
 		var module = $field.data('module');
+		var addParams = ($field.data('add_params')) ? '?' + $field.data('add_params') : '';
 
 		var isMulti = ($field.attr('multiple')) ? true : false;
 		
 		var parentModule = fuel.getModuleURI(context);
 		var url = jqx_config.fuelPath + '/' + module + '/inline_';
-		
 		var btnClasses = ($field.attr('multiple')) ? 'btn_field btn_field_right ' : 'btn_field';
 		if (!$field.parent().find('.edit_inline_button').length) $field.after('&nbsp;<a href="' + url + 'edit/" class="' + btnClasses+ ' edit_inline_button">' + fuel.lang('btn_edit') + '</a>');
-		if (!$field.parent().find('.add_inline_button').length) $field.after('&nbsp;<a href="' + url + 'create" class="' + btnClasses+ ' add_inline_button">' + fuel.lang('btn_add') + '</a>');
+		if (!$field.parent().find('.add_inline_button').length) $field.after('&nbsp;<a href="' + url + 'create' + addParams + '" class="' + btnClasses+ ' add_inline_button">' + fuel.lang('btn_add') + '</a>');
 		
 		var refreshField = function($field){
 
@@ -1146,7 +1203,7 @@ fuel.fields.toggler_field = function(context, options){
 	})
 
 	// for block fields that get ajaxed in
-	$(document).on("blockLoaded", function(e, elem, context){
+	$(document).off("blockLoaded").on("blockLoaded", function(e, elem, context){
 		var $togglers = $(elem).parent().find(".toggler").not('.__applied__');
 		$togglers.each(function(){
 			var $this = $(this);
