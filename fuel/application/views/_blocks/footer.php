@@ -1,5 +1,4 @@
-	<div class="clearfix"></div>
-	<footer class="footer clearfix">
+	<footer class="footer">
 		<div class="wrapper">
 			<p class="colophon small">&copy; <?php echo date("Y"); ?> My Website. All Rights Reserved. Site by <a href="http://thedaylightstudio.com" target="_blank">Daylight</a></p>
 		</div>

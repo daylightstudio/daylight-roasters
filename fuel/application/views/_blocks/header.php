@@ -47,10 +47,12 @@
 </head>
 
 <?php $bc = fuel_var('body_class', 'Body Class') ?>
-<!--[if lte IE 8]><body class="<?php echo $bc;?> ie lt-ie9"><![endif]-->
 <!--[if IE 9]><body class="<?php echo $bc;?> ie"><![endif]-->
 <!--[if gt IE 9]><! --><body class="<?php echo $bc;?>"><!-- ><![endif]-->
-	<header class="header clearfix">
+	<!--[if lt IE 9]>
+	<div style="position:fixed;top:0;width:100%;height:30px;text-align:center;background:yellow;color:black;font-size:16px;z-index:9999;line-height:30px;">This site is optimized for IE9 or better. Please update your browser.</div>
+	<![endif]-->
+	<header class="header">
 		<div class="wrapper">
 			<div class="row">
 				<div class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></div>

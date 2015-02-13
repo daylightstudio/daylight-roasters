@@ -99,11 +99,12 @@ p {
 	margin: 0 0 1em 0; 
 }
 
-a { color: $accent; text-decoration: none;
-	&:hover { text-decoration: underline; }
-	// Use vertical-align:top on linked images when using
-	// border-bottom for link styling. Will hide border behind image.
-	// img { vertical-align: top; }
+a { 
+	color: $accent; 
+	text-decoration: none;
+	&:hover { 
+		text-decoration: underline; 
+	}
 }
 
 %header_global { margin: 0.5em 0;
@@ -156,8 +157,26 @@ small,
  	padding: 0; 
  	margin: 0 auto; 
  }
- //use mixin buffer with $sm, $md, $lg, $xl for spacing
 
+// COLUMNS
+// ---------------------------------------- //
+@for $i from 1 through 12 {
+	%column#{$i} { 
+		@media (min-width: $smWidth){
+		  	@include column($i);
+		  	padding-bottom: 0;
+		}
+	}
+}
+.row {
+	@include row;
+	@include clearfix;
+}
+%narrow-column {
+	@media (min-width: $smWidth){
+		@include column_center(10);
+	}
+}
 
 // HEADER
 // ---------------------------------------- //
