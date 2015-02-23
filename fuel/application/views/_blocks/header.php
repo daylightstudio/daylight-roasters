@@ -38,6 +38,7 @@
 	<?=fuel_block('type')?>
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
+	<!--[if lte IE 8 ]><?php echo js('respond.min')?><![endif]-->
 
 	<?php if (!empty($is_blog)) : ?>
 	<?php echo $CI->fuel_blog->header()?>
