@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2014, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2015, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -460,6 +460,12 @@ class Fuel_admin extends Fuel_base_library {
 			if (file_exists($nav_path))
 			{
 				include($nav_path);
+
+				$app_nav_path = APPPATH.'config/'.$module.'.php';
+				if (file_exists($app_nav_path))
+				{
+					include($app_nav_path);
+				}
 				
 				if (array_key_exists('module_overwrites', $config) AND ! empty($config['module_overwrites']))
 				{
@@ -1414,7 +1420,7 @@ class Fuel_admin extends Fuel_base_library {
 		$vars['init_params']['cssPath'] = css_path('', 'fuel'); 
 		$vars['init_params']['jsPath'] = js_path('', 'fuel');
 		$vars['init_params']['editor'] = $this->fuel->config('text_editor');
-		$vars['init_params']['editorConfig'] = $this->fuel->config('ck_editor_settings');
+		// $vars['init_params']['editorConfig'] = $this->fuel->config('ck_editor_settings');
 		$last_page = uri_path();
 		if (empty($last_page)) $last_page = $this->fuel->config('default_home_view');
 		$vars['last_page'] = uri_safe_encode($last_page);

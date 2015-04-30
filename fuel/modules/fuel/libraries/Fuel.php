@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2014, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2015, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -58,6 +58,8 @@ class Fuel extends Fuel_advanced_module {
 									'navigation',
 									'notification',
 									'pages',
+									'parser',
+									'posts',
 									'pagevars',
 									'permissions',
 									'redirects',
@@ -188,7 +190,7 @@ class Fuel extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Installs FUEL with common configurations
+	 * Installs the modules
 	 *
 	 * @access	public
 	 * @return	boolean
@@ -271,7 +273,6 @@ class Fuel extends Fuel_advanced_module {
 		// change database config
 		if (!empty($db_name) AND !empty($db_user) AND !empty($db_pwd))
 		{
-			$this->installer->change_config('database', '$db[\'default\'][\'database\'] = \'\';', '$db[\'default\'][\'database\'] = \''.$db_name.'\';');
 			$this->installer->change_config('database', '$db[\'default\'][\'username\'] = \'\';', '$db[\'default\'][\'username\'] = \''.$db_user.'\';');
 			$this->installer->change_config('database', '$db[\'default\'][\'password\'] = \'\';', '$db[\'default\'][\'password\'] = \''.$db_pwd.'\';');
 
@@ -281,7 +282,13 @@ class Fuel extends Fuel_advanced_module {
 			{
 				$this->CI->load->dbforge();
 				$this->CI->dbforge->create_database($db_name);
+				$this->installer->change_config('database', '$db[\'default\'][\'database\'] = \'\';', '$db[\'default\'][\'database\'] = \''.$db_name.'\';');
 				$this->installer->install_sql();
+			}
+			else
+			{	
+				// must do this afterward to prevent errors
+				$this->installer->change_config('database', '$db[\'default\'][\'database\'] = \'\';', '$db[\'default\'][\'database\'] = \''.$db_name.'\';');	
 			}
 		}
 

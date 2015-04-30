@@ -8,7 +8,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2014, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2015, Run for Daylight LLC.
  * @license		http://docs.getfuelcms.com/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -178,6 +178,7 @@ class Fuel_assets extends Fuel_base_library {
 						if ($param != 'posted')
 						{
 							$input_key = $non_multi_key.'_'.$param;
+							$is_multiple = (preg_match('#.+_\d+_.+#U', $non_multi_key));
 							$input_key_arr = explode('--', $input_key);
 							$input_key = end($input_key_arr);
 
@@ -207,7 +208,7 @@ class Fuel_assets extends Fuel_base_library {
 								}
 								if ($param == 'file_name')
 								{
-									$posted_filename = TRUE;
+									$posted_filename = $is_multiple;
 								}
 							}
 						}
@@ -244,8 +245,6 @@ class Fuel_assets extends Fuel_base_library {
 				{
 					$params['upload_path'] = (!empty($params[$field_name.'_path'])) ? $params[$field_name.'_path'] : assets_server_path().$asset_dir.'/';
 				}
-
-				$params['remove_spaces'] = TRUE;
 
 				// make directory if it doesn't exist and subfolder creation is allowed'
 				if (!is_dir($params['upload_path']) AND $this->fuel->config('assets_allow_subfolder_creation'))
@@ -300,6 +299,16 @@ class Fuel_assets extends Fuel_base_library {
 				if ($this->has_errors())
 				{
 					return FALSE;
+				}
+
+				// pull in from config if it exists
+				if (file_exists(APPPATH.'config/upload.php'))
+				{
+					include(APPPATH.'config/upload.php');
+					if (!empty($config))
+					{
+						$params = array_merge($config, $params);
+					}
 				}
 
 				// UPLOAD!!!

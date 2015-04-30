@@ -13,6 +13,9 @@ class Pages extends Module {
 		$validate = (fuel_uri_segment(2) == 'select') ? FALSE : TRUE;
 		if ($validate)
 		{
+			$load_vars['user'] = $this->fuel->auth->user_data();
+			$load_vars['session_key'] = $this->fuel->auth->get_session_namespace();
+			$this->load->vars($load_vars);
 			$this->_validate_user($this->permission);	
 		}
 		$this->load->module_model(FUEL_FOLDER, 'fuel_pagevariables_model');
@@ -224,6 +227,13 @@ class Pages extends Module {
 
 		// create fields... start with the table info and go from there
 		$fields = $this->model->form_fields($saved);
+
+		// if it's an object, then extract
+		if ($fields instanceof Base_model_fields)
+		{
+			$fields = $fields->get_fields();
+		}
+
 		$common_fields = $this->_common_fields($saved);
 		$fields = array_merge($fields, $common_fields);
 
@@ -554,9 +564,10 @@ class Pages extends Module {
 				{
 					if (isset($v['type']) AND $v['type'] == 'block' AND isset($posted[$key]))
 					{
-						if (is_array($posted[$key]) AND is_int(key($posted[$key])))
+						$posted_var = (isset($posted['vars--'.$key])) ? $posted['vars--'.$key] : $posted[$key];
+						if (is_array($posted_var) AND is_int(key($posted_var)))
 						{
-							foreach($posted[$key] as $a => $b)
+							foreach($posted_var as $a => $b)
 							{
 								if (is_array($b))
 								{
@@ -791,6 +802,13 @@ class Pages extends Module {
 	public function _has_conflict($fields)
 	{
 		$page_columns = $this->model->form_fields();
+
+		// if it's an object, then extract
+		if ($page_columns instanceof Base_model_fields)
+		{
+			$page_columns = $page_columns->get_fields();
+		}
+
 		unset($page_columns['id']);
 		$reserved_cols = array_keys($page_columns);
 		$page_variable_cols = array_keys($fields);

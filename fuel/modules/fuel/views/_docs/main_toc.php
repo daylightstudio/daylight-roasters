@@ -41,7 +41,6 @@
 				<h3>Additional Resources</h3>
 				<ul>
 					<li><a href="http://www.getfuelcms.com/blog">FUEL CMS's Blog</a></li>
-					<li><a href="http://www.thedaylightstudio.com/the-whiteboard/categories/fuel-cms">Daylight's Blog</a></li>
 					<li><a href="http://codeigniter.com">CodeIgniter Website</a></li>
 				</ul>
 
@@ -100,7 +99,9 @@
 					<li><a href="<?=user_guide_url('libraries/fuel_notification')?>">Fuel Notification Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_pages')?>">Fuel Pages Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_pagevars')?>">Fuel Pagevars Class</a></li>
+					<li><a href="<?=user_guide_url('libraries/fuel_parser')?>">Fuel Parser Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_permissions')?>">Fuel Permissions Class</a></li>
+					<li><a href="<?=user_guide_url('libraries/fuel_posts')?>">Fuel Posts Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_redirects')?>">Fuel Redirects Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_sitevars')?>">Fuel Sitevars Class</a></li>
 					<li><a href="<?=user_guide_url('libraries/fuel_tags')?>">Fuel Tags Class</a></li>
