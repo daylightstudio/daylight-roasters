@@ -84,7 +84,7 @@
   }
 
   function getColors() {
-    $filecontents = file_get_contents(assets_server_path('css/_variables.scss'));
+    $filecontents = file_get_contents(assets_server_path('css/sass/_variables.scss'));
     $pos1 = strpos($filecontents, '//Base Colors') + strlen('//Base Colors');
     $pos2 = strpos($filecontents, '//End Base Colors');
     $len = $pos2 - $pos1;
@@ -100,7 +100,7 @@
   }
 
   function getFonts() {
-    $filecontents = file_get_contents(assets_server_path('css/_variables.scss'));
+    $filecontents = file_get_contents(assets_server_path('css/sass/_variables.scss'));
     $pos1 = strpos($filecontents, '//Base Type') + strlen('//Base Type');
     $pos2 = strpos($filecontents, '//End Base Type');
     $len = $pos2 - $pos1;

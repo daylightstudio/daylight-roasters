@@ -47,16 +47,16 @@ $config['auto_search_views'] = FALSE;
 $config['assets_upload_max_size']	= 5000;
 
 // max width for asset images beign uploaded
-$config['assets_upload_max_width']  = 1024;
+$config['assets_upload_max_width']  = 1600;
 
 // max height for asset images beign uploaded
-$config['assets_upload_max_height']  = 768;
+$config['assets_upload_max_height']  = 1000;
 
 
 // text editor settings  (options are markitup or ckeditor)
 // markitup: allows you to visualize the code in its raw format - not wysiwyg (http://markitup.jaysalvat.com/)
 // ckeditor: suitable for clients; shows what the output will look like in the page (http://ckeditor.com/)
-$config['text_editor'] = 'markitup';
+$config['text_editor'] = 'ckeditor';
 
 // ck editor specific settings... if you use a PHP array, it will use json_encode
 $config['ck_editor_settings'] = "{
