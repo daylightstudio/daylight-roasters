@@ -1,6 +1,6 @@
 <?php $this->load->view('_blocks/header')?>
 
-	<div class="main_container wrapper">
+	<div class="main-container">
 		<?=fuel_var('body', ''); ?>
 	</div>
 

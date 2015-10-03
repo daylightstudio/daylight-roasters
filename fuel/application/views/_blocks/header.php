@@ -20,6 +20,8 @@
 	<meta name="description" content="<?php echo fuel_var('meta_description')?>" />
 	<?php endif ?>
 
+	<?php //fuel_block('og')?>
+
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
 	<link rel="apple-touch-icon-precomposed" href="<?=site_url('apple-touch-icon.png')?>">
 	<?php // also include apple-touch-icon.png at root, 152x152 ?>
