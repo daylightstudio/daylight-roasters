@@ -24,6 +24,7 @@ $config['fuel_mode'] = 'views';
 // specifies which modules are allowed to be used in the fuel admin
 $config['modules_allowed'] = array(
 	'user_guide',
+	'styleguide',
 );
 
 // used for system emails
@@ -46,16 +47,16 @@ $config['auto_search_views'] = FALSE;
 $config['assets_upload_max_size']	= 5000;
 
 // max width for asset images being uploaded
-$config['assets_upload_max_width']  = 1024;
+$config['assets_upload_max_width']  = 1600;
 
 // max height for asset images being uploaded
-$config['assets_upload_max_height']  = 768;
+$config['assets_upload_max_height']  = 1000;
 
 // text editor settings  (options are markitup or ckeditor)
 // markitup: allows you to visualize the code in its raw format - not wysiwyg (http://markitup.jaysalvat.com/)
 // ckeditor: suitable for clients; shows what the output will look like in the page (http://ckeditor.com/)
 // for more editor settings, look at the config/editors.php configuration file
-$config['text_editor'] = 'markitup';
+$config['text_editor'] = 'ckeditor';
 
 // The parsing engine to use for FUEL. Options are dwoo, ci and now 'twig'!
 $config['parser_engine'] = 'dwoo';
