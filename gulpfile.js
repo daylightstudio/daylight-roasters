@@ -20,18 +20,19 @@ var notify = require('gulp-notify');
 gulp.task('styles', function() {
 	return gulp.src('assets/css/sass/*.scss')
 		.pipe(sass({ style: 
-			'compressed', 
-			'sourcemap=none': true, 
+			'expanded', 
 		}))
 		.on('error', function (err) {
 			notify().write(err);
 			this.emit('end');
 		})
-	    .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 9', 'opera 12.1'))
+	    .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 9'))
 	    .pipe(gulp.dest('assets/css'))
 	    .pipe(notify('CSS Compiled!'))
 	    ;
 });
+
+///TODO: write a Gulp task that will get stuff ready for prod
 
 
 // Default task
@@ -40,9 +41,6 @@ gulp.task('default', ['styles'], function() {
  
 // // Watch
 gulp.task('watch', function() {
- 
   // Watch .scss files
   gulp.watch('assets/css/sass/*.scss', ['styles']);
-   
- 
 });
