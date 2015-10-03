@@ -100,6 +100,8 @@ class Pages extends Module {
 						if ( ! empty($data))
 						{
 							$msg = lang('module_created', $this->module_name, $data[$this->display_field]);
+							$this->fuel->logs->write($msg);
+
 							$url = fuel_uri('pages/edit/'.$id);
 
 							// save any tab states
@@ -390,7 +392,8 @@ class Pages extends Module {
 
 			foreach($_POST as $key => $val)
 			{
-				$key = end(explode('--', $key));
+				$key_parts = explode('--', $key);
+				$key = end($key_parts);
 				$page_vars[$key] = $val;
 			}
 		}
@@ -453,6 +456,8 @@ class Pages extends Module {
 		$vars['id'] = $id;
 		$vars['data'] = $saved;
 		$vars['action'] =  ( ! empty($saved['id'])) ? 'edit' : 'create';
+		$vars['languages'] = $this->fuel->config('languages');
+		$vars['language'] = ($lang = $this->input->get('lang', TRUE)) ? $lang : key($vars['languages']);
 
 		$action_uri = $vars['action'].'/'.$id.'/';
 
@@ -515,7 +520,8 @@ class Pages extends Module {
 		{
 			if (strncmp('vars--', $key, 6) === 0)
 			{
-				$new_key = end(explode('--', $key));
+				$key_parts = explode('--', $key);
+				$new_key = end($key_parts);
 				$vars[$new_key] = $val;
 			}
 		}
@@ -697,7 +703,7 @@ class Pages extends Module {
 		$this->model->archive($id, $archive);
 
 		// save to navigation if config allows it
-		if ($this->input->post('navigation_label'))
+		if ($this->input->post('navigation_label') AND $this->fuel->auth->has_permission('navigation/create'))
 		{
 			$this->fuel->load_model('fuel_navigation');
 
@@ -1136,7 +1142,8 @@ class Pages extends Module {
 			$fields = $layout_obj->fields();
 			$field = $this->input->get_post('field', TRUE);
 
-			$field_key = end(explode('vars--', $field));
+			$field_parts = explode('vars--', $field);
+			$field_key = end($field_parts);
 
 			if ( ! isset($fields[$field_key])) return;
 
@@ -1206,7 +1213,8 @@ class Pages extends Module {
 
 	protected function _process_upload_data($field_name, $uploaded_data, $posted)
 	{
-		$field_name = end(explode('--', $field_name));
+		$field_name_parts = explode('--', $field_name);
+		$field_name = end($field_name_parts);
 
 		foreach($uploaded_data as $key => $val)
 		{

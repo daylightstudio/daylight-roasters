@@ -408,7 +408,7 @@ class Asset {
 	 */	
 	public function cache_path($file = NULL, $module = NULL, $absolute = NULL)
 	{
-		return $this->assets_path($file, 'assets_cache_folder', $module, $absolute);
+		return $this->assets_path($file, $this->assets_cache_folder, $module, $absolute);
 	}
 
 	// --------------------------------------------------------------------
@@ -1302,7 +1302,8 @@ class Asset {
 			$params['type'] = 'js';
 			foreach($files as $file)
 			{
-				$ext =  end(explode('.', $files[0]));
+				$file_parts = explode('.', $files[0]);
+				$ext =  end($file_parts);
 				if (in_array($ext, $valid_exts))
 				{
 					$params['type'] = $ext;
@@ -1516,7 +1517,7 @@ class Asset {
 			$str = '';
 			foreach($arr as $key => $val)
 			{
-				$str .= $key.'="'.$val.'"';
+				$str .= $key.'="'.$val.'" ';
 			}
 			return $str;
 		}

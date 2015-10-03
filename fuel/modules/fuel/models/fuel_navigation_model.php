@@ -288,8 +288,10 @@ class Fuel_navigation_model extends Base_module_model {
 		$CI->load->helper('array');
 		
 		$group_options = $CI->fuel_navigation_groups_model->options_list();
-		$group_values = array_keys($group_options);
-		$group_value = (!empty($group_values)) ? $group_values[0] : 1;
+		// $group_values = array_keys($group_options);
+		// $group_value = (!empty($group_values)) ? $group_values[0] : 1;
+		$group_value = $this->CI->fuel->config('auto_page_navigation_group_id');
+
 		
 		$fields['group_id'] = array(
 			'type' => 'inline_edit', 
@@ -312,6 +314,10 @@ class Fuel_navigation_model extends Base_module_model {
 		
 		$this->load->helper('array');
 		
+		if (empty($values['group_id']))
+		{
+			$fields['group_id']['value'] = $group_value;
+		}
 		$parent_group = (!empty($values['group_id'])) ? $values['group_id'] : $group_value;
 		$where['group_id'] = $parent_group;
 		if (!empty($values['id']))
@@ -474,9 +480,9 @@ class Fuel_navigation_model extends Base_module_model {
 		// if the path is local, then we clean it
 		if (!is_http_path($values['location']))
 		{
-			$values['location'] = str_replace(array('/', '#', '.'), array('____', '___', '_X_'), $values['location']);
+			$values['location'] = str_replace(array('/', '#', '.', ':', '@'), array('__SLASH__', '__POUND__', '_X_', '__COLON__', '__AT__'), $values['location']);
 			$values['location'] = url_title($values['location']);
-			$values['location'] = str_replace(array('____', '___', '_X_'), array('/', '#', '.'), $values['location']);
+			$values['location'] = str_replace(array('__SLASH__', '__POUND__', '_X_', '__COLON__', '__AT__'), array('/', '#', '.', ':', '@'), $values['location']);
 		}
 
 		if (empty($values['language']))

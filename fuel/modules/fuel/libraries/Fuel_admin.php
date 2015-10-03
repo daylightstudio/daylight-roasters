@@ -961,6 +961,11 @@ class Fuel_admin extends Fuel_base_library {
 			$this->set_panel_display('top', FALSE);
 			$this->set_panel_display('nav', FALSE);
 		}
+		else
+		{
+			$this->set_panel_display('top', TRUE);
+			$this->set_panel_display('nav', TRUE);
+		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -1334,7 +1339,7 @@ class Fuel_admin extends Fuel_base_library {
 		{
 			foreach($dashboards as $d)
 			{
-				if (!in_array($d, $dashbaords))
+				if (!in_array($d, $dashboards))
 				{
 					$dashboards[] = $d;
 				}
@@ -1342,7 +1347,7 @@ class Fuel_admin extends Fuel_base_library {
 		}
 		else
 		{
-			if (!in_array($d, $dashboard))
+			if (!in_array($dashboard, $dashboards))
 			{
 				$dashboards[] = $dashboard;
 			}

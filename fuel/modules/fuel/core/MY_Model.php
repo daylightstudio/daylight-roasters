@@ -83,6 +83,7 @@ class MY_Model extends CI_Model {
 	protected $validator = NULL; // the validator object
 	protected $clear_related_on_save = 'AUTO'; // clears related records before saving
 	protected $_tables = array(); // an array of table names with the key being the alias and the value being the actual table
+	protected $_last_saved = NULL; // a reference to the last saved object / ID of record;
 	
 
 	/**
@@ -475,7 +476,7 @@ class MY_Model extends CI_Model {
 		//Get the data out of the database
 		$query = $this->db->get($this->table_name);
 		
-		if (empty($query)) $query = new MY_DB_mysql_result();
+		if (empty($query)) $query = ($this->db->dbdriver == 'mysql') ? new MY_DB_mysql_result() : new MY_DB_mysqli_result();
 		
 		if ($this->return_method == 'query') 
 		{
@@ -1305,14 +1306,7 @@ class MY_Model extends CI_Model {
 		{
 			$field = $fields[$key];
 
-			if ($field['type'] == 'datetime')
-			{
-				if (empty($values[$key]) OR (int)$values[$key] == 0)
-				{
-					$values[$key] = $this->default_date;
-				}
-			}
-			else if ($field['type'] == 'date')
+			if ($field['type'] == 'date' OR $field['type'] == 'datetime')
 			{
 				if (empty($values[$key]) OR (int)$values[$key] == 0) $values[$key] = $this->default_date;
 				if (!empty($values[$key]) AND !is_date_db_format($values[$key])) $values[$key] = english_date_to_db_format($values[$key]);
@@ -1637,6 +1631,7 @@ class MY_Model extends CI_Model {
 			if (isset($insert_id) AND ! empty($insert_id))
 			{
 				$return = $insert_id;
+				$this->_last_saved_id = $insert_id;
 			}
 			else
 			{
@@ -1693,6 +1688,31 @@ class MY_Model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Returns the last saved record
+	 *
+	 <code>
+	 $this->examples_model->save($values);
+	 $record = $this->saved();
+	</code>
+	 *
+	 * @access public
+	 * @return object
+	 */
+	public function saved()
+	{
+		if (!empty($this->_last_saved))
+		{
+			if (!is_object($this->_last_saved) AND !is_array($this->_last_saved))
+			{
+				$this->_last_saved = $this->find_by_key($this->_last_saved);	
+			}
+			return $this->_last_saved;
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Save related data to a many to many table. To be used in on_after_save hook
 	 *
 	 <code>
@@ -1735,7 +1755,7 @@ class MY_Model extends CI_Model {
 		}
 		return $return;
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -2782,6 +2802,7 @@ class MY_Model extends CI_Model {
 			{
 				$where = NULL;
 				$order = TRUE;
+				$label = NULL;
 				$model = $this->load_model($val);
 				if (is_array($val))
 				{
@@ -2796,9 +2817,14 @@ class MY_Model extends CI_Model {
 						$order = $val['order'];	
 						unset($val['order']);
 					}
+					if (!empty($val['label']))
+					{
+						$label = $val['label'];	
+						unset($val['label']);
+					}
 				}
 				$fields[$key]['type'] = 'select';
-				$fields[$key]['options'] = $CI->$model->options_list(NULL, NULL, $where, $order);
+				$fields[$key]['options'] = $CI->$model->options_list(NULL, $label, $where, $order);
 				$fields[$key]['first_option'] = lang('label_select_one');
 				$fields[$key]['label'] = ucfirst(str_replace('_', ' ', $CI->$model->singular_name(FALSE)));
 				$fields[$key]['module'] = $CI->$model->short_name(TRUE, FALSE);
@@ -2814,11 +2840,13 @@ class MY_Model extends CI_Model {
 				foreach($related as $key => $val)
 				{
 					// related  need to be loaded using slash syntax if model belongs in another module (e.g. my_module/my_model)
-					$related_name = end(explode('/', $key));
+					$key_parts = explode('/', $key);
+					$related_name = end($key_parts);
 					$related_model = $this->load_model($key.$this->suffix);
 					$related_model_name = $related_name.$this->suffix;
 					
-					$lookup_name = end(explode('/', $val));
+					$val_parts = explode('/', $val);
+					$lookup_name = end($val_parts);
 					$lookup_model = $this->load_model($val);
 
 					$options = $CI->$related_model_name->options_list();
@@ -2839,6 +2867,7 @@ class MY_Model extends CI_Model {
 				$related_model = $this->load_related_model($rel_config);
 				$where = NULL;
 				$order = TRUE;
+				$label = NULL;
 				if (is_array($rel_config))
 				{
 					if (!empty($rel_config['where']))
@@ -2851,8 +2880,13 @@ class MY_Model extends CI_Model {
 					{
 						$order = $rel_config['order'];	
 					}
+
+					if (!empty($rel_config['label']))
+					{
+						$label = $val['label'];
+					}
 				}
-				$related_options = $CI->$related_model->options_list(NULL, NULL, $where, $order);
+				$related_options = $CI->$related_model->options_list(NULL, $label, $where, $order);
 				$related_vals = ( ! empty($values['id'])) ? $this->get_related_keys($related_field, $values, $related_model, 'has_many', $rel_config) : array();
 				$fields[$related_field] = array('label' => humanize($related_field), 'type' => 'multi', 'options' => $related_options, 'value' => $related_vals, 'mode' => 'multi', 'module' => $CI->$related_model->short_name(TRUE));
 			}
@@ -2864,6 +2898,7 @@ class MY_Model extends CI_Model {
 			{
 				$where = NULL;
 				$order = TRUE;
+				$label = NULL;
 				if (is_array($rel_config))
 				{
 					if (!empty($rel_config['where']))
@@ -2876,9 +2911,14 @@ class MY_Model extends CI_Model {
 					{
 						$order = $rel_config['order'];	
 					}
+
+					if (!empty($rel_config['label']))
+					{
+						$label = $val['label'];
+					}
 				}
 				$related_model = $this->load_related_model($rel_config);
-				$related_options = $CI->$related_model->options_list(NULL, NULL, $where, $order);
+				$related_options = $CI->$related_model->options_list(NULL, $label, $where, $order);
 				$related_vals = ( ! empty($values['id'])) ? $this->get_related_keys($related_field, $values, $related_model, 'belongs_to', $rel_config, $related_field) : array();
 				$fields[$related_field] = array('label' => lang('label_belongs_to').'<br />' . humanize($related_field), 'type' => 'multi', 'options' => $related_options, 'value' => $related_vals, 'mode' => 'multi', 'module' => $CI->$related_model->short_name(TRUE));
 			}
@@ -3302,7 +3342,7 @@ class MY_Model extends CI_Model {
 				$relationships_model = $this->load_model($fields['relationships_model']);
 
 				// cache the loaded models here for reference below
-				$related_models[$related_field] =& $this->load_related_model($related_model);
+				$related_models[$related_field] = $this->load_related_model($related_model);
 
 				$clear_on_save = ((strtoupper($this->clear_related_on_save) == 'AUTO' AND isset($this->normalized_save_data['exists_'.$related_field])) OR $this->clear_related_on_save === TRUE);
 
@@ -3641,7 +3681,8 @@ class MY_Model extends CI_Model {
 			$CI->load->model($model);
 			$return = $model;
 		}
-		$return = end(explode('/', $return));
+		$return_parts = explode('/', $return);
+		$return = end($return_parts);
 		return $return;
 	}
 	
@@ -4242,7 +4283,10 @@ class MY_Model extends CI_Model {
 				{
 					foreach($values as $key => $val)
 					{
-						$str = str_replace('{'.$key.'}', $val, $str);	
+						if (is_string($val) OR is_numeric($val))
+						{
+							$str = str_replace('{'.$key.'}', $val, $str);
+						}	
 					}
 				}
 				else
@@ -4264,7 +4308,10 @@ class MY_Model extends CI_Model {
 					{
 						foreach($values as $k => $v)
 						{
-							$return[$key] = str_replace('{'.$k.'}', $v, $val);	
+							if (is_string($val) OR is_numeric($val))
+							{
+								$return[$key] = str_replace('{'.$k.'}', $v, $val);
+							}	
 						}
 					}
 					else
@@ -5437,9 +5484,18 @@ class Data_record {
 		}
 		else if (preg_match("/^has_(.*)/", $method, $found))
 		{
+			$foreign_keys = $this->_parent_model->foreign_keys;
+			
 			if (array_key_exists($found[1], $this->_fields))
 			{
-				return !empty($this->_fields[$found[1]]);
+				return !empty($this->_fields[$found[1]]) AND $this->_fields[$found[1]] != '0000-00-00' AND $this->_fields[$found[1]] != '0000-00-00 00:00:00';
+			}
+			// then look in foreign keys, has_many and belongs_to
+			else if (in_array($found[1].'_id', array_keys($foreign_keys)) OR $this->_is_relationship_property($found[1], 'has_many') OR $this->_is_relationship_property($found[1], 'belongs_to'))
+			{
+				$return_object = $this->$found[1];
+				$key_field = $this->_parent_model->key_field();
+				return (isset($return_object->$key_field));
 			}
 		}
 
@@ -5554,7 +5610,8 @@ class Data_record {
 				$model = $custom_class;
 			}
 
-			$model = ucfirst(end(explode('/', $model)));
+			$model_parts = explode('/', $model);
+			$model = ucfirst(end($model_parts));
 			$value = (isset($this->_fields[$var])) ? $this->_fields[$var] : NULL;
 			$output = new $model($var, $value, $this, $init);
 

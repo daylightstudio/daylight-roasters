@@ -288,6 +288,8 @@ if (typeof(window.fuel.fields) == 'undefined'){
 				$('#' + ckId).parent().append(sourceButton);
 
 				$('#' + ckId + '_viewsource').click(function(e){
+					var elem = $(e.currentTarget).closest('.field').find('textarea:first');
+					
 					$elem = $(elem);
 					ckInstance = CKEDITOR.instances[ckId];
 
@@ -480,6 +482,11 @@ if (typeof(window.fuel.fields) == 'undefined'){
 						} else {
 							assetVal = selectedVal;
 						}
+	
+						if (! $activeField.data('remove_subfolder') && $activeField.data('subfolder')){
+							assetVal = $activeField.data('subfolder') + '/' + assetVal;
+						}
+						assetVal = replacePlaceholders(assetVal, context);
 						$activeField.val(assetVal).trigger("change");
 
 						refreshImage($activeField);
@@ -492,11 +499,44 @@ if (typeof(window.fuel.fields) == 'undefined'){
 			return false;
 		}
 		
-		
+		var replacePlaceholders = function(folder, context){
+
+			// now replace any placeholder values in the folder... required for new pages that may not have a value
+			var $inputs = $(context).closest('form').find('select, textarea')
+			.add('input').not('input[type="radio"], input[type="checkbox"], input[type="button"]')
+			.add('input[type="radio"]:checked, input[type="checkbox"]:checked');
+			
+			var replaceValues = {};
+			$inputs.each(function(i){
+				var id = ($(this).is('input[type="radio"], input[type="checkbox"]')) ? $(this).attr('name'): $(this).attr('id');
+				if (id){
+					var idArr = id.split('--');
+					id = idArr[idArr.length -1];
+					replaceValues[id] = $(this).val();
+					var regex = new RegExp('\{' + id + '\}', 'g');
+					folder = folder.replace(regex, replaceValues[id]);
+				}
+			})
+			return folder;
+		}
+
+		var convertQueryStringToJSON = function(url) {            
+    		var pairs = url.split('&');
+    		var result = {};
+			pairs.forEach(function(pair) {
+        		pair = pair.split('=');
+        		result[pair[0]] = decodeURIComponent(pair[1] || '');
+    		});
+    		return result;
+    	}
+
 		var _this = this;
 		$('.asset_select', context).each(function(i){
 			if ($(this).parent().find('.asset_upload_button').length == 0){
 				var assetFolder = $(this).data('folder');
+				if ($(this).data('subfolder')){
+					assetFolder += '/' + $(this).data('subfolder');
+				}
 
 				// legacy code
 				if (!assetFolder) {
@@ -525,28 +565,14 @@ if (typeof(window.fuel.fields) == 'undefined'){
 			activeField = $(e.target).parent().find('input[type="text"],textarea').filter(':first').attr('id');
 			selectedAssetFolder = $(e.target).data('folder');
 
-			// now replace any placeholder values in the folder... required for new pages that may not have a value
-			$inputs = $(context).closest('form').find('select, textarea')
-			.add('input', context).not('input[type="radio"], input[type="checkbox"], input[type="button"]')
-			.add('input[type="radio"]:checked, input[type="checkbox"]:checked', context);
-			
-			var replaceValues = {};
-			$inputs.each(function(i){
-				var id = ($(this).is('input[type="radio"], input[type="checkbox"]')) ? $(this).attr('name'): $(this).attr('id');
-				if (id){
-					var idArr = id.split('--');
-					id = idArr[idArr.length -1];
-					replaceValues[id] = $(this).val();
-					var regex = new RegExp('\{' + id + '\}', 'g');
-					selectedAssetFolder = selectedAssetFolder.replace(regex, replaceValues[id]);
-				}
-			})
-
 			// legacy code
 			if (!selectedAssetFolder){
 				var assetTypeClasses = $(e.target).attr('class').split(' ');
 				selectedAssetFolder = (assetTypeClasses.length > 0) ? assetTypeClasses[(assetTypeClasses.length - 1)] : 'images';
 			}
+
+			selectedAssetFolder = replacePlaceholders(selectedAssetFolder, context);
+
 			showAssetsSelect();
 			return false;
 		});
@@ -604,7 +630,12 @@ if (typeof(window.fuel.fields) == 'undefined'){
 				var assetTypeClasses = $(e.target).attr('class').split(' ');
 				selectedAssetFolder = (assetTypeClasses.length > 0) ? assetTypeClasses[(assetTypeClasses.length - 1)] : 'images';
 			}
+
 			var params = $(this).attr('data-params');
+			var paramsJSON = convertQueryStringToJSON(params);
+			paramsJSON.asset_folder = replacePlaceholders(selectedAssetFolder, context);
+			paramsJSON.subfolder = replacePlaceholders(paramsJSON.subfolder, context);
+			var params = jQuery.param(paramsJSON);
 			var url = $(this).attr('href') + '?' + params;
 			showAssetUpload(url);
 			return false;
@@ -614,7 +645,11 @@ if (typeof(window.fuel.fields) == 'undefined'){
 		// refresh any images
 		var refreshImage = function(activeField){
 			$activeField = $(activeField);
-			var folder = $activeField.data('folder')
+			var folder = $activeField.data('folder');
+			if ($activeField.data('remove_subfolder') && $activeField.data('subfolder')){
+				folder += '/' + $activeField.data('subfolder');
+			}
+			folder = replacePlaceholders(folder);
 			var imgPath = jqx_config.assetsPath + folder + '/';
 			var $preview = $activeField.parent().find('.img_preview');
 			var value =  $activeField.val();
@@ -625,7 +660,7 @@ if (typeof(window.fuel.fields) == 'undefined'){
 			$.each(imgValues, function(img){
 
 				// check if it is an image 
-				if (this.length && this.toLowerCase().match(/\.jpg$|\.jpeg$|\.gif$|\.png$/i)){
+				if (this.length && this.toLowerCase().match(/\.jpg$|\.jpeg$|\.gif$|\.png$|\.svg$/i)){
 					var newSrc = (this.toLowerCase().match(/^http(s)?:\/\//)) ? '' : imgPath;
 					newSrc += $.trim(this) + '?c=' + new Date().getTime()
 					previewHTML += '<a href="' + newSrc + '" target="_blank">';
@@ -767,7 +802,7 @@ if (typeof(window.fuel.fields) == 'undefined'){
 					// refresh field with formBuilder jquery
 					fuel.fields.multi_field(context)
 					$('#form').formBuilder().initialize(context);
-					$('#' + fieldId, context).change(function(){
+					$('#' + fieldId, context).off('.addedit').on('change.addedit', function(){
 						changeField($(this));
 					});
 					changeField($('#' + fieldId, context));
@@ -775,14 +810,19 @@ if (typeof(window.fuel.fields) == 'undefined'){
 			}
 			
 			var changeField = function($this){
-				if ($this.val() == '' || $this.find('option').length == 0){
-					if ($this.is('select') && $this.find('option').length == 0){
-						$this.hide();
-					}
-					if ($this.is('input, select')) $this.parent().find('.edit_inline_button').hide();
-				} else {
-					$this.parent().find('.edit_inline_button').show();
-				}	
+				if (!$this.is('[multiple]')){
+					if ($this.val() == '' || $this.find('option').length == 0){
+						if ($this.is('select') && $this.find('option').length == 0){
+							$this.hide();
+						} else {
+							$this.show();
+						}
+						if ($this.is('input, select')) $this.parent().find('.edit_inline_button').hide();
+					} else {
+						$this.parent().find('.edit_inline_button').show();
+						$this.show();
+					}	
+				}
 			}
 			
 			$('.add_inline_button', context).unbind().click(function(e){
@@ -841,7 +881,7 @@ if (typeof(window.fuel.fields) == 'undefined'){
 				return false;
 			});
 
-			$field.change(function(){
+			$field.off('.addedit').on('change.addedit', function(){
 				changeField($(this));
 			});
 			changeField($field);
@@ -1193,12 +1233,14 @@ if (typeof(window.fuel.fields) == 'undefined'){
 
 				// show loader
 				$(this).parent().find('.loader').show();
+				$('#form').data('disabled', true);
 				$layout_fields.load(url, function(){
 					// hide loader
 					$(this).parent().find('.loader').hide();
 					$(this).find('.block_name').val(val);
 					fuel.adjustIframeWindowSize();
 					$(document).trigger('blockLoaded', [$this, context]);
+					$('#form').data('disabled', false);
 				});
 			} else {
 				$layout_fields.empty();
@@ -1301,6 +1343,8 @@ if (typeof(window.fuel.fields) == 'undefined'){
 	}
 
 	fuel.fields.dependent_field = function(context, options){
+		var firstlaunch = true;
+		
 		$('.dependent', context).each(function(i){
 
 			var _this = this;
@@ -1346,16 +1390,20 @@ if (typeof(window.fuel.fields) == 'undefined'){
 					$.extend(data, xtraData);
 				}
 
-				if (val.length){
+				if (val && val.length){
 					$.get(url, data, function(html){
-						var $select = $(replaceSelector, this);
+						var $select = $(replaceSelector);
 						$select.html(html);
 						$select.val(origValue);
-						if ($select.prop("multiple")){
+						//if ($select.prop("multiple")){
 							fuel.fields.multi_field(context);
+						//}
+
+						if (firstlaunch){
+							$.changeChecksaveValue($select, $select.val());
+							firstlaunch = false;	
 						}
 					});
-					fuel.fields.inline_edit_field(context);
 				}
 			})
 			

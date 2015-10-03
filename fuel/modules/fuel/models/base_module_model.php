@@ -49,6 +49,7 @@ class Base_module_model extends MY_Model {
 	public $upload_data = array(); // data about all uploaded files
 	public $ignore_replacement = array(); // the fields you wish to remain in tack when replacing (.e.g. location, slugs)
 	public $display_unpublished_if_logged_in = FALSE; // determines whether to display unpublished content on the front end if you are logged in to the CMS
+	public $list_items_class = ''; // a class that can extend Base_model_list_items to help with displaying and filtering the list items
 	public $form_fields_class = ''; // a class that can extend Base_model_fields and manipulate the form_fields method
 	public $validation_class = ''; // a class that can extend Base_model_validation and manipulate the validate method by adding additional validation to the model
 	public $related_items_class = ''; // a class that can extend Base_model_related_items and manipulate what is displayed in the related items area (right side of page)
@@ -95,6 +96,7 @@ class Base_module_model extends MY_Model {
 															'camelize',
 															'upper'			=> 'strtoupper',
 															'lower'			=> 'strtolower',
+															'nl2br',
 															),
 								'number'			=> array(
 															'currency',
@@ -205,6 +207,12 @@ class Base_module_model extends MY_Model {
 		{
 			$this->formatters = $this->_formatters;	
 		}		
+
+		// setup this class since it may be used in several methods
+		if (!empty($this->list_items_class) AND class_exists($this->list_items_class))
+		{
+			$this->list_items = new $this->list_items_class($this);
+		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -284,6 +292,11 @@ class Base_module_model extends MY_Model {
 	 */	
 	public function list_items($limit = NULL, $offset = 0, $col = 'id', $order = 'asc', $just_count = FALSE)
 	{
+		if (!empty($this->list_items))
+		{
+			$this->list_items->run();
+		}
+
 		$this->_list_items_query();
 		
 		if ($just_count)
@@ -304,6 +317,11 @@ class Base_module_model extends MY_Model {
 
 		$query = $this->db->get();
 		$data = $query->result_array();
+
+		if (!empty($this->list_items) AND $just_count == FALSE)
+		{
+			$data = $this->list_items->process($data);
+		}
 
 		//$this->debug_query();
 		return $data;
@@ -355,11 +373,11 @@ class Base_module_model extends MY_Model {
 				}
 			}
 
-			if (!empty($val)) 
+			if (!empty($val) OR $val === '0')
 			{
 				$joiner_arr = 'where_'.strtolower($joiner);
 				
-				if (strpos($key, '.') === FALSE AND strpos($key, '(') === FALSE) $key = $this->table_name.'.'.$key;
+				if (strpos($key, '.') === FALSE AND strpos($key, '(') === FALSE AND !preg_match('#_having$#', $key)) $key = $this->table_name.'.'.$key;
 				
 				//$method = ($joiner == 'or') ? 'or_where' : 'where';
 				
@@ -369,7 +387,11 @@ class Base_module_model extends MY_Model {
 					//$this->db->where(array($key => $val));
 					array_push($$joiner_arr, $key.'='.$val);
 				}
-				
+				else if (preg_match('#_having$#', $key))
+				{
+					$key = preg_replace('#_having$#', '', $key);
+					$this->db->having($key, $val);
+				}
 				// from imknight https://github.com/daylightstudio/FUEL-CMS/pull/113#commits-pushed-57c156f
 				//else if (preg_match('#_from#', $key) OR preg_match('#_to#', $key))
 				else if (preg_match('#_from$#', $key) OR preg_match('#_fromequal$#', $key) OR preg_match('#_to$#', $key) OR preg_match('#_toequal$#', $key) OR preg_match('#_equal$#', $key))
@@ -379,6 +401,22 @@ class Base_module_model extends MY_Model {
 					//$this->db->where(array($key => $val));
 					//$where_or[] = $key.'='.$this->db->escape($val);
 					array_push($$joiner_arr, $key_with_comparison_operator.$this->db->escape($val));
+				}
+				else if (is_array($val))
+				{
+					$arrjoiner = array();
+					foreach($val as $v)
+					{
+						if (strlen($v))
+						{
+							array_push($arrjoiner, $key.'='.$v);
+						}
+					}
+					if (!empty($arrjoiner))
+					{
+						$arrjoiner_sql = '('.implode(' OR ', $arrjoiner).')';
+						array_push($$joiner_arr, $arrjoiner_sql);
+					}
 				}
 				else
 				{
@@ -428,6 +466,104 @@ class Base_module_model extends MY_Model {
 		return $cnt;
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Filter fields to be used to filter the list view data
+	 *
+	 * @access	public
+	 * @return	array
+	 */	
+	public function filters($values = array())
+	{
+		if (!empty($this->list_items))
+		{
+			$fields = $this->list_items->fields($values);
+			if (! is_null($fields))
+			{
+				return $fields;
+			}
+		}
+		return array();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Displays friendly text for what is being filtered on the list view
+	 *
+	 * @access	public
+	 * @param	array The values applied to the filters
+	 * @return	string The friendly text string
+	 */	
+	public function friendly_filter_info($values)
+	{
+		if (!empty($this->list_items))
+		{
+			$str = $this->list_items->friendly_info($values);
+			if (! is_null($str))
+			{
+				return $str;
+			}
+		}
+
+		$form_filters = $this->CI->filters;
+
+		$filters = array();
+		foreach($values as $key => $val)
+		{
+			if (!empty($val) AND isset($form_filters[$key]))
+			{
+				// Check if there are options for the form
+				if (isset($form_filters[$key]['options']) OR isset($form_filters[$key]['model']))
+				{
+					if (isset($form_filters[$key]['model']))
+					{
+						$model_params = ( !empty($form_filters[$key]['model_params'])) ? $form_filters[$key]['model_params'] : array();
+						$options = $this->CI->form_builder->options_from_model($form_filters[$key]['model'], $model_params);
+					}
+					else
+					{
+						$options = $form_filters[$key]['options'];
+					}
+					
+					$replace = array('#_from$#', '#_fromequal$#', '#_to$#', '#_toequal$#', '#_equal$#');
+					if (is_array($val))
+					{
+						foreach($val as $k => $v)
+						{
+							if (isset($options[$v]))
+							{
+								$val[$k] = $options[$v];
+							}
+
+							$val[$k] = preg_replace($replace, '', $val[$k]);
+						}
+						$val = implode(', ', $val);
+					}
+					else
+					{
+						if (isset($options[$val]))
+						{
+							$val = $options[$val];
+						}
+
+						$val = preg_replace($replace, '', $val);
+					}
+				}
+
+				$label = (isset($form_filters[$key]['label'])) ? $form_filters[$key]['label'] : ucfirst(str_replace('_', ' ', $key));
+				$filters[] = $label.'="'.$val.'"';
+			}
+		}
+
+		$str = '';
+		if (!empty($filters))
+		{
+			$str = '<strong>Filters:</strong> '.$str .= implode(', ', $filters);
+		}
+		return $str;
+	}
 	// --------------------------------------------------------------------
 	
 	/**
@@ -886,6 +1022,7 @@ class Base_module_model extends MY_Model {
 	 */	
 	public function ajax_options($where = array())
 	{
+
 		if (!empty($where['exclude']))
 		{
 			$ids = explode(',', $where['exclude']);
@@ -905,9 +1042,24 @@ class Base_module_model extends MY_Model {
 			unset($where[$new_lang_key]);
 		}
 
-		$options = $this->options_list(NULL, NULL, $where);
 
 		$str = '';
+
+		if (isset($where['first_option']))
+		{
+			if (!empty($where['first_option']))
+			{
+				$str .= "<option value=\"\" label=\"".$where['first_option']."\">".$where['first_option']."</option>\n";
+			}
+			else
+			{
+				$str .= "<option value=\"\" label=\"".lang('label_select_one')."\">".lang('label_select_one')."</option>\n";
+			}
+		}
+
+		unset($where['first_option']);
+		$options = $this->options_list(NULL, NULL, $where);
+
 		foreach($options as $key => $val)
 		{
 			$str .= "<option value=\"".$key."\" label=\"".$val."\">".$val."</option>\n";
@@ -1195,7 +1347,7 @@ class Base_module_model extends MY_Model {
 	protected function _publish_status()
 	{
 		//$fields = $this->fields();
-		$fields = $fields = array_keys($this->table_info()); // used to prevent an additional query that the fields() method would create
+		$fields = array_keys($this->table_info()); // used to prevent an additional query that the fields() method would create
 
 		if (in_array('published', $fields))
 		{
@@ -1239,24 +1391,8 @@ class Base_module_model extends MY_Model {
 	{
 		if (defined('FUEL_ADMIN') AND !empty($this->limit_to_user_field) AND !$this->fuel->auth->is_super_admin())
 		{
-			$join = TRUE;
-			if (!empty($this->db->ar_join))
-			{
-				foreach($this->db->ar_join as $joiner)
-				{
-					if (strncmp('LEFT JOIN `fuel_users`', $joiner, 22) === 0)
-					{
-						$join = FALSE;
-						break;
-					}
-				}
-			}
-
-			if ($join)
-			{
-				$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->limit_to_user_field, 'left');	
-			}
-			$this->db->where($this->_tables['fuel_users'].'.id = '.$this->fuel->auth->user_data('id'));
+			$this->db->join($this->_tables['fuel_users'].' AS fuser', 'fuser.id = '.$this->limit_to_user_field, 'left');	
+			$this->db->where('fuser.id = '.$this->fuel->auth->user_data('id'));
 		}
 	}
 
@@ -1273,7 +1409,7 @@ class Base_module_model extends MY_Model {
 		if (!empty($this->limit_to_user_field) AND !$this->fuel->auth->is_super_admin())
 		{
 			$rec = $this->find_one_array($this->_tables['fuel_users'].'.id = '.$this->limit_to_user_field);
-			if ($rec[$this->limit_to_user_field] != $this->fuel->auth->user_data('id'))
+			if (!empty($rec) AND ($rec[$this->limit_to_user_field] != $this->fuel->auth->user_data('id')))
 			{
 				$this->add_error(lang('error_no_permissions'));
 				return FALSE;

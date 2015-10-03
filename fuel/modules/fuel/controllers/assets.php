@@ -57,6 +57,7 @@ class Assets extends Module {
 				$posted['master_dim'] = $this->input->get_post('master_dim', TRUE);
 				$posted['file_name'] = $this->input->get_post('userfile_file_name', TRUE);
 				$posted['unzip'] = ($this->input->get_post('unzip')) ? TRUE : FALSE;
+				$posted['remove_subfolder'] = $this->input->get_post('remove_subfolder', TRUE);
 				
 				$redirect_to = uri_safe_decode($this->input->get_post('redirect_to'));
 				$id = $posted['file_name'];
@@ -95,13 +96,18 @@ class Assets extends Module {
 
 					foreach($uploaded_data as $ud)
 					{
-						$uploaded_file_name_arr[] = trim(str_replace(assets_server_path().$dir, '', $ud['full_path']), '/');
+						$uploaded_path = assets_server_path().$dir;
+
+						if (is_true_val($posted['remove_subfolder']))
+						{
+							$uploaded_path = $uploaded_path .'/'.$subfolder;
+						}
+						$uploaded_file_name_arr[] = trim(str_replace($uploaded_path, '', $ud['full_path']), '/');
 						$uploaded_file_webpath_arr[] = assets_server_to_web_path($ud['full_path']);
 					}
 
 					// set the uploaded file name to a concatenated string separated by commas
 					$uploaded_file_name = implode(', ', $uploaded_file_name_arr);
-
 					$flashdata['uploaded_file_name'] = $uploaded_file_name;
 					$flashdata['uploaded_file_webpath'] = $uploaded_file_webpath_arr;
 
@@ -233,27 +239,45 @@ class Assets extends Module {
 
 		$options = options_list($this->model->list_items(NULL, 0, $order, $by), 'name', 'name');
 		$redirect_to = uri_safe_encode(fuel_uri(fuel_uri_string(), TRUE)); // added back to make it refresh
-		$preview = ' OR <a href="'.fuel_url('assets/inline_create?asset_folder='.urlencode($dir).'&redirect_to='.$redirect_to).'" class="btn_field">Upload</a><div id="asset_preview"></div>';
+		$allowed_q = array(
+				'subfolder', 
+				'userfile_file_name', 
+				'overwrite', 
+				'unzip',
+				'create_thumb', 
+				'maintain_ration', 
+				'width', 
+				'height', 
+				'master_dim', 
+				'resize_and_crop', 
+				'resize_method', 
+				'hide_options',' 
+				accept',
+				'multiple', 
+				'remove_subfolder'
+				);
+		$query_str = query_str($allowed_q, FALSE, FALSE);
+		$preview = ' OR <a href="'.fuel_url('assets/inline_create?asset_folder='.urlencode($dir).'&redirect_to='.$redirect_to.'&'.$query_str).'" class="btn_field">Upload</a><div id="asset_preview"></div>';
 
 		$field_values['asset_folder']['value'] = $dir;
 		$fields['asset_select'] = array('value' => $value, 'label' => lang('assets_select_action'), 'type' => 'select', 'options' => $options, 'after_html' => $preview);
 
-		if (isset($_GET['width']))
+		if (!empty($_GET['width']))
 		{
 			$fields['width'] = array('value' => $this->input->get_post('width', TRUE), 'label' => lang('form_label_width'), 'size' => 5, 'row_class' => 'img_only');
 		}
 
-		if (isset($_GET['height']))
+		if (!empty($_GET['height']))
 		{
 			$fields['height'] = array('value' => $this->input->get_post('height', TRUE), 'label' => lang('form_label_height'), 'size' => 5, 'row_class' => 'img_only');
 		}
 
-		if (isset($_GET['alt']))
+		if (!empty($_GET['alt']))
 		{
 			$fields['alt'] = array('value' => $this->input->get_post('alt', TRUE), 'label' => lang('form_label_alt'), 'row_class' => 'img_only');
 		}
 
-		if (isset($_GET['align']))
+		if (!empty($_GET['align']))
 		{
 			$alignment_options = array(
 				'' => '',
@@ -268,7 +292,7 @@ class Assets extends Module {
 			$fields['align'] = array('value' => $this->input->get_post('align', TRUE), 'label' => lang('form_label_align'), 'type' => 'select', 'options' => $alignment_options, 'row_class' => 'img_only');
 		}
 
-		if (isset($_GET['class']))
+		if (!empty($_GET['class']))
 		{
 			$fields['class'] = array('value' => $this->input->get_post('class', TRUE), 'label' => lang('form_label_class'), 'size' => 6, 'row_class' => 'img_only');
 		}

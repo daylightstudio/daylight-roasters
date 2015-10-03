@@ -341,7 +341,7 @@ Custom record object should extend the <a href="<?=user_guide_url('libraries/bas
 <ul>
 	<li>list_items()</li>
 	<li>tree()</li>
-	<li>form()</li>
+	<li>form_fields()</li>
 </ul>
 
 <p>Additionally, there are <a href="<?=user_guide_url('libraries/my_model#hooks')?>">several hooks</a> you may want to use that allow you to insert functionality during the saving and deleting process of a modules record.</p>
@@ -355,6 +355,136 @@ Custom record object should extend the <a href="<?=user_guide_url('libraries/bas
 	<li><strong>Preview view (optional)</strong> - the URO to the website to preview the module</li>
 </ul>
 
+<h2 id="filtering">Filtering the List View</h2>
+<p>The list_items() method provides some ways to make it easier to search and filter your list results. 
+By default, a simple module comes with a single search field that will use the module's <dfn>display_field</dfn> configuration parameter to search in. 
+If you want the primary search field to be different then the <dfn>display_field</dfn>, you must specify the <dfn>search_field</dfn> 
+parameter in the module's configuration (most of the time, these will be the same so you will not need to use the <dfn>search_field</dfn> configuration).</p>
+<pre class="brush:php">
+$config['modules']['articles'] = array(
+	...
+	'display_field' => 'title',
+	'search_field' => 'content',
+	...
+);
+</pre>
+
+<p>To search in multiple fields, use the module model's <dfn>filter</dfn> property as shown here:</p>
+<pre class="brush:php">
+	public $filters = array('title', 'slug', 'content');
+</pre>
+
+<h3>Filtering Form Fields</h3>
+<p>If a single search field isn't enough, you can specify a form using the <a href="<?=user_guide_url('libraries/form_builder')?>">Form_builder</a> array syntax
+in the module's configuration:</p>
+<pre class="brush:php">
+$config['modules']['articles'] = array(
+	...
+	'filters' => array(
+			'post_date' => array('type' => 'datetime'),
+			'published' => array('type' => 'enum', array('yes', 'no')),
+			),
+	...
+);
+</pre>
+<p>Or, you can create a <dfn>filters()</dfn> method on the module's model like so to create the form fields:</p>
+<pre class="brush:php">
+public function filters()
+{
+	$fields['post_date'] = array('type' => 'datetime');
+	$fields['published'] = array('type' => 'enum', array('yes', 'no'));
+	return $fields;
+}
+</pre>
+
+
+<h3>Operator Suffixes</h3>
+<p>The default operator is <dfn>LIKE %{term}%</dfn> however, you can use the following suffixes for your filter names to use different operators:</p>
+<ul>
+	<li><strong>_from</strong>: "&gt;"</li>
+	<li><strong>_fromequal</strong>: "&gt;="</li>
+	<li><strong>_to</strong>: "&lt;"</li>
+	<li><strong>_toequal</strong>: "&lt;="</li>
+	<li><strong>_equal</strong>: "="</li>
+	<li><strong>_id</strong>: "="</li>
+</ul>
+<pre class="brush:php">
+public function filters()
+{
+	$fields['post_date_to'] = array('type' => 'datetime');
+	$fields['post_date_from'] = array('type' => 'datetime');
+	return $fields;
+}
+</pre>
+<p>Additionally, using <dfn>_having</dfn> will perform a having condition on the SQL which is helpful for filtering on values generated in the SELECT of the SQL.</p>
+
+<h3>Advanced Search</h3>
+<p>The filter fields will by default be put to the left of the search box. However, if you have a lot of filter fields that area will get crowded quickly.
+To help with this issue, there is an <dfn>advanced_search</dfn> module configuration that can have the following values:
+</p>
+<ul>
+	<li><strong>FALSE</strong>: Will display filter fields next to the search box</li>
+	<li><strong>TRUE or popup</strong>: Will display a triangle icon in the search box that will display the fields when clicked.</li>
+	<li><strong>collapse</strong>: Will display a collapsible area above the list (new in 1.3).</li>
+</ul>
+<pre class="brush:php">
+$config['modules']['articles'] = array(
+	...
+	'advanced_search' => 'collapse',
+	...
+);
+</pre>
+
+<h3>AND &amp; OR</h3>
+<p>The SQL generated will by default use "OR". To use "AND", change the module model's <dfn>filter_join</dfn> property like so:</p>
+<pre class="brush:php">
+	public $filter_join = 'and';
+</pre>
+<p>To combine AND and OR, you can use an array like so:</p>
+<pre class="brush:php">
+	public $filter_join = array('title' => 'or', 'content' => 'or', published' => 'and');
+</pre>
+
+<h3>Joins</h3>
+<p>Often, you'll need to join one or more tables together. You can use CodeIgniter's active record and add it to the list_items method like so:</p>
+
+<pre class="brush:php">
+public function list_items($limit = NULL, $offset = NULL, $col = 'statement_date', $order = 'asc', $just_count = FALSE)
+{
+	$this->db->join('fuel_categories', 'fuel_categories.id = articles.category_id', 'LEFT');
+	$this->db->select('articles.id, article.title, fuel_categories.name as category, articles.published');
+	$data = parent::list_items($limit, $offset, $col, $order, $just_count);
+	return $data;
+}
+</pre>
+<p>Or you can add a <dfn>_common_joins()</dfn> method (new to 1.3). 
+The <dfn>_common_joins</dfn> method will be used for all "find_", options_list and list_item methods on the module's model.</p>
+<pre class="brush:php">
+public function _common_joins()
+{
+	$this->db->join('fuel_categories', 'fuel_categories.id = articles.category_id', 'LEFT');
+}
+</pre>
+
+<p>Sometimes joins will require you to prefix the field with the table name. Periods can be problematic so you can substitute it using a ":".</p>
+<pre class="brush:php">
+public function filters()
+{
+	$fields['fuel_categories:name'] = array('label' => 'Category name');
+	$fields['post_date_to'] = array('type' => 'datetime');
+	$fields['post_date_from'] = array('type' => 'datetime');
+	return $fields;
+}
+</pre>
+
+<h3>Friendly Filter Text</h3>
+<p>When multiple filters are being used to filter the list view, there is friendly text that appears above the list as of 1.3. 
+This is controlled by the <a href="<?=user_guide_url('libraries/base_module_model#friendly_filter_info')?>">Base_module_model::friendly_filter_info()</a> method.
+To alter the returned value you can simply overwrite this method in your module's model.
+</p>
+
+<p class="important">Remember, you can always simply just overwrite the list_items() method on the module's model with your own logic to filter the results.</p>
+
 <h2 id="overwrites">Module Overwrites</h2>
 <p>Module overwrites allow for you to overwrite existing module parameters. For example, if you'd like to overwrite the built-in FUEL fuel_pages_model to incorporate your own model hook you've added to the MY_pages_model,
 you can do so like so:</p>
@@ -365,7 +495,7 @@ $config['module_overwrites']['pages']['model_name'] = 'MY_pages_model';
 
 <h2 id="post_pages">Generated Post Pages</h2>
 <p>New to FUEL CMS 1.3 is the ability to create post type pages automatically from your modules. 
-This is a very powerful future that allows you to map routes to post pages that have specific behaviors. 
+This is a very powerful feature that allows you to map routes to post pages that have specific behaviors. 
 This means each module can now have blog like features (minus the commenting). 
 It uses the <a href="<?=user_guide_url('libraries/fuel_posts')?>">Fuel_posts</a> class to do so.
 There are a number of types of pages automatically created for you 
@@ -391,7 +521,7 @@ CREATE TABLE `articles` (
   `category_id` int(10) unsigned NOT NULL,
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 </pre>
 
 <p>The module's model (note that it inherits from the Base_posts_model):</p>
@@ -421,7 +551,7 @@ class Articles_model extends Base_posts_model {
 	}
 }
 
-class Articles_item_model extends Base_post_item_model {
+class Article_model extends Base_post_item_model {
 
 }
 </pre>
@@ -452,14 +582,14 @@ on your model to generate the data you want to pass to your view and specify a r
 <pre class="brush:php">
 ...
 'pages' => array(
-	'base_uri' => 'media',
+	'base_uri' => 'articles',
 	'per_page' => 10,
 	'layout' => 'posts',
-	'list' => 'media/list',
-	'post' => 'media/detail',
-	'archive' => array('route' => 'media/archive(/$year:\d{4})(/$month:\d{1,2})?(/$day:\d{1,2})?', 'view' => 'media/list', 'layout' => 'main', 'method' => 'my_test_method', 'empty_data_show_404' => TRUE),
-	'tag' => array('view' => 'media/list', 'empty_data_show_404' => TRUE, 'per_page' => 5),
-	'custom' => array('route' => 'media/custom', 'view' => 'media/list', 'method' => 'my_custom_method')
+	'list' => 'articles/list',
+	'post' => 'articles/detail',
+	'archive' => array('route' => 'articles/archive(/$year:\d{4})(/$month:\d{1,2})?(/$day:\d{1,2})?', 'view' => 'articles/list', 'layout' => 'main', 'method' => 'my_test_method', 'empty_data_show_404' => TRUE),
+	'tag' => array('view' => 'articles/list', 'empty_data_show_404' => TRUE, 'per_page' => 5),
+	'custom' => array('route' => 'articles/custom', 'view' => 'articles/list', 'method' => 'my_custom_method')
 ),
 ...
 </pre>
@@ -470,6 +600,7 @@ on your model to generate the data you want to pass to your view and specify a r
 to inherit from three new classes to make it easier to separate that logic out. To add this functionality, there are now three new properties that can be utilized on a module model:</p>
 
 <pre class="brush:php">
+public $list_items_class = '';  // a class that can extend Base_model_list_fields and manipulate the list_items method
 public $form_fields_class = '';  // a class that can extend Base_model_fields and manipulate the form_fields method
 public $validation_class = ''; // a class that can extend Base_model_validation and manipulate the validate method by adding additional validation to the model
 public $related_items_class = ''; // a class that can extend Base_model_related_items and manipulate what is displayed in the related items area (right side of page)
@@ -486,6 +617,71 @@ public $related_items_class = ''; // a class that can extend Base_model_related_
 	<li><strong>get_value</strong>: Returns a specific value and must pass the key name of the value</li>
 	<li><strong>record</strong>: Returns a record object of the current records value (if any)</li>
 </ul>
+
+<h3>Custom List Items Class</h3>
+<p>To create your own custom form fields class, specify the class name for the model's $list_items_class property, 
+	and then create a class that inherits from Base_model_list_items (see below).
+	In the initialize method, you can specify your field logic or even break it out into additional methods to keep it better organized. 
+	The example below does this and creates separate "Info" and "Meta" tabs.</p>
+
+<pre class="brush:php">
+&lt;?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+require_once(FUEL_PATH.'models/base_module_model.php');
+
+class Articles_model extends Base_module_model {
+	...
+	public $list_items_class = 'Article_list_items';  // a class that can extend Base_model_list_items and manipulate the list_items method
+	...
+}
+
+// --------------------------------------------------------------------
+
+class Article_model extends Base_module_record {
+	
+	// put your record model code here
+}
+
+// --------------------------------------------------------------------
+
+class Article_fields extends Base_model_list_items {
+
+	public function fields($values = array())
+	{
+		$f = $this->get_parent_model()->form_fields();
+		$fields =&amp; $this->fields;
+
+		$fields['title'] = $f['title'];
+		$fields['slug'] = $f['slug'];
+		$fields['category_id'] = $f['category_id']
+		$fields['publish_date_from'] = array('type' => 'date');
+		$fields['publish_date_to'] = array('type' => 'date');
+		return $fields;
+	}
+
+	public function process($data)
+	{
+		foreach($data as $key => $val)
+		{
+			$data[$key]['title'] = htmlentities($val['title']);
+		}
+		return $data;
+	}
+}
+</pre>
+
+<p>The <dfn>Base_model_list_items</dfn> class provides the follow additional methods:</p>
+<ul>
+	<li><strong>fields</strong>: Uses a Base_model_fields class to create form fields for filtering the list (see next section for Base_model_fields class</li>
+	<li><strong>add_filter</strong>: Adds a filter to the model's property</li>
+	<li><strong>add_filters</strong>: Adds multiple filter values to the model's filters property</li>
+	<li><strong>add_filter_join</strong>: Sets the filter_join property on the model</li>
+	<li><strong>select</strong>: Runs a select statement on the model's active record query for the list view</li>
+	<li><strong>join</strong>: Runs a join statement on the model's active record query for the list view</li>
+	<li><strong>friendly_info</strong>: Creates friendly text explaining what is being filtered</li>
+	<li><strong>process</strong>: This methods allows for further processing of the data and provides the array of data to process as a parameter to the method</li>
+</ul>
+
 
 <h3>Custom Form Fields Class</h3>
 <p>To create your own custom form fields class, specify the class name for the model's $form_fields_class property, 
@@ -575,25 +771,45 @@ Below is an example of how to hide multiple fields at once:</p>
 <ul>
 	<li><strong>add</strong>: Adds a validation rule using the <a href="<?=user_guide_url('libraries/validator')?>">Validator</a> class that is set on the parent model</li>
 	<li><strong>remove</strong>: Removes a validation rule</li>
-	<li><strong>validate</strong>: Runs through the validation rules to validate</li>
+	<li><strong>validate</strong>: Runs through the validation rules to validate and returns a boolean value</li>
+	<li><strong>set_validator</strong>: Sets the validator object to use for validation. The default object is the one already attached to the model</li>
+	<li><strong>get_validator</strong>: Returns the validator object used for validation</li>
+	<li><strong>add_error</strong>: Adds an error to the validation object</li>
 </ul>
 
-<h3>Custom Validation Class</h3>
+<h3>Custom Related Items Class</h3>
+<p>The custom relatd items class can be used to display information that appears to the right of the form fields.</p>
 <ul>
-	<li><strong>add</strong>: Adds a validation rule using the <a href="<?=user_guide_url('libraries/validator')?>">Validator</a> class that is set on the parent model</li>
-	<li><strong>remove</strong>: Removes a validation rule</li>
-	<li><strong>validate</strong>: Runs through the validation rules to validate and returns a boolean value</li>
+	<li><strong>vars</strong>: By default the following variables are passed to the view file:
+		<ul>
+			<li><strong>values</strong>: The saved values for the record</li>
+			<li><strong>rec</strong>: An instance of the record being editing</li>
+			<li><strong>model</strong>: The model object</li>
+			<li><strong>CI</strong>: The main CodeIgniter object</li>
+			<li><strong>fuel</strong>: The main FUEL object (e.g. $CI->fuel)</li>
+			<li><strong>class</strong>: The name of the class</li>
+			<li><strong>ref</strong>: A reference to the related items class</li>
+		</ul>
+	</li>
+	<li><strong>view</strong>: The path to the view file. If a key/value array is passed, the key will be the advanced module folder and the value will be the path to the view</li>
+	<li><strong>set_output</strong>: Sets the output string for rendering</li>
+	<li><strong>get_output</strong>: Returns the output string for rendering</li>
+	<li><strong>render</strong>: Renders the view file if it exists and returns the output string</li>
+	<li><strong>display_if_new</strong>: Displays the related items area even if it is a new record. Default is TRUE</li>
 </ul>
 
 <pre class="brush:php">
 ...
-class Article_validation extends Base_model_validation {
+class Article_related_items extends Base_model_related_items {
 
-	public function initialize($record, $parent_model)
+	public function initialize($values, $parent_model)
 	{
-		// passing additional parameters can be done either as a colon after the key in a second array parameter or in an array as the 4th option)
-		$this->add('submitted_by_id', 'is_equal_to', 'The submitter ID needs to equal 2', array(2));
-		$this->add('submitted_by_id', array('is_equal_to:2' => 'The submitter ID needs to equal 2'));
+		// if view is in an advanced module
+		$this->view(array(MY_MODULE_FOLDER => '_admin/article_related_items'));
+
+		// OR ... if view is in the main application folder
+		$this->view('_admin/article_related_items');
 	}
 }
+
 </pre>

@@ -99,13 +99,15 @@ class Fuel_layouts extends Fuel_base_library {
 		{
 			foreach($layout_files as $file)
 			{
-				$layout = end(explode('/', $file));
+				$file_parts = explode('/', $file);
+				$layout = end($file_parts);
 				$layout = substr($layout, 0, -4);
 				$file_dir = ltrim(dirname($file), '/');
 				
 				if ($file_dir != ltrim($layout_path, '/'))
 				{
-					$group = end(explode('/', $file_dir));
+					$file_dir_parts = explode('/', $file_dir);
+					$group = end($file_dir_parts);
 				}
 				else
 				{
@@ -379,7 +381,7 @@ class Fuel_layouts extends Fuel_base_library {
 			$init['fields'] = (isset($init['fields'])) ? $init['fields'] : array();
 			$init['import_field'] = (isset($init['import_field'])) ? $init['import_field'] : NULL;
 			$init['module'] = (isset($init['module'])) ? $init['module'] : 'app';
-			$init['double_parse'] = (isset($init['double_parse'])) ? $init['double_parse'] : FALSE;
+			$init['double_parse'] = (isset($init['double_parse'])) ? $init['double_parse'] : NULL;
 			$init['hidden'] = (isset($init['hidden'])) ? $init['hidden'] : FALSE;
 			$init['parser'] = (isset($init['parser'])) ? $init['parser'] : NULL;
 
@@ -1165,7 +1167,7 @@ class Fuel_layout extends Fuel_base_library {
 	 */	
 	public function parser()
 	{
-		if (empty($this->parser))
+		if ($this->parser !== FALSE && is_null($this->parser))
 		{
 			return $this->fuel->config('parser_engine');
 		}
@@ -1203,7 +1205,11 @@ class Fuel_layout extends Fuel_base_library {
 	 */	
 	public function parse($str, $vars = array())
 	{
-		return $this->fuel->parser->set_engine($this->parser())->parse_string($str, $vars);
+		if ($this->parser() !== FALSE)
+		{
+			return $this->fuel->parser->set_engine($this->parser())->parse_string($str, $vars);	
+		}
+		return $str;
 	}
 }
 

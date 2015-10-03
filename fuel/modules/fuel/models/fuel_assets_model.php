@@ -151,7 +151,9 @@ class Fuel_assets_model extends CI_Model {
 			
 		}
 		
-		$return = array_sorter($return, $col, $order, TRUE);
+		$order = ($order == 'desc') ? SORT_DESC : SORT_ASC;
+		$return = array_orderby($return, $col, $order);
+		//$return = array_sorter($return, $col, $order, TRUE);
 		
 		// do a check for empty limit values to prevent issues found where an empty $limit value would return nothing in 5.16
 		$return = (empty($limit)) ? array_slice($return, $offset) : array_slice($return, $offset, $limit);
@@ -419,6 +421,7 @@ class Fuel_assets_model extends CI_Model {
 		$fields['uploaded_file_name'] = array('type' => 'hidden');
 		$fields['hide_options'] = array('type' => 'hidden');
 		$fields['hide_image_options'] = array('type' => 'hidden');
+		$fields['remove_subfolder'] = array('type' => 'hidden');
 		return $fields;
 	}
 	
@@ -457,7 +460,19 @@ class Fuel_assets_model extends CI_Model {
 	{
 		return TRUE;
 	}
-		
+	
+	/**
+	 * Placeholder function (not used)
+	 *
+	 * @access	public
+	 * @param   array Posted values
+	 * @return	void
+	 */
+	public function filters($values = array())
+	{
+		return array();
+	}
+
 	/**
 	 * Displays the most recently uplloaded 
 	 *

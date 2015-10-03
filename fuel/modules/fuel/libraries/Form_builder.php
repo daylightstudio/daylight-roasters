@@ -584,7 +584,7 @@ class Form_builder {
 			if ($val['type'] == 'section')
 			{
 				$str .= "<div".$this->_open_row_attrs($val).'>';
-				$str .= "<span class=\"section\">".$this->create_section($val)."</span>\n";
+				$str .= "<div class=\"section\">".$this->create_section($val)."</div>\n";
 				$str .= "</div>\n";
 				continue;
 			}
@@ -596,14 +596,14 @@ class Form_builder {
 			if ($val['type'] == 'copy')
 			{
 				$str .= "<div".$this->_open_row_attrs($val).'>';
-				$str .= "<span class=\"copy\">".$this->create_copy($val)."</span>\n";
+				$str .= "<div class=\"copy\">".$this->create_copy($val)."</div>\n";
 				$str .= "</div>\n";
 				continue;
 			}
 			else if (!empty($val['copy']))
 			{
 				$str .= "<div".$this->_open_row_attrs($val).'>';
-				$str .= "<span class=\"copy\"><".$this->copy_tag.">".$val['copy']."</".$this->copy_tag."></span>\n";
+				$str .= "<div class=\"copy\"><".$this->copy_tag.">".$val['copy']."</".$this->copy_tag."></div>\n";
 				$str .= "</div>\n";
 			}
 			
@@ -656,11 +656,17 @@ class Form_builder {
 			$str .= $this->_open_div();
 		}
 		
-		$str .= "<div class=\"actions\"><div class=\"actions_inner\">";
+		$actions =  $this->_render_actions();
 
-		$str .= $this->_render_actions();
+		if (!empty($actions))
+		{
+			$str .= "<div class=\"actions\"><div class=\"actions_inner\">";
 
-		$str .= "</div></div>\n";
+			$str .= $actions;
+
+			$str .= "</div></div>\n";
+		}
+		
 		if ($this->has_required AND $this->show_required)
 		{
 			$str .= "<div class=\"required\">";
@@ -864,24 +870,29 @@ class Form_builder {
 			$str .= $this->_open_table();
 		}
 
-		if ($this->label_layout != 'top')
+		$actions = $this->_render_actions();
+
+		if (!empty($actions))
 		{
-			$str .= "<tr";
-			if (!empty($this->row_id_prefix))
+			if ($this->label_layout != 'top')
 			{
-				$str .= ' id="'.$this->row_id_prefix.'actions"';
+				$str .= "<tr";
+				if (!empty($this->row_id_prefix))
+				{
+					$str .= ' id="'.$this->row_id_prefix.'actions"';
+				}
+				$str .= ">\n\t<td></td>\n\t<td class=\"actions\"><div class=\"actions_inner\">";
 			}
-			$str .= ">\n\t<td></td>\n\t<td class=\"actions\"><div class=\"actions_inner\">";
+			else
+			{
+				$str .= "<tr>\n\t<td class=\"actions\"><div class=\"actions\">";
+			}
+
+			$str .= $actions;
+
+			$str .= "</div></td>\n</tr>\n";
 		}
-		else
-		{
-			$str .= "<tr>\n\t<td class=\"actions\"><div class=\"actions\">";
-		}
 
-		$str .= $this->_render_actions();
-
-
-		$str .= "</div></td>\n</tr>\n";
 		if ($this->has_required AND $this->show_required)
 		{
 			$str .= "<tr>\n\t<td colspan=\"".$colspan."\" class=\"required\">";
@@ -957,11 +968,16 @@ class Form_builder {
 			$str = parse_template_syntax($str, $vars, 'ci');
 		}
 
-		$str .= '<div class="actions">';
+		$actions =  $this->_render_actions();
 
-		$str .= $this->_render_actions();
+		if (!empty($actions))
+		{
+			$str .= '<div class="actions">';
 
-		$str .= "</div>";
+			$str .= $actions;
+
+			$str .= "</div>";
+		}
 
 		$this->_html = $this->_close_form($str);
 		
@@ -1179,7 +1195,11 @@ class Form_builder {
 		$wrapper_close_str = "</div>";
 		
 		// apply any CSS first
-		$this->_html .= $this->_apply_css();
+		foreach($this->css as $css)
+		{
+			$this->_html .= $this->_apply_asset_files('css', $css);
+		}
+
 		$this->_html .= $wrapper_open_str.$str.$wrapper_close_str;
 		
 		if (!empty($this->key_check))
@@ -1661,9 +1681,14 @@ class Form_builder {
 
 		if ($use_label)
 		{
-			if (!empty($this->name_prefix))
+			if (!empty($params['id']))
 			{
-				$id_name = $this->name_prefix.'--'.end(explode($this->name_prefix.'--', $params['name'])); // ugly... bug needed for nested repeatable fields
+				$id_name = $params['id'];
+			}
+			elseif (!empty($this->name_prefix))
+			{
+				$name_parts = explode($this->name_prefix.'--', $params['name']);
+				$id_name = $this->name_prefix.'--'.end($name_parts); // ugly... bug needed for nested repeatable fields
 			}
 			else
 			{
@@ -1791,6 +1816,7 @@ class Form_builder {
 			'style' => $params['style'],
 			'tabindex' => $params['tabindex'],
 			'attributes' => $params['attributes'],
+			'placeholder' => (!empty($params['placeholder']) ? $params['placeholder'] : NULL),
 		);
 		$name = $params['name'];
 		if (!empty($params['multiple']))
@@ -2881,7 +2907,7 @@ class Form_builder {
 	public function create_readonly($params)
 	{
 		$params = $this->normalize_params($params);
-		$str = $params['value']."\n".$this->create_hidden($val);
+		$str = $params['value']."\n".$this->create_hidden($params);
 		return $str;
 	}
 	
@@ -3105,7 +3131,9 @@ class Form_builder {
 					$library = $custom_field['class'];
 					$this->CI->load->library($custom_field['class']);
 				}
-				$library = end(explode('/', strtolower($library)));
+
+				$library_parts = explode('/', strtolower($library));
+				$library = end($library_parts);
 				$func = array($this->CI->$library, $custom_field['function']);
 			}
 			
@@ -3898,8 +3926,13 @@ class Form_builder {
 	{
 		if ($this->no_css_js) return '';
 
+		if (empty($GLOBALS['__js_files__']))
+		{
+			$GLOBALS['__js_files__'] = array();
+		}
+
 		$_js = $this->get_js();
-		
+
 		$str = '';
 		$str_inline = '';
 		$str_files = '';
@@ -3911,34 +3944,17 @@ class Form_builder {
 		
 		$orig_asset_output = $this->CI->asset->assets_output;
 		$this->CI->asset->assets_output = FALSE;
+		$add_js = array();
 
 		if (!empty($_js))
 		{
 			// loop through to generate javascript
 			foreach($_js as $type => $js)
 			{
-				
-				// if $js is a PHP array and the js asset function exists, then we'll use that to render'
-				if (is_array($js))
-				{
-					$j = current($js);
-				
-					// TODO if the value is another array, then the key is the name of the function and the value is the name of a file to load
-					if (is_array($j))
-					{
-					
-					}
-					$str_files .= js($js);
-				}
 				// if a string with a slash in it, then we will assume it's just a single file to load'
-				else if ((strpos($js, '/') !== FALSE OR preg_match('#.+\.js$#U', $js)) AND strpos($js, '<script') === FALSE)
+				if (is_array($js) OR ((strpos($js, '/') !== FALSE OR preg_match('#.+\.js$#U', $js)) AND strpos($js, '<script') === FALSE))
 				{
-					$str_files .= js($js);
-				}
-				// if it starts with a script tag and does NOT have a src attribute
-				else if (preg_match($script_regex, $js))
-				{
-					$str_files .= $js;
+					$str_files .= $this->_apply_asset_files('js', $js);
 				}
 			
 				// if it starts with a script tag and DOES have a src attribute
@@ -3956,6 +3972,8 @@ class Form_builder {
 				}
 			}
 		}
+
+		
 
 		// loop through custom fields to generate any js function calls
 		foreach($this->_rendered_field_types as $type => $cs_field)
@@ -3986,7 +4004,6 @@ class Form_builder {
 			$out = $str_files;
 			$out .= $str_inline;
 			$out .= "<script type=\"text/javascript\">\n";
-			$out .= "";
 			$out .= $str."\n";
 
 			if (!empty($js_exec))
@@ -3998,6 +4015,7 @@ class Form_builder {
 				$out .= 'jQuery("#'.$this->id.'").formBuilder(window[\'formBuilderFuncs\']);';
 				if ($this->auto_execute_js) $out .= 'jQuery("#'.$this->id.'").formBuilder().initialize();';
 				$out .= '}';
+
 				$out .= '})}';
 			}
 
@@ -4006,101 +4024,153 @@ class Form_builder {
 		}
 	}
 	
+
 	// --------------------------------------------------------------------
 
 	/**
-	 * Applies the CSS for the fields. A variable of $css must exist for the page to render
+	 * Applies the JS OR CSS for the fields. A variable of $css must exist for the page to render
 	 * 
 	 * @access	protected
+	 * @param	string 	'js' OR 'css'
+	 * @param	array 	An array of js or css files. If it is an array and has a string key, then the key will be assumed to be the module in which the asset belongs
 	 * @return	string
 	 */
-	protected function _apply_css()
+	protected function _apply_asset_files($type, $files)
 	{
-		if (empty($this->css) OR $this->no_css_js) return;
-		
-		// static way but won't work if the form is ajaxed int'
-		// $css = $this->CI->load->get_vars('css');
-		// foreach($this->css as $c)
-		// {
-		// 	$css[] = $c;
-		// }
-		//$this->CI->load->vars(array('css' => $css));
+
+		if (empty($this->$type) OR $this->no_css_js) return;
 		
 		// set as global variable to help with nested forms
-		if (empty($GLOBALS['__css_files__']))
+		$global_key = '__'.$type.'_files__';
+		$path_func = $type.'_path';
+		$tag_selector = ($type == 'js') ? 'head script' : 'head link';
+		$tag_attr = ($type == 'js') ? 'src' : 'href';
+		if (empty($GLOBALS[$global_key]))
 		{
-			$GLOBALS['__css_files__'] = array();
+			$GLOBALS[$global_key] = array();
 		}
-		$add_css = array();
-		$file = '';
+
 		$out = '';
-		foreach($this->css as $css)
+		$to_add = array();
+
+		if (is_string($files))
 		{
-			if (is_string($css))
+			$files = array($files);
+		}
+		foreach($files as $module => $asset)
+		{
+			if (is_string($asset))
 			{
-				$css = preg_split('#\s*,\s*#', $css);
+				$asset = preg_split('#\s*,\s*#', $asset);
 			}
 
-			foreach($css as $k => $c)
+			$module = is_string($module) ? $module : NULL;
+
+			foreach($asset as $k => $a)
 			{
-				$module = (is_string($k)) ? $k : NULL;
-				if (is_array($c))
+				if (is_array($a))
 				{
-					foreach($c as $file)
+					foreach($a as $file)
 					{
-						$f = css_path($file, $module);
-						if (!empty($f) AND !in_array($f, $GLOBALS['__css_files__']))
+						$f = call_user_func($path_func, $file, $module);
+						$f_arr = explode('?', $f);
+						$f = $f_arr[0];
+						if (!empty($f))
 						{
-							array_push($GLOBALS['__css_files__'], $f);
-							$add_css[] = $f;
+							array_push($GLOBALS[$global_key], $f);
+							$to_add[] = $f;
 						}
 					}
 				}
 				else
 				{
-					$file = css_path($c, $module);
-					if (!empty($file) AND !in_array($file, $GLOBALS['__css_files__']))
+					$file = call_user_func($path_func, $a, $module);
+					$file_arr = explode('?', $file);
+					$file = $file_arr[0];
+					if (!empty($file))
 					{
-						array_push($GLOBALS['__css_files__'], $file);
-						$add_css[] = $file;
+						array_push($GLOBALS[$global_key], $file);
+						$to_add[] = $file;
 					}
 				}
 			}
 		}
 
 		// must use javascript to do this because forms may get ajaxed in and we need to inject their CSS into the head
-		if (!empty($add_css))
+		if (!empty($to_add))
 		{
-			$out .= "<script type=\"text/javascript\">\n";
-			$out .= "//<![CDATA[\n";
+			$out .= "\n<script>\n";
 			$out .= 'if (jQuery){ (function($) {
-					var cssFiles = '.json_encode($add_css).';
-					var css = [];
-					$("head link").each(function(i){
-						css.push($(this).attr("href"));
+					var currentCacheSetting = $.ajaxSetup()["cache"];
+					$.ajaxSetup({cache: true});
+					var files = '.json_encode($to_add).';
+					var assets = [];
+					jQuery("'.$tag_selector.'").each(function(i){
+						var attr = $(this).attr("'.$tag_attr.'");
+						if (attr){
+							attr = attr.split("?")[0];
+							assets.push(attr);	
+						}
 					});
-					for(var n in cssFiles){
-						if ($.inArray(cssFiles[n], css) == -1){
-							// for IE 8
-							if (document.createStyleSheet){
-								var stylesheet = document.createStyleSheet(cssFiles[n])
-							}
-							else
-							{
-								var stylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssFiles[n] + "\" />";
-							}
-							jQuery("head").append(stylesheet);
+					for(var n in files){
+						if (jQuery.inArray(files[n], assets) == -1){';
+			if ($type == 'css')
+			{
+				$out .= '
+						// for IE 8
+						if (document.createStyleSheet){
+							var stylesheet = document.createStyleSheet(files[n])
+						} else {
+							var stylesheet = document.createElement("link");
+        					stylesheet.rel = "stylesheet";
+        					stylesheet.type = "text/css";
+        					stylesheet.href = files[n];
+						}
+						document.getElementsByTagName("head")[0].appendChild(stylesheet);
+						';
+			}
+			elseif ($type == 'js')
+			{
+				// $out .= ';
+				// var file = files[n].split("?")[0];
+				// var script = document.createElement("script");
+				// script.src = file;
+				// script.async = false;
+				
+				// // var attachElement = document.getElementsByTagName("head");
+				// // if (!attachElement.length){
+				// // 	attachElement = document.getElementsByTagName("body");
+				// // }
+				// // attachElement[0].appendChild(script);
+
+				// // Strangely doesn\'t appear in the DOM... would like to know why... oh... well here we go:
+				// // http://stackoverflow.com/questions/610995/cant-append-script-element
+				// $("head").append(script);
+
+				// $.ajaxSetup({cache: currentCacheSetting});
+				// ';
+
+				$out .= ';
+				var file = files[n].split("?")[0];
+				var script = document.createElement("script");
+				script.src = file;
+				script.async = false;
+				
+				$("head").append(script);
+
+				$.ajaxSetup({cache: currentCacheSetting});
+				';
+			}
+			$out .= '		
 						}
 					}
 				
-			})(jQuery)}';
-			$out .= "\n//]]>\n";
+			})(jQuery);}';
 			$out .= "</script>\n";
 		}
 
 		return $out;
 	}
-
 }
 
 

@@ -195,7 +195,7 @@ class Fuel_custom_fields {
 		{
 			$editor_config = json_encode($editor_config);
 		}
-		$js = '<script>fuel.fields.setElementData("'.$params['name'].'", "editor", '.$editor_config.');</script>';	
+		$js = '<script>jQuery(function(){ fuel.fields.setElementData("'.$params['name'].'", "editor", '.$editor_config.');});</script>';
 		$form_builder->add_js($js, 'editor_config_'.$params['name']);
 		return $form_builder->create_textarea($params);
 	}
@@ -315,21 +315,22 @@ class Fuel_custom_fields {
 		}
 
 		// add image altering hidden field values
-		$img_params = array('create_thumb',
+		$additional_params = array('create_thumb',
 						'thumb_marker',
 						'maintain_ratio',
 						'master_dim', 
 						'width', 
 						'height', 
 						'resize_and_crop',
+						'remove_spaces',
 						'resize_method');
 
-		foreach($img_params as $img_p)
+		foreach($additional_params as $p)
 		{
-			if (isset($params[$img_p]))
+			if (isset($params[$p]))
 			{
 
-				$str .= $this->CI->form->hidden($file_params['name'].'_'.$img_p, $params[$img_p], 'class="noclear"');
+				$str .= $this->CI->form->hidden($file_params['name'].'_'.$p, $params[$p], 'class="noclear"');
 			}
 
 		}
@@ -357,7 +358,17 @@ class Fuel_custom_fields {
 		{
 			$params['folder'] = 'images';
 		}
-		
+
+		if (empty($params['subfolder']))
+		{
+			$params['subfolder'] = '';
+		}
+
+		if (empty($params['remove_subfolder']))
+		{
+			$params['remove_subfolder'] = FALSE;
+		}
+
 		$asset_class = '';
 		if (!isset($params['select']) OR (isset($params['select']) AND $params['select'] !== FALSE))
 		{
@@ -405,6 +416,8 @@ class Fuel_custom_fields {
 			'multiple' => $multiple,
 			'separator' => $separator,
 			'folder' => $params['folder'],
+			'subfolder' => $params['subfolder'],
+			'remove_subfolder' => $params['remove_subfolder'],
 			'orig' => $params['value'],
 			);
 
@@ -598,7 +611,8 @@ class Fuel_custom_fields {
 		$data_params['resize_method'] = (isset($params['resize_method'])) ? $params['resize_method'] : 'maintain_ratio';
 		$data_params['hide_options'] = (isset($params['hide_options'])) ? (bool)$params['hide_options'] : FALSE;
 		$data_params['accept'] = (isset($params['accept'])) ? $params['accept'] : '';
-		$data_params['multiple'] = (isset($params['multiple'])) ? (bool)$params['multiple'] : '';
+		$data_params['multiple'] = (isset($params['multiple'])) ? (bool)$params['multiple'] : FALSE;
+		$data_params['remove_subfolder'] = (isset($params['remove_subfolder'])) ? (bool)$params['remove_subfolder'] : FALSE;
 
 		if (isset($params['hide_image_options']))
 		{
@@ -721,7 +735,8 @@ class Fuel_custom_fields {
 			if ($form_builder->is_nested())
 			{
 				$linked_to = $fields[$linked_to_field]['key'];
-				$linked_to = end(explode('vars--', $linked_to));
+				$linked_to_parts = explode('vars--', $linked_to);
+				$linked_to = end($linked_to_parts);
 			}
 			else
 			{
@@ -944,6 +959,7 @@ class Fuel_custom_fields {
 			return $fields;
 		}
 
+		$vars = !empty($params['vars']) ? $params['vars'] : array();
 		$vars['values'] = $params['value'];
 		$vars['fields_config'] = $params['fields'];
 		if ($repeatable)
@@ -1563,8 +1579,8 @@ class Fuel_custom_fields {
 
 					}
 
-					$val = (!empty($params['equalize_key_value']) AND is_int($key)) ? $val : $key;
-					$str .= $form_builder->form->checkbox($params['name'], $val, $attrs);
+					$v = (!empty($params['equalize_key_value']) AND is_int($key)) ? $val : $key;
+					$str .= $form_builder->form->checkbox($params['name'], $v, $attrs);
 
 					$label = ($lang = $form_builder->label_lang($attrs['id'])) ? $lang : $val;
 					$enum_params = array('label' => $label, 'name' => $attrs['id']);
@@ -2145,7 +2161,7 @@ class Fuel_custom_fields {
 		$embedlistid = (!empty($params['id'])) ? $params['id'] : 'embedlist-'.sha1($module->name() . mt_rand());
 		$class = (!empty($params['class'])) ? ' '.$params['class'] : '';
 		$embedded_list_view = '<div class="embedded_list_container'.$class.'" id="'.$embedlistid.'" data-module-url="'.$module_url.'" data-embedded-list-params=\''.json_encode($embedded_list_params).'\'>';
-		if (!$readonly)
+		if (!$readonly AND (!isset($params['create_button_label']) OR (isset($params['create_button_label']) AND $params['create_button_label'] !== FALSE)))
 		{
 			$embedded_list_view .= '<div class="embedded_list_actions" style="margin-bottom: 20px;"><a href="'.$create_url.'" class="btn_field datatable_action">'.$create_button_label.'</a></div>';
 		}

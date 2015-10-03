@@ -119,6 +119,7 @@ class Fuel_assets extends Fuel_base_library {
 						'encrypt_name' => FALSE,
 						'unzip' => FALSE,
 						'override_post_params' => FALSE,
+						'remove_spaces' => TRUE,
 						'posted' => $_POST,
 						
 						// image manipulation parameters must all be FALSE or NULL or else it will trigger the image_lib image processing
@@ -145,7 +146,8 @@ class Fuel_assets extends Fuel_base_library {
 		{
 			if ($file['error'] == 0)
 			{
-				$ext = end(explode('.', $file['name']));
+				$file_parts = explode('.', $file['name']);
+				$ext = end($file_parts);
 				$field_name = current(explode('___', $key)); // extract out multi file upload infor
 			
 				// loop through all the allowed file types that are accepted for the asset directory
@@ -264,14 +266,18 @@ class Fuel_assets extends Fuel_base_library {
 				// set file name
 				if (!$posted_filename)
 				{
-					if ($has_empty_filename AND !empty($params[$field_name.'_file_name']) )
+					if ($has_empty_filename)
 					{
-						$params['file_name'] = $params[$field_name.'_file_name'];
-					}
-					else if ($has_empty_filename)
-					{
-						$file_name = pathinfo($file['name'], PATHINFO_FILENAME);
-						$params['file_name'] = url_title($file_name, 'underscore', FALSE);	
+						if (!empty($params[$field_name.'_file_name']))
+						{
+							$params['file_name'] = $params[$field_name.'_file_name'];	
+						}
+						else if (empty($params['file_name']))
+						{
+							$file_name = pathinfo($file['name'], PATHINFO_FILENAME);
+							//$params['file_name'] = url_title($file_name, 'underscore', FALSE);
+							$params['file_name'] = $file_name;
+						}
 					}
 				}
 
@@ -735,7 +741,8 @@ class Fuel_assets extends Fuel_base_library {
 		// add .zip extension so file_name is correct
 		if (empty($file_name))
 		{
-			$file_name = end(explode('/', rtrim($dir, '/')));
+			$dir_parts = explode('/', rtrim($dir, '/'));
+			$file_name = end($dir_parts);
 		}
 		
 		$file_name = $file_name.'.zip';

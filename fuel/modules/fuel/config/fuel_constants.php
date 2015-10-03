@@ -1,6 +1,6 @@
 <?php 
 // INSTALL_ROOT is defined in the index.php bootstrap file
-define('FUEL_VERSION', '1.2.1');
+define('FUEL_VERSION', '1.3.1');
 define('MODULES_FOLDER', '../modules');
 define('FUEL_FOLDER', 'fuel');
 define('MODULES_PATH', APPPATH.MODULES_FOLDER.'/');
@@ -10,6 +10,14 @@ define('WEB_ROOT', str_replace('\\', '/', realpath(dirname(SELF)).DIRECTORY_SEPA
 
 // Needed to take care of some server environments
 $_SERVER['SCRIPT_NAME'] = preg_replace('#^/(.+)\.php/(.*)#', '/$1.php', $_SERVER['SCRIPT_NAME']);
+if (!isset($_SERVER['HTTP_HOST']))
+{
+	$_SERVER['HTTP_HOST'] = $_SERVER['SERVER_NAME'];
+	if (!empty($_SERVER['SERVER_PORT']))
+	{
+		$_SERVER['HTTP_HOST'] .= ':'.$_SERVER['SERVER_PORT'];
+	}
+}
 define('WEB_PATH', str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']));
 
 // Change slashes for some Windows platforms

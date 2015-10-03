@@ -48,7 +48,7 @@ class Module extends Fuel_base_controller {
 			$this->module = fuel_uri_segment(2);
 			$this->module_obj = $this->fuel->modules->get($this->module, FALSE);
 
-			if ($this->module_obj)
+			if ($this->module AND $this->module_obj)
 			{
 				$mod_name = $this->module_obj->name();	
 			}
@@ -184,12 +184,11 @@ class Module extends Fuel_base_controller {
 	{
 		$this->load->library('data_table');
 	
-		// check the model for a filters method as well and merge it with the property value
-		// added per http://www.getfuelcms.com/forums/discussion/760/filter-dropdown/#Item_2
-		if (method_exists($this->model, 'filters'))
-		{
-			$this->filters = array_merge($this->filters, $this->model->filters($this->filters));
+		$filters = $this->model->filters($this->filters);
+		if (is_object($filters) && ($filters instanceof Base_model_fields)) {
+			$filters = $filters->get_fields();
 		}
+		$this->filters = array_merge($this->filters, $filters);
 
 		// set the language dropdown if there is a language column
 		if ($this->fuel->language->has_multiple() AND !empty($this->language_col) AND method_exists($this->model, 'get_languages'))
@@ -197,7 +196,7 @@ class Module extends Fuel_base_controller {
 			$languages = $this->model->get_languages($this->language_col);
 			$first_option = current($languages);
 
-			if ( ! empty($languages) AND (is_string($first_option) OR (is_array($first_option)) AND count($first_option) > 1))
+			if (( ! empty($languages) AND (is_string($first_option) OR (is_array($first_option)) AND count($first_option) > 1)) AND empty($this->filters[$this->language_col.'_equal']))
 			{
 				$lang_filter = array('type' => 'select', 'options' => $languages, 'label' => lang('label_language'), 'first_option' => lang('label_select_a_language'));
 				$this->filters[$this->language_col.'_equal'] = $lang_filter;
@@ -618,7 +617,7 @@ class Module extends Fuel_base_controller {
 					{
 						$field_type = $this->model->field_type($raw_key);
 
-						if (is_date_format($posted[$key]) AND $field_type == 'datetime' OR $field_type == 'date')
+						if (is_date_format($posted[$key]) AND $field_type == 'datetime' OR $field_type == 'date' AND (int) $posted[$key] !== 0)
 						{
 							$date  = ($this->input->get_post($key) AND is_date_format($this->input->get_post($key))) ? current(explode(" ", $this->input->get_post($key))) : "";
 							$hr    = ($this->input->get_post($key.'_hour') AND (int)$this->input->get_post($key.'_hour') > 0 AND (int)$this->input->get_post($key.'_hour') < 24) ? $this->input->get_post($key.'_hour') : "";
@@ -829,7 +828,10 @@ class Module extends Fuel_base_controller {
 
 		$shell_vars = $this->_shell_vars($id);
 
-		$passed_init_vars = ($this->input->get(NULL, TRUE)) ? $this->input->get(NULL, TRUE) : array();
+		$get = (array) $this->input->get(NULL, TRUE);
+		$post = (array) $this->input->post(NULL, TRUE);
+		$passed_init_vars = array_filter(array_merge($get, $post));
+
 		$form_vars = $this->_form_vars($id, $passed_init_vars, $field, $inline);
 		$vars = array_merge($shell_vars, $form_vars);
 		$vars['action'] = 'create';
@@ -961,7 +963,8 @@ class Module extends Fuel_base_controller {
 
 				if ( ! empty($data))
 				{
-					$msg = lang('module_edited', $this->module_name, $data[$this->display_field]);
+					$msg_data = (is_array($data[$this->display_field])) ? json_encode($data[$this->display_field]) : $data[$this->display_field];
+					$msg = lang('module_edited', $this->module_name, $msg_data);
 					$this->fuel->logs->write($msg);
 					$this->_clear_cache();
 					return $id;
@@ -1067,9 +1070,10 @@ class Module extends Fuel_base_controller {
 
 		$crumbs = array($this->module_uri => $this->module_name);
 
+		$msg_data = (is_array($data[$this->display_field])) ? json_encode($data[$this->display_field]) : $data[$this->display_field];
 		if ( ! empty($data[$this->display_field]))
 		{
-			$crumbs[''] = character_limiter(strip_tags($data[$this->display_field]), 50);
+			$crumbs[''] = character_limiter(strip_tags($msg_data), 50);
 		}
 
 		$this->fuel->admin->set_titlebar($crumbs);
@@ -1078,9 +1082,9 @@ class Module extends Fuel_base_controller {
 		$this->fuel->admin->render($this->views['create_edit'], $vars, '', FUEL_FOLDER);
 
 		// do this after rendering so it doesn't render current page'
-		if ( ! empty($data[$this->display_field]) AND $inline !== TRUE)
+		if ( ! empty($msg_data) AND $inline !== TRUE)
 		{
-			$this->fuel->admin->add_recent_page($this->uri->uri_string(), $this->module_name.': '.$data[$this->display_field], $this->module);
+			$this->fuel->admin->add_recent_page($this->uri->uri_string(), $this->module_name.': '.$msg_data, $this->module);
 		}
 	}
 	
@@ -1154,7 +1158,8 @@ class Module extends Fuel_base_controller {
 				// run after_save hook
 				$this->_run_hook('after_save', $data);
 
-				$msg = lang('module_edited', $this->module_name, $data[$this->display_field]);
+				$msg_data = (is_array($data[$this->display_field])) ? json_encode($data[$this->display_field]) : $data[$this->display_field];
+				$msg = lang('module_edited', $this->module_name, $msg_data);
 				$this->fuel->logs->write($msg);
 				$this->_clear_cache();
 
@@ -1323,7 +1328,7 @@ class Module extends Fuel_base_controller {
 		}
 
 		// if field parameter is set, then we just display a single field
-		if ( ! empty($field))
+		if ( ! empty($field) AND ! is_numeric($field))
 		{
 			// added per pierlo in Forum (http://www.getfuelcms.com/forums/discussion/673/fuel_helper-fuel_edit-markers)
 			$columns = explode(':', $field);
@@ -1459,7 +1464,8 @@ class Module extends Fuel_base_controller {
 		// first loop through and create simple non-namespaced $_POST values if they don't exist for convenience'
 		foreach($_POST as $key => $val)
 		{
-			$tmp_key = end(explode('--', $key));
+			$key_parts = explode('--', $key);
+			$tmp_key = end($key_parts);
 			$_POST[$tmp_key] = $val;
 		}
 
@@ -1609,7 +1615,7 @@ class Module extends Fuel_base_controller {
 
 			foreach ($posted as $id)
 			{
-				if ($this->model->delete(array($this->model->key_field() => $id)))
+				if ($this->model->delete(array($this->model->table_name().'.'.$this->model->key_field() => $id)))
 				{
 					$any_success = TRUE;
 				}
@@ -1855,6 +1861,12 @@ class Module extends Fuel_base_controller {
 		if ( ! empty($_POST))
 		{
 			$fields = $this->model->form_fields();
+
+			if (is_object($fields) AND $fields instanceof Base_model_fields)
+			{
+				$fields = $fields->get_fields();
+			}
+
 			$field = $this->input->post('field', TRUE);
 
 			if ( ! isset($fields[$field])) return;
@@ -1863,8 +1875,8 @@ class Module extends Fuel_base_controller {
 			$values = $this->input->post('values', TRUE);
 
 			$selected = $this->input->post('selected', TRUE);
-
-			$field_key = end(explode('vars--', $field));
+			$field_parts = explode('vars--', $field);
+			$field_key = end($field_parts);
 
 			$this->load->library('form_builder');
 			$this->form_builder->load_custom_fields(APPPATH.'config/custom_fields.php');
@@ -1982,7 +1994,7 @@ class Module extends Fuel_base_controller {
 				$this->output->set_header('Content-type: application/json');
 				$output = json_encode($results);
 
-				print($output);
+				echo $output;
 			}
 		}
 	}
@@ -2077,7 +2089,8 @@ class Module extends Fuel_base_controller {
 					// run after_save hook
 					$this->_run_hook('after_save', $data);
 
-					$msg = lang('module_edited', $this->module_name, $data[$this->display_field]);
+					$msg_data = (is_array($data[$this->display_field])) ? json_encode($data[$this->display_field]) : $data[$this->display_field];
+					$msg = lang('module_edited', $this->module_name, $msg_data);
 					$this->fuel->logs->write($msg);
 				}
 				else
@@ -2219,7 +2232,8 @@ class Module extends Fuel_base_controller {
 					}
 
 					// set both values for the namespaced and non-namespaced... make them underscored and lower cased
-					$tmp_field_name = end(explode('--', $field_name));
+					$field_name_parts = explode('--', $field_name);
+					$tmp_field_name = end($field_name_parts);
 
 					$file_name = pathinfo($field_value, PATHINFO_FILENAME);
 					$file_ext = pathinfo($field_value, PATHINFO_EXTENSION);
@@ -2271,11 +2285,13 @@ class Module extends Fuel_base_controller {
 
 	protected function _process_upload_data($field_name, $uploaded_data, $posted)
 	{
-		$field_name = end(explode('--', $field_name));
+		$field_name_parts = explode('--', $field_name);
+		$field_name = end($field_name_parts);
 
 		foreach($uploaded_data as $key => $val)
 		{
-			$file_tmp = current(explode('___', $key));
+			$key_parts = explode('___', $key);
+			$file_tmp = current($key_parts);
 
 			// get the file name field
 			// if the file name field exists AND there is no specified hidden filename field to assign to it AND...
@@ -2298,7 +2314,8 @@ class Module extends Fuel_base_controller {
 				{
 					if (isset($posted[$matches[1]][$matches[2]][$matches[3]]) AND isset($data[$matches[1]][$matches[2]][$matches[3]]))
 					{
-						$data[$matches[1]][$matches[2]][$matches[3]] = $posted[$file_tmp];
+						//$data[$matches[1]][$matches[2]][$matches[3]] = $posted[$file_tmp];
+						$data[$matches[1]][$matches[2]][$matches[3]] = $val['file_name'];
 						$save = TRUE;
 					}
 				}
