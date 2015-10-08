@@ -9,7 +9,7 @@
 	<?php endif ?>
 
 	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -58,7 +58,7 @@
 			<div class="row">
 				<div class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></div>
 
-				<nav class="mainnav_container">
+				<nav class="mainnav-container">
 					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */ ?>
 					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
 				</nav>
