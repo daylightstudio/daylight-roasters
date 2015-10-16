@@ -13,14 +13,7 @@
 
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 
-	<?php if (!empty($meta_keywords)): ?>
-	<meta name="keywords" content="<?php echo fuel_var('meta_keywords')?>" />
-	<?php endif ?>
-	<?php if (!empty($meta_description)): ?>
-	<meta name="description" content="<?php echo fuel_var('meta_description')?>" />
-	<?php endif ?>
-
-	<?php //fuel_block('og')?>
+	<?=fuel_block('og')?>
 
 	<link rel="icon" href="<?php echo site_url('favicon.ico')?>"/>
 	<link rel="apple-touch-icon-precomposed" href="<?=site_url('apple-touch-icon.png')?>">
@@ -32,6 +25,10 @@
 			document.cookie='HTTP_IS_RETINA=1;path=/';
 	</script>
 	<?php echo jquery('1.10.2') ?>
+	<?php /* if you want to use select2, otherwise remove...
+	<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+	<script>(typeof S2 == 'function') || document.write('<script src="/assets/js/select2.min.js">\x3C/script>')</script>
+	*/?>
 
 	<!--[if lte IE 8 ]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -44,7 +41,7 @@
 	<?php echo $CI->fuel_blog->header()?>
 	<?php endif; ?>
 	
-	<?php //fuel_block('ga');?>
+	<?=fuel_block('ga');?>
 </head>
 
 <?php $bc = fuel_var('body_class', 'Body Class') ?>

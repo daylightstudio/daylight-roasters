@@ -1,18 +1,23 @@
 <?php 
 $path = '';
-$title = $page_title;
+$page_title = fuel_var('page_title');
+$meta_description = fuel_var('meta_description');
+$meta_keywords = fuel_var('meta_keywords');
+$title = (!empty($og_title) ? $og_title : $page_title);
+$desc = (!empty($og_description) ? $og_description : $meta_description);
+$image = (!empty($og_image) ? $og_image : '_template/graphic_social_tag_facebook.png');
 ?>
-<meta property="og:site_name" content="The Site Title"/>
+<meta name="keywords" content="<?=$meta_keywords?>" />
+<meta name="description" content="<?=$meta_description?>" />
+
+<meta property="og:site_name" content="LSN"/>
 <meta property="og:url" content="<?=current_url()?>" />
-<?php if(!empty($og_title)):
-	echo '<meta property="og:title" content="'.$og_title.'" />'; 
- else:
- 	echo '<meta property="og:title" content="'.$title.'" />';
- endif;
- ?>
-<?php if(!empty($og_description)) echo '<meta property="og:description" content="'.$og_description.'" />'; ?>
-<?php if(!empty($og_image)): ?>
-<meta property="og:image" content="<?=img_path($path . $og_image, '', TRUE)?>" />
-<?php else: ?>
-<meta property="og:image" content="<?=img_path('_template/open_graph.jpg', '', TRUE)?>" />
-<?php endif; ?>
+<meta property="og:title" content="<?=$title?>" />
+<meta property="og:description" content="<?=$desc?>" />
+<meta property="og:image" content="<?=img_path($path . $image, '', TRUE)?>" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@connectmyoffice" />
+<meta name="twitter:title" content="<?=$title?>" />
+<meta name="twitter:description" content="<?=$desc?>" />
+<meta name="twitter:image" content="<?=img_path('_template/graphic_social_tag_facebook.png')?>" />
