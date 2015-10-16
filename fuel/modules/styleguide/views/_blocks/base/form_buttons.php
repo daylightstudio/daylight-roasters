@@ -1,3 +1,6 @@
+<p><a href="#" class="btn">Link button default</a></p>
+<p><a href="#" class="btn-secondary">Link Secondary</a></p>
+
 <form>
   <fieldset>
     <p><input type="button" value="Input type button"></p>

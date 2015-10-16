@@ -34,18 +34,10 @@ textarea {
 	resize: vertical; 
 }
 
-// Chromeframe styles
-.chromeframe { 
-	background: #ccc; 
-	color: #000; 
-	padding: 1em 0; 
-	text-align: center;  
-}
-
 // Box sizing: http://paulirish.com/2012/box-sizing-border-box-ftw/
 *, *:before, *:after {
-  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
- }
+  box-sizing: border-box;
+}
 
 // Set html/body max width
 html, body { 
@@ -94,8 +86,11 @@ a {
 	}
 }
 
-%header_global { margin: 0.5em 0;
-	&:first-child { margin-top: 0; }
+%header_global { 
+	margin: 0.5em 0;
+	&:first-child { 
+		margin-top: 0; 
+	}
 }
 h1, .h_headline { 
 	@extend %header_global;
