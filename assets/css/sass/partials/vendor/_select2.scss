@@ -4,6 +4,7 @@
 // ---------------------------------------- //
 
 $select2-radius: 4px;
+$select2-fontsize: 16px;
 
 //selection/placeholder
 $select2-selection-height: 28px;
@@ -17,6 +18,7 @@ $select2-selection-radius: $select2-radius;
 $select2-selection-color: #444;
 $select2-selection-placeholder-color: #999;
 $select2-selection-bgcolor--disabled: #eee;
+$select2-selection-fontsize: $select2-fontsize;
 
 //arrow -- users a css arrow
 $select2-arrow-container-width: 20px;
@@ -41,8 +43,9 @@ $select2-results-maxheight: 200px;
 $select2-result-padding: 6px;
 $select2-result-bgcolor--disabled: $select2-selection-bgcolor--disabled;
 $select2-result-color--disabled: #999;
-$select2-result-bgcolor--selected: #ddd; //hover
-$select2-result-bgcolor--highlighted: #5897fb; //selected
+$select2-result-bgcolor--selected: #ddd;
+$select2-result-bgcolor--highlighted: #5897fb; //hover
+$select2-result-color: #FFF;
 
 $select2-selection-multi-spacing: 5px; //for multi's, placeholder
 $select2-multi-selected-bgcolor: #e4e4e4;
@@ -62,6 +65,7 @@ $select2-multi-remove-spacing: 2px;
   margin: 0;
   position: relative;
   vertical-align: middle;
+  font-size: $select2-fontsize;
 }
 .select2-container .select2-selection--single {
   cursor: pointer;
@@ -77,6 +81,7 @@ $select2-multi-remove-spacing: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: $select2-selection-fontsize;
 }
 .select2-container[dir="rtl"] .select2-selection--single .select2-selection__rendered {
   padding-right: $select2-selection-padding--sides;
@@ -95,6 +100,7 @@ $select2-multi-remove-spacing: 2px;
   padding-left: $select2-selection-padding--sides;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: $select2-selection-fontsize;
 }
 .select2-container .select2-search--inline {
   float: left;
@@ -331,6 +337,9 @@ $select2-multi-remove-spacing: 2px;
 .select2-container--default .select2-results > .select2-results__options {
   max-height: $select2-results-maxheight;
   overflow-y: auto;
+}
+.select2-container--default .select2-results__option {
+  color: $select2-result-color;
 }
 .select2-container--default .select2-results__option[role=group] {
   padding: 0;
