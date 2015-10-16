@@ -30,5 +30,5 @@ gulp.task('default', ['styles'], function() {
 // // Watch
 gulp.task('watch', function() {
   // Watch .scss files
-  gulp.watch('assets/css/sass/**/*.scss', ['styles']);
+  gulp.watch('assets/css/sass/*/*.scss', ['styles']);
 });
