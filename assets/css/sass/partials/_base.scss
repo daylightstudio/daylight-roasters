@@ -17,9 +17,9 @@ hr {
 	padding: 0; 
 }
 
-// Remove the gap between images and the bottom of their containers: h5bp.com/i/440
 img {
 	vertical-align: middle; 
+	max-width: 100%;
 }
 
 // Remove default fieldset styles.
@@ -34,7 +34,6 @@ textarea {
 	resize: vertical; 
 }
 
-// Box sizing: http://paulirish.com/2012/box-sizing-border-box-ftw/
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -45,7 +44,6 @@ html, body {
 	min-height: 100%; 
 	padding: 0; 
 	margin: 0; 
-	display: table; 
 }
 
 
