@@ -553,7 +553,7 @@ class Base_module_model extends MY_Model {
 				}
 
 				$label = (isset($form_filters[$key]['label'])) ? $form_filters[$key]['label'] : ucfirst(str_replace('_', ' ', $key));
-				$filters[] = $label.'="'.$val.'"';
+				$filters[] = str_replace(':', '', $label).'="'.$val.'"';
 			}
 		}
 
@@ -1421,6 +1421,30 @@ class Base_module_model extends MY_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	* Function to return the display name as defined by the display_field in MY_fuel_modules
+	* @param  array $values The values of the current record
+	* @return string
+	*/
+	public function display_name($values)
+	{
+		$module =& $this->get_module();
+
+		$key = $module->info('display_field');
+
+		if(isset($values[$key]))
+		{
+			return (is_array($values[$key])) ? json_encode($values[$key]) : $values[$key];
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+
+	/**
 	 * Model hook executed right before saving
 	 *
 	 * @access	public
@@ -1568,8 +1592,22 @@ class Base_module_record extends Data_record {
 	protected function _parse($output)
 	{
 		$vars = $this->values();
-		$output = $this->_CI->fuel->parser->parse_string($output, $vars, TRUE);
-		return $output;
+		if (is_array($output))
+		{
+			foreach($output as $key => $val)
+			{
+				if (is_string($val))
+				{
+					$output[$key] = $this->_CI->fuel->parser->parse_string($val, $vars, TRUE);
+				}
+			}
+			return $output;
+		}
+		elseif(is_string($output))
+		{
+			$output = $this->_CI->fuel->parser->parse_string($output, $vars, TRUE);	
+			return $output;
+		}
 	}
 	
 }
