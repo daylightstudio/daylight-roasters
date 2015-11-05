@@ -1,0 +1,44 @@
+/* ==========================================================================
+	VARIABLES
+============================================================================= */
+
+/** COLORS
+---------------------------------------- **/
+//Base Colors
+$red: #ff0000;
+$black: #000;
+$dark: #0C0C0C;
+$gray: #666666;
+$white: #fff;
+$copy: #666666;
+//End Base Colors
+
+// Component Colors
+$copy: $dark;
+$accent: $red;
+
+/** FONTS
+---------------------------------------- **/
+//Base Type
+$font-main: 'Arial', sans-serif;
+//End Base Type
+
+
+/** RESPONSIVE WIDTHS
+---------------------------------------- **/
+$smWidth: 570px; //568px for iphone .. and (orientation : landscape)
+$mdWidth: 770px;
+$lgWidth: 960px;
+
+
+/** SPACING
+---------------------------------------- **/
+$sm: 0.5em;
+$md: 1em;
+$lg: 1.5em;
+$xl: 2.5em;
+
+
+/** TRANSITIONS
+---------------------------------------- **/
+$cubic_ease: cubic-bezier(0.5, 0, 0.5, 1);

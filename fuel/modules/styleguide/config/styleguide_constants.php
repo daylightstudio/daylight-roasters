@@ -1,0 +1,4 @@
+<?php 
+define('STYLEGUIDE_VERSION', '1.0');
+define('STYLEGUIDE_FOLDER', 'styleguide');
+define('STYLEGUIDE_PATH', MODULES_PATH.STYLEGUIDE_FOLDER.'/');

@@ -1,0 +1,38 @@
+input[type="text"], input[type="email"], input[type="tel"], input[type="search"], textarea {
+	font-size: 16px;
+	width: 100%;
+	&:focus {
+		border-color: $black;
+	}
+	&.error {
+		border-color: red;
+	}
+	@media (min-width: $mdWidth) {
+		font-size: 1em;
+	}
+}
+input[type="search"] {
+	appearance: none;
+}
+
+input[type="submit"], input[type="button"], button, input[type="reset"] {
+	//@extend .btn;
+	border: none;
+	appearance: none;
+	&:disabled {
+		//background: gray;
+	}
+}
+label {
+}
+label.error {
+	color: red;
+}
+.required {
+}
+.form-field {
+	margin-bottom: 1em;
+}
+.form-field-submit {
+	margin: 2em 0;
+}
