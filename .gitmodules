@@ -1,0 +1,3 @@
+[submodule "fuel/modules/forms"]
+	path = fuel/modules/forms
+	url = https://dalla777@github.com/daylightstudio/FUEL-CMS-Forms-Module.git
