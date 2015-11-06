@@ -33,6 +33,23 @@ $config['layouts']['main'] = array(
 	// )
 );
 
+/** BLOCKS **********************************/
+
+$config['blocks']['full-width'] = array(
+	'group' => 'Sections',
+	'label' => 'Full Width',
+	'fields' => array(
+		'text' => array('type' => 'textarea'),
+	),
+);
+$config['blocks']['intro'] = array(
+	'group' => 'Sections',
+	'label' => 'Intro Block',
+	'fields' => array(
+		'title' => array(),
+		'text' => array('type' => 'textarea'),
+	),
+);
 /* End of file MY_fuel_layouts.php */
 /* Location: ./application/config/MY_fuel_layouts.php */
 

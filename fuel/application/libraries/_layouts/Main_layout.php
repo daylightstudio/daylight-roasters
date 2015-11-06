@@ -18,7 +18,7 @@ class Main_layout extends Base_layout {
 	{
 		$fields = parent::fields();
 		$this->main_fields();
-		//$this->section_fields();
+		$this->section_fields();
 		$this->meta_fields();
 		return $this->fields;
 	}

@@ -55,7 +55,6 @@ class Base_layout extends Fuel_layout {
 	function main_fields()
 	{
 		$fields['Main Content'] = array('type' => 'fieldset', 'label' => 'Main Content', 'class' => 'tab');
-		$fields['top_image'] = array('type' => 'asset', 'label' => 'Top Image', 'multiple' => FALSE, 'folder' => 'images/leaf', 'style' => 'width: 500px;', 'comments' => '1224w x 240h');
 		$fields['h1'] = array('label' => 'Main heading');
 		$fields['body'] = array('type' => 'textarea');
 		$this->add_fields($fields);
@@ -77,7 +76,7 @@ class Base_layout extends Fuel_layout {
 					'type'          => 'template', 
 					'fields'	=> array(
 									'heading' => array('type' => 'section', 'value' => 'Section <span class="num"></span>'),
-									'block' => array('type' => 'block', 'group' => 'Sections')
+									'block' => array('type' => 'blockpicker', 'group' => 'Sections')
 
 						),
 					'init_display'  => 'first',
