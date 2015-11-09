@@ -1,1 +1,22 @@
-.btn {}
+.btn {
+	display: inline-block;
+	border-radius: $border-radius;
+	padding: 0.3em 1.5em 0.2em;
+	font-size: 1.6rem;
+	text-transform: uppercase;
+	color: $white;
+	background: $accent;
+
+	&:link, &:visited {
+		color: $white;
+		background: $accent;
+	}
+	&:hover, &:focus {
+		background: darken($accent, 10%);
+		text-decoration: none;
+	}
+	&:active {
+		background: darken($accent, 20%);
+	}
+}
+.btn-secondary {}

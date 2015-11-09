@@ -21,6 +21,9 @@ img {
 	vertical-align: middle; 
 	max-width: 100%;
 }
+.img-circle {
+	border-radius: 50%;
+}
 
 // Remove default fieldset styles.
 fieldset {
@@ -56,8 +59,8 @@ html {
 	font-family: $font-main;
 }
 body { 
-	@include font-size(1.6); 
-	line-height: 1.5; 
+	font-size: $font-size-base;
+	line-height: $line-height-base;
 }
 html, body, button, input, select, textarea { 
 	color: $copy; 
@@ -86,37 +89,32 @@ a {
 
 %header_global { 
 	margin: 0.5em 0;
+	font-family: $font-heading;
 	&:first-child { 
 		margin-top: 0; 
 	}
 }
 h1, .h_headline { 
 	@extend %header_global;
-	@include font-size(3);
+	font-size: 3rem;
 }
 h2, .h_subheadline { 
 	@extend %header_global;
-	@include font-size(2.7);
+	font-size: 2.7rem;
 }
 h3, .h_byline {
 	@extend %header_global; 
-	@include font-size(2.2);
+	font-size: 2.2rem;
 }
 h4, .h_standfirst { 
 	@extend %header_global;
-	@include font-size(1.8);
+	font-size: 1.8rem;
 }
 h5, .h_related { 
 	@extend %header_global;
-	@include font-size(1.6); 
-	margin-bottom: 0.2em;
+	font-size: 1.6rem; 
 }
-h6, .h_promo { 
-	@extend %header_global;
-	@include font-size(1.4); 
-	margin-bottom: 0.2em; 
-	text-transform: uppercase;
-}
+
 
 big,
 .text_large,
@@ -130,6 +128,32 @@ small,
 	line-height: 1.2; 
 }
 
+
+blockquote {
+	font-size: $font-size-base*1.4;
+	margin: 1em 0;
+	.fancy {
+		position: relative;
+		&:before {
+			content: '\201C';
+			position: absolute;
+			right: 100%;
+			margin-right: 3px;
+			font-size: 1.4em;
+
+		}
+		&:after {
+			content: '\201D';
+		}
+	}
+}
+cite {
+	font-size: $font-size-base*0.9;
+	font-style: normal;
+}
+
+// LAYOUT
+// ---------------------------------------- //
 .wrapper { 
 	@include clearfix;
  	max-width:960px; 
@@ -137,12 +161,15 @@ small,
  	padding: 0; 
  	margin: 0 auto; 
  }
+ body.pinned {
+ 	overflow: hidden;
+ }
 
 // COLUMNS
 // ---------------------------------------- //
 @for $i from 1 through 12 {
 	%column#{$i} { 
-		@media (min-width: $smWidth){
+		@media (min-width: $break-sm){
 		  	@include column($i);
 		  	padding-bottom: 0;
 		}
@@ -153,7 +180,7 @@ small,
 	@include clearfix;
 }
 %narrow-column {
-	@media (min-width: $smWidth){
+	@media (min-width: $break-sm){
 		@include column_center(10);
 	}
 }

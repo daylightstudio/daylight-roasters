@@ -15,7 +15,7 @@ $fields['blockpicker'] = array(
             'customfields/blockpicker',
         ),
         'js_function' => 'blockpicker_field',
-        'represents' => array('name' => 'block'),
+        //'represents' => array('name' => 'block'),
 );
 include(FUEL_PATH.'config/custom_fields.php');
 

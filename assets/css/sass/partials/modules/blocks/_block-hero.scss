@@ -1,0 +1,46 @@
+.block-hero {
+	position: relative;
+	color: $white;
+	&-image {
+		position: relative;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 400px;
+
+		@media (min-width: $break-lg) {
+			height: 0;
+			padding-bottom: (400/1200)*100%; //height / width
+		}
+	}
+	&-content {
+		@include absCover;
+		margin-top: 0;
+		.wrapper {
+			@include verticalCenter;
+		}
+	}
+}
+
+.block-hero.block-center {
+	.col {
+		@media (min-width: $break-sm){
+			width: getColWidth(10);
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+}
+.block-hero-left {
+	@media (min-width: $break-sm){
+		.col {
+			width: getColWidth(7);
+		}
+	}
+}
+.block-hero-right {
+	@media (min-width: $break-sm){
+		.col {
+			margin-left: getPush(5);
+		}
+	}
+}

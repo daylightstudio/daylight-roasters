@@ -123,10 +123,23 @@ img[align="right"] {
 // MARGIN 
 .no_marg, .no_margin{ margin:0; }
 
-
 /* FUEL CLASSES */
+
 /* for form */
-div.error,li.error,ul.error{background-color:#c30;color:#fff;padding:2px 5px;}
-span.error_highlight input,span.error_highlight textarea,span.error_highlight select{border:2px solid #c30;}
+div.error, li.error, ul.error {
+	background-color: #c30;
+	color: #fff;
+	padding: 2px 5px;
+}
+span.error_highlight input, span.error_highlight textarea, span.error_highlight select {
+	border: 2px solid #c30;
+}
+
 /* for ckeditor */
-.ckeditor{background:#fff;padding:5px 5px 171px 5px; color:#000;font-size:12px; font-family: 'Lucida Grande', 'Gill Sans', Arial, Helvetica, Sans-serif !important;}
+.ckeditor {
+	background: #fff;
+	padding: 5px 5px 171px 5px;
+	color: #000;
+	font-size: 12px;
+	font-family: 'Lucida Grande', 'Gill Sans', Arial, Helvetica, Sans-serif !important;
+}

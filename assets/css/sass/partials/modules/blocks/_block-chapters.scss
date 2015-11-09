@@ -1,0 +1,41 @@
+.block-chapters {
+	@media (min-width: $break-sm) {
+		display: flex;
+		justify-content: space-between;
+		align-items: stretch;
+		align-content: space-between;
+	}
+
+	.col {
+		padding: 2em;
+		background: $gray;
+		font-size: 0.9em;
+		text-align: center;
+		> a {
+			display: block;
+			color: $white;
+		}
+		&:hover {
+			background: darken($gray, 10%);
+		}
+		@media (min-width: $break-sm) {
+			width: 20%; //just to make these always even
+			flex-grow: 1;
+		}
+	}
+}
+//only use columns if you need them to break to the next line
+@media (min-width: $break-sm) {
+	.block-chapters.cols-2, .block-chapters.cols-3, .block-chapters.cols-4 {
+		flex-wrap: wrap;
+	}
+	.block-chapters.cols-2 .col {
+		width: 50%;
+	}
+	.block-chapters.cols-3 .col {
+		width: 33%;
+	}
+	.block-chapters.cols-4 .col {
+		width: 25%;
+	}
+}

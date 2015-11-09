@@ -35,6 +35,7 @@
 	<?=fuel_block('type')?>
 	<?php echo css('main'); ?>
 	<?php echo css($css); ?>
+
 	<!--[if lte IE 8 ]><?php echo js('respond.min')?><![endif]-->
 
 	<?php if (!empty($is_blog)) : ?>
@@ -52,11 +53,12 @@
 	<![endif]-->
 	<header class="header">
 		<div class="wrapper">
-			<div class="row">
-				<div class="sitetitle"><a href="<?php echo site_url()?>">Site Title</a></div>
+			<div class="sitetitle"><a href="<?php echo site_url()?>" alt="Site Title"><img src="http://placehold.it/200x100"></a></div>
 
+			<div class="mainnav-wrap">
+				<a href="#" id="menu-toggle" class="mainnav-toggle">Menu</a>
 				<nav class="mainnav-container" role="navigation">
-					<?php /* edit main nav via admin or nav variables file (_variables/nav.php) */ ?>
+					<a href="#" id="menu-toggle-close" class="mainnav-toggle-close">Close</a>
 					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
 				</nav>
 			</div>

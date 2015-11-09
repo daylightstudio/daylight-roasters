@@ -10,35 +10,64 @@ $black: #000;
 $dark: #0C0C0C;
 $gray: #666666;
 $white: #fff;
-$copy: #666666;
 //End Base Colors
-
-// Component Colors
-$copy: $dark;
-$accent: $red;
 
 /** FONTS
 ---------------------------------------- **/
 //Base Type
 $font-main: 'Arial', sans-serif;
+$font-heading: 'Comic Sans MS', cursive, serif;
 //End Base Type
+
+$font-size-base: 1.6rem;
+$line-height-base: 1.3;
+
 
 
 /** RESPONSIVE WIDTHS
 ---------------------------------------- **/
-$smWidth: 570px; //568px for iphone .. and (orientation : landscape)
-$mdWidth: 770px;
-$lgWidth: 960px;
+$break-sm: 570px; //568px for iphone .. and (orientation : landscape)
+$break-md: 770px;
+$break-lg: 960px;
+
+$break-nav: $break-sm; //when it becomes the hamburger
 
 
-/** SPACING
+/** VERTICAL SPACING
 ---------------------------------------- **/
-$sm: 0.5em;
-$md: 1em;
-$lg: 1.5em;
-$xl: 2.5em;
+$spacing-xl: 100px;
+$spacing-lg: 80px;
+$spacing-md: 60px;
+$spacing-sm: 20px;
 
 
 /** TRANSITIONS
 ---------------------------------------- **/
 $cubic_ease: cubic-bezier(0.5, 0, 0.5, 1);
+
+$fast: 0.2s;
+$slow: 0.4s;
+$ease: $cubic_ease;
+
+
+/** MODULE VARIABLES
+---------------------------------------- **/
+$copy: $dark;
+$accent: $red;
+$border-radius: 5px;
+
+$hamburger-color: $black;
+$hamburger-color--active: $red;
+
+/*$link:;
+$link--hover:;
+$link--active:;
+
+$btn-color:;
+$btn-color--hover:;
+$btn-color--active:;
+$btn-bg:;
+$btn-bg--hover:;
+$btn-bg--active:;
+
+$alt-bg:;*/

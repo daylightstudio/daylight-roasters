@@ -7,7 +7,7 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="search"]
 	&.error {
 		border-color: red;
 	}
-	@media (min-width: $mdWidth) {
+	@media (min-width: $break-md) {
 		font-size: 1em;
 	}
 }

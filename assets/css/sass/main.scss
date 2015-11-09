@@ -5,6 +5,7 @@
 @import 'partials/helpers';
 
 //@import 'partials/vendor/select2';
+@import 'partials/vendor/font-awesome/font-awesome';
 
 @import 'partials/base';
 @import 'partials/buttons';
@@ -13,6 +14,14 @@
 @import 'partials/modules/header';
 @import 'partials/modules/footer';
 @import 'partials/modules/mainnav';
+@import 'partials/modules/hanger';
 
+@import 'partials/modules/blocks/block';
+@import 'partials/modules/blocks/block-hero';
+@import 'partials/modules/blocks/block-text';
+@import 'partials/modules/blocks/block-twocol';
+@import 'partials/modules/blocks/block-features';
+@import 'partials/modules/blocks/block-chapters';
+@import 'partials/modules/blocks/block-quote';
 
 @import 'partials/print';

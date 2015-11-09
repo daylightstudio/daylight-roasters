@@ -1,0 +1,10 @@
+.hanger {
+	[class^="icon-"], .hanging {
+		float: left;
+		margin-right: 1em;
+
+		& + div {
+			overflow: hidden;
+		}
+	}
+}

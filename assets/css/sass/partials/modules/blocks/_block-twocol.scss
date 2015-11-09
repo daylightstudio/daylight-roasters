@@ -1,0 +1,10 @@
+.block-twocol {
+	@extend %block;
+	.col {
+		@extend %column6;
+		margin-bottom: 1em;
+		@media (min-width: $break-sm) {
+			margin-bottom: 0;
+		}
+	}
+}
