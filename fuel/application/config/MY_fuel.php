@@ -94,8 +94,7 @@ if (!empty($config['modules_allowed']))
 	$config['settings']['modules_allowed'] = array('type' => 'multi', 'options' => array_combine($config['modules_allowed'], $config['modules_allowed']));
 }
 */
-
-
+$config['assets_excluded_dirs'] = array('js', 'css', 'cache', 'swf', 'captchas', '_template');
 
 /* End of file MY_fuel.php */
 /* Location: ./application/config/MY_fuel.php */

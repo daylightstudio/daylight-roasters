@@ -1,0 +1,20 @@
+.breadcrumb {
+	ul {
+		margin: 0;
+		padding: 0;
+
+		list-style: none;
+		li {
+			display: inline;
+		}
+		a {
+			padding: 0.25em;
+		}
+		li:first-child a {
+			padding-left: 0;
+		}
+	}
+}
+.sep {
+	margin: 0.5em 0;
+}

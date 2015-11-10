@@ -3718,12 +3718,37 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   }
 }
 
+.breadcrumb ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.breadcrumb ul li {
+  display: inline;
+}
+.breadcrumb ul a {
+  padding: 0.25em;
+}
+.breadcrumb ul li:first-child a {
+  padding-left: 0;
+}
+
+.sep {
+  margin: 0.5em 0;
+}
+
 .hanger [class^="icon-"], .hanger .hanging {
   float: left;
   margin-right: 1em;
 }
 .hanger [class^="icon-"] + div, .hanger .hanging + div {
   overflow: hidden;
+}
+
+@media (min-width: 570px) {
+  .page-header {
+    padding: 20px 0 60px;
+  }
 }
 
 /** GLOBAL BLOCK STYLES
@@ -3880,6 +3905,10 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   .block-chapters.cols-4 .col {
     width: 25%;
   }
+}
+.block-cta {
+  background-repeat: no-repeat;
+  background-position: center;
 }
 @media (min-width: 570px) {
   .block-cta .col {

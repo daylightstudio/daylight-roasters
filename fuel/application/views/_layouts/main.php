@@ -1,10 +1,13 @@
 <?php $this->load->view('_blocks/header')?>
 
 	<div class="main-container">
-		<div class="wrapper">
-			<h1><?=fuel_var('h1', ''); ?></h1>
-			<?=fuel_var('body', ''); ?>
-		</div>
+		<section class="page-header">
+			<div class="wrapper">
+				<?php $this->load->view('_blocks/breadcrumb')?>
+				<h1><?=fuel_var('h1', ''); ?></h1>
+				<?=fuel_var('body', ''); ?>
+			</div>
+		</section>
 
 		<div class="main-repeater-container">
 			<?php 

@@ -1,5 +1,7 @@
 .block-cta {
 	@extend %block;
+	background-repeat: no-repeat;
+	background-position: center;
 	.col {
 		@media (min-width: $break-sm) {
 			width: 50%;

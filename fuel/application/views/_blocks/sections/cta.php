@@ -1,4 +1,4 @@
-<section class="block-cta<?php if($centered == 'yes') echo ' block-center'; ?> block-<?=$alignment?>">
+<section class="block-cta<?php if($centered == 'yes') echo ' block-center'; ?> block-<?=$alignment?>"<?php if(!empty($background_image)):?> style="background-image:url(<?=img_path($background_image)?>);background-size:cover;"<?php endif; ?>>
 	<div class="wrapper">
 		<?php if($columns == 2): ?>
 		<div class="row">

@@ -1,0 +1,5 @@
+.page-header {
+	@media (min-width: $break-sm) {
+		padding: $spacing-sm 0 $spacing-md;
+	}
+}

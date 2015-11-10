@@ -38,22 +38,6 @@ $config['layouts']['main'] = array(
 $alignment = array('center', 'left', 'right');
 $yesno = array('no', 'yes');
 
-$config['blocks']['full-width'] = array(
-	'group' => 'Sections',
-	'label' => 'Full Width',
-	'fields' => array(
-		'text' => array('type' => 'textarea'),
-	),
-);
-$config['blocks']['intro'] = array(
-	'group' => 'Sections',
-	'label' => 'Intro Block',
-	'fields' => array(
-		'title' => array(),
-		'text' => array('type' => 'textarea'),
-	),
-);
-
 $config['blocks']['hero'] = array(
 	'group' => 'Sections',
 	'label' => 'Hero Block',
@@ -154,6 +138,7 @@ $config['blocks']['cta'] = array(
 		'title' => array(),
 		'link' => array(),
 		'button_text' => array(),
+		'background_image' => array('1200px by 300px'),
 		'columns' => array('type' => 'select', 'options' => array('1', '2')),
 		'alignment' => array('type' => 'select', 'options' => $alignment),
 	),
