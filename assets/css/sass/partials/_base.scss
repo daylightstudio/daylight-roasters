@@ -1,0 +1,187 @@
+// Remove text-shadow in selection highlight: h5bp.com/i
+// These selection declarations have to be separate.
+// Customize the background color to match your design.
+::selection { 
+	background: rgba($accent, 0.9); 
+	text-shadow: none; 
+	color: $white; 
+}
+
+// A better looking default horizontal rule
+hr { 
+	display: block; 
+	height: 1px; 
+	border: 0; 
+	border-top: 1px solid #ccc; 
+	margin: 1em 0; 
+	padding: 0; 
+}
+
+img {
+	vertical-align: middle; 
+	max-width: 100%;
+}
+.img-circle {
+	border-radius: 50%;
+}
+
+// Remove default fieldset styles.
+fieldset {
+	border: 0; 
+	margin: 0; 
+	padding: 0; 
+}
+
+// Allow only vertical resizing of textareas.
+textarea {
+	resize: vertical; 
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+// Set html/body max width
+html, body { 
+	width: 100%; 
+	min-height: 100%; 
+	padding: 0; 
+	margin: 0; 
+}
+
+
+// TYPOGRAPHY
+// ---------------------------------------- //
+html { 
+	font-size: 62.5%; 
+}
+.mainfont, html, body, button, input, select, textarea { 
+	font-family: $font-main;
+}
+body { 
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+}
+html, body, button, input, select, textarea { 
+	color: $copy; 
+}
+
+%first_last_margins {
+	&:first-child { margin-top: 0 }
+	// &:last-child { margin-bottom: 0 }
+}
+ul, ol { 
+	@extend %first_last_margins;
+	margin: 1em 0;
+}
+p { 
+	@extend %first_last_margins;
+	margin: 0 0 1em 0; 
+}
+
+a { 
+	color: $accent; 
+	text-decoration: none;
+	&:hover { 
+		text-decoration: underline; 
+	}
+}
+
+%header_global { 
+	margin: 0.5em 0;
+	font-family: $font-heading;
+	&:first-child { 
+		margin-top: 0; 
+	}
+}
+h1, .h_headline { 
+	@extend %header_global;
+	font-size: 3rem;
+}
+h2, .h_subheadline { 
+	@extend %header_global;
+	font-size: 2.7rem;
+}
+h3, .h_byline {
+	@extend %header_global; 
+	font-size: 2.2rem;
+}
+h4, .h_standfirst { 
+	@extend %header_global;
+	font-size: 1.8rem;
+}
+h5, .h_related { 
+	@extend %header_global;
+	font-size: 1.6rem; 
+}
+
+
+big,
+.text_large,
+.text_intro { 
+	font-size: 2em;
+	line-height: 1.5; 
+}
+small,
+.text_small { 
+	font-size: 0.5em;
+	line-height: 1.2; 
+}
+blockquote {
+	font-size: $font-size-base*1.4;
+	margin: 1em 0;
+	.fancy {
+		position: relative;
+		&:before {
+			content: '\201C';
+			position: absolute;
+			right: 100%;
+			margin-right: 3px;
+			font-size: 1.4em;
+
+		}
+		&:after {
+			content: '\201D';
+		}
+	}
+}
+cite {
+	font-size: $font-size-base*0.9;
+	font-style: normal;
+}
+address {
+	margin: 1em 0;
+	font-style: normal;
+}
+// LAYOUT
+// ---------------------------------------- //
+.wrapper { 
+	@include clearfix;
+ 	max-width:960px; 
+ 	width: 90%; 
+ 	padding: 0; 
+ 	margin: 0 auto; 
+ }
+ body.pinned {
+ 	overflow: hidden;
+ }
+
+// COLUMNS
+// ---------------------------------------- //
+@for $i from 1 through 12 {
+	%column#{$i} { 
+		@media (min-width: $break-sm){
+		  	@include column($i);
+		  	padding-bottom: 0;
+		}
+	}
+}
+.row {
+	@include row;
+	@include clearfix;
+}
+%narrow-column {
+	@media (min-width: $break-sm){
+		@include column_center(10);
+	}
+}

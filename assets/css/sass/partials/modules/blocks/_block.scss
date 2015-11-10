@@ -1,0 +1,16 @@
+/** GLOBAL BLOCK STYLES
+---------------------------------------- **/
+%block {
+	padding: $spacing-sm 0;
+
+	@media (min-width: $break-sm) {
+		padding: $spacing-md 0;
+	}
+}
+.block-center {
+	text-align: center;
+}
+.block-header {
+	margin-bottom: 1em;
+	text-align: center;
+}

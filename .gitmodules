@@ -1,0 +1,9 @@
+[submodule "fuel/modules/forms"]
+	path = fuel/modules/forms
+	url = https://dalla777@github.com/daylightstudio/FUEL-CMS-Forms-Module.git
+[submodule "fuel/modules/sync"]
+	path = fuel/modules/sync
+	url = https://dalla777@github.com/daylightstudio/FUEL-CMS-Sync-Module.git
+[submodule "fuel/modules/backup"]
+	path = fuel/modules/backup
+	url = https://dalla777@github.com/daylightstudio/FUEL-CMS-Backup-Module.git

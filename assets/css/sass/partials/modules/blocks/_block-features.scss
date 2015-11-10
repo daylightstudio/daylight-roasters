@@ -1,0 +1,19 @@
+.block-features {
+	@extend %block;
+	font-size: 0.9em;
+}
+.block-features.cols-3 {
+	.col {
+		@extend %column4;
+	}
+}
+.block-features.cols-4 {
+	.col {
+		@extend %column3;
+	}
+}
+.block-features.cols-3, .block-features.cols-4 {
+	@media (max-width: $break-sm) {
+		margin-bottom: 1em;
+	}
+}
