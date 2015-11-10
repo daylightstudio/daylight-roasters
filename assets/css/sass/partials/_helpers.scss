@@ -17,7 +17,6 @@
 		height: 150%; 
 	}
 }
-
 %text_center { text-align: center; }
 
 // The micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
@@ -31,7 +30,7 @@
 }
 // HIDE STUFF //
 .hidden{ display: none; }
-.visuallyhidden { 
+.visuallyhidden, .sr-only { 
 	border:0;
 	clip:rect(0 0 0 0);
 	height:1px;

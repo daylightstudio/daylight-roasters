@@ -127,8 +127,6 @@ small,
 	font-size: 0.5em;
 	line-height: 1.2; 
 }
-
-
 blockquote {
 	font-size: $font-size-base*1.4;
 	margin: 1em 0;
@@ -151,7 +149,10 @@ cite {
 	font-size: $font-size-base*0.9;
 	font-style: normal;
 }
-
+address {
+	margin: 1em 0;
+	font-style: normal;
+}
 // LAYOUT
 // ---------------------------------------- //
 .wrapper { 

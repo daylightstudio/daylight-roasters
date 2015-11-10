@@ -8,3 +8,19 @@
 		}
 	}
 }
+.block-twocol.block-left-lg {
+	.col:first-child {
+		@extend %column8;
+	}
+	.col:last-child {
+		@extend %column4;
+	}
+}
+.block-twocol.block-right-lg {
+	.col:first-child {
+		@extend %column4;
+	}
+	.col:last-child {
+		@extend %column8;
+	}
+}

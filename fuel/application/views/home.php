@@ -11,7 +11,7 @@
 	</div>
 </section>
 
-<section class="block-hero block-hero-left">
+<section class="block-hero block-left">
 	<div class="block-hero-image" style="background-image:url(http://placehold.it/1200x400);background-size:cover;"></div>
 	<div class="block-hero-content">
 		<div class="wrapper">
@@ -24,7 +24,7 @@
 	</div>
 </section>
 
-<section class="block-hero block-hero-right">
+<section class="block-hero block-right">
 	<div class="block-hero-image" style="background-image:url(http://placehold.it/1200x400);background-size:cover;"></div>
 	<div class="block-hero-content">
 		<div class="wrapper">
@@ -299,6 +299,41 @@
 				<p class="fancy">Quote, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
 				<cite>—byline, name and title</cite>
 			</blockquote>
+		</div>
+	</div>
+</section>
+
+<section class="block-cta block-center">
+	<div class="wrapper">
+		<h2>CTA Message</h2>
+		<p><a href="#" class="btn">Contact</a></p>
+	</div>
+</section>
+<section class="block-cta">
+	<div class="wrapper">
+		<div class="col">
+			<h2>CTA Message</h2>
+			<p><a href="#" class="btn">Contact</a></p>
+		</div>
+	</div>
+</section>
+<section class="block-cta block-cta-right">
+	<div class="wrapper">
+		<div class="col">
+			<h2>CTA Message</h2>
+			<p><a href="#" class="btn">Contact</a></p>
+		</div>
+	</div>
+</section>
+<section class="block-cta">
+	<div class="wrapper">
+		<div class="row">
+			<div class="col">
+				<h2>CTA Message</h2>
+			</div>
+			<div class="col">
+				<p><a href="#" class="btn">Contact</a></p>
+			</div>
 		</div>
 	</div>
 </section>

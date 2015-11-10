@@ -1,7 +1,8 @@
 // MAINNAV
 // ---------------------------------------- //
 .mainnav {
-
+	position: relative;
+	z-index: 999;
 	// global styles
 	// ---------------------------------------- //
 	&, ul {
@@ -14,9 +15,11 @@
 		display: block;
 		padding: 0.3em 0.75em;
 	}
+
 	// mobile-specific
 	// ---------------------------------------- //
-	
+	@media (max-width: $break-nav - 1) {
+	}
 
 	// larger then break
 	// ---------------------------------------- //
@@ -56,7 +59,7 @@
 	// mobile-specific - popover
 	// ---------------------------------------- //
 	@media (max-width: $break-nav - 1) {
-		z-index: 999;
+		z-index: 9999;
 		background: $dark;
 		padding-top: 3em;
 		position: fixed;

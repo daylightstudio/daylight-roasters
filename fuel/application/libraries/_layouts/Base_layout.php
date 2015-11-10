@@ -79,7 +79,6 @@ class Base_layout extends Fuel_layout {
 									'block' => array('type' => 'blockpicker', 'group' => 'Sections')
 
 						),
-					'init_display'  => 'first',
 					'class'         => 'repeatable',
 					'add_extra'     => FALSE,
 					'repeatable'    => TRUE,

@@ -30,14 +30,14 @@
 		}
 	}
 }
-.block-hero-left {
+.block-hero.block-left {
 	@media (min-width: $break-sm){
 		.col {
 			width: getColWidth(7);
 		}
 	}
 }
-.block-hero-right {
+.block-hero.block-right {
 	@media (min-width: $break-sm){
 		.col {
 			margin-left: getPush(5);

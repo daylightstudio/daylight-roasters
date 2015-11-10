@@ -56,7 +56,7 @@
 			<div class="sitetitle"><a href="<?php echo site_url()?>" alt="Site Title"><img src="http://placehold.it/200x100"></a></div>
 
 			<div class="mainnav-wrap">
-				<a href="#" id="menu-toggle" class="mainnav-toggle">Menu</a>
+				<a href="#" id="menu-toggle" class="mainnav-toggle">Menu <i class="fa fa-bars"></i></a>
 				<nav class="mainnav-container" role="navigation">
 					<a href="#" id="menu-toggle-close" class="mainnav-toggle-close">Close</a>
 					<?php echo fuel_nav(array('container_tag_class' => 'mainnav', 'item_id_prefix' => 'nav_'))?>
