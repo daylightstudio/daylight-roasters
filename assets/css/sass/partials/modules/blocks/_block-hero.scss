@@ -19,6 +19,10 @@
 			@include verticalCenter;
 		}
 	}
+	h1 {
+		font-style: italic;
+		text-transform: uppercase;
+	}
 }
 
 .block-hero.block-center {

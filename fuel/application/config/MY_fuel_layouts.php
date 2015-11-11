@@ -32,8 +32,15 @@ $config['layouts']['main'] = array(
 	// 	'body_class' => array('label' => lang('layout_field_body_class')),
 	// )
 );
+$config['layouts']['home'] = array(
+	'label'    => 'Home',
+	'file' 		=> $config['layouts_path'].'home',
+	'class'		=> 'Home_layout',
+	'filepath' => 'libraries/_layouts',
+	'filename' => 'Home_layout.php',
+);
 
-/** BLOCKS **********************************/
+/** GENERIC BLOCKS **********************************/
 
 $alignment = array('center', 'left', 'right');
 $yesno = array('no', 'yes');
@@ -48,7 +55,7 @@ $config['blocks']['hero'] = array(
 		'alignment' => array('type' => 'enum', 'options' => $alignment),
 	),
 );
-$config['blocks']['text'] = array(
+$config['blocks']['textblock'] = array(
 	'group' => 'Sections',
 	'label' => 'Text Block',
 	'fields' => array(
@@ -144,8 +151,16 @@ $config['blocks']['cta'] = array(
 	),
 );
 
+/** CUSTOM BLOCKS **********************************/
 
-
+$config['blocks']['menu'] = array(
+	'group' => 'Sections',
+	'label' => 'Menu Block',
+	'fields' => array(
+		'column_left' => array('type' => 'textarea'),
+		'column_right' => array('type' => 'textarea'),
+	),
+);
 
 /* End of file MY_fuel_layouts.php */
 /* Location: ./application/config/MY_fuel_layouts.php */

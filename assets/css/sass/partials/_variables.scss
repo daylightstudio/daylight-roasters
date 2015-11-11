@@ -5,22 +5,33 @@
 /** COLORS
 ---------------------------------------- **/
 //Base Colors
-$red: #ff0000;
-$black: #000;
-$dark: #0C0C0C;
-$gray: #666666;
+$teal: #7A9E9F;
+$babyblue: #B8D8D8;
+$black: #282828;
+$darkgray1: #404045;
+$darkgray2: #4B4B4D;
+$gray: #727272;
+$lightgray1: #EAE7D6;
+$lightgray2: #EDEBE2;
 $white: #fff;
+$tan: #f4f2e9;
 //End Base Colors
+
+$dark: $black;
+$copy: $dark;
+$accent: $teal;
+
 
 /** FONTS
 ---------------------------------------- **/
 //Base Type
-$font-main: 'Arial', sans-serif;
-$font-heading: 'Comic Sans MS', cursive, serif;
+$font-main: "raleway", 'Century Gothic', CenturyGothic, AppleGothic, Helvetica, sans-serif;
+$font-heading: "chaparral-pro", Palatino, Palatino Linotype,Palatino LT STD, Book Antiqua,Georgia,serif;
 //End Base Type
 
 $font-size-base: 1.6rem;
-$line-height-base: 1.3;
+$line-height-base: 1.44;
+$bold: 600;
 
 
 
@@ -30,7 +41,7 @@ $break-sm: 570px; //568px for iphone .. and (orientation : landscape)
 $break-md: 770px;
 $break-lg: 960px;
 
-$break-nav: $break-sm; //when it becomes the hamburger
+$break-nav: $break-md; //when it becomes the hamburger
 
 
 /** VERTICAL SPACING
@@ -50,24 +61,6 @@ $slow: 0.4s;
 $ease: $cubic_ease;
 
 
-/** MODULE VARIABLES
+/** MISC VARIABLES
 ---------------------------------------- **/
-$copy: $dark;
-$accent: $red;
-$border-radius: 5px;
-
-$hamburger-color: $black;
-$hamburger-color--active: $red;
-
-/*$link:;
-$link--hover:;
-$link--active:;
-
-$btn-color:;
-$btn-color--hover:;
-$btn-color--active:;
-$btn-bg:;
-$btn-bg--hover:;
-$btn-bg--active:;
-
-$alt-bg:;*/
+$border-radius: 0;

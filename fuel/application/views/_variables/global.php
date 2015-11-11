@@ -14,7 +14,6 @@ $vars['js'] = array();
 $vars['css'] = array();
 $vars['body_class'] = uri_segment(1).' '.uri_segment(2);
 
-
 /* SET $h1 BASED ON NAV LABEL */
 include('nav.php');
 $vars['h1'] = isset($nav[uri_string()]) ? $nav[uri_string()]['label'] : '';
@@ -23,4 +22,4 @@ $vars['h1'] = isset($nav[uri_string()]) ? $nav[uri_string()]['label'] : '';
 /* PAGE SPECIFIC VARS
 ---------------------------------------- **/
 $pages = array();
-$pages['home'] = array('body_class' => 'home');
+$pages['home'] = array('body_class' => 'home', 'sitetitle_tag' => 'h1');

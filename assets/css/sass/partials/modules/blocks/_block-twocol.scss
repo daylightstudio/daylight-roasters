@@ -1,5 +1,6 @@
 .block-twocol {
 	@extend %block;
+	background: $tan;
 	.col {
 		@extend %column6;
 		margin-bottom: 1em;

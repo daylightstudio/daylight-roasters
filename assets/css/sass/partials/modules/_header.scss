@@ -1,14 +1,15 @@
 // HEADER
 // ---------------------------------------- //
 .header { 
+	background: $babyblue;
 	.wrapper {
 		@include clearfix;
-		margin-top: 1em;
-		margin-bottom: 1em;
+		padding: 1em 0;
 	}
 }
 .sitetitle { 
 	text-align: center;
+	font-size: inherit;
 
 	@media (min-width: $break-nav) {
 		float: left;

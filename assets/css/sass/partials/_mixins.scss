@@ -22,6 +22,21 @@
 	transform: translateY(-50%);
 }
 
+@mixin doubleBorder($color) {
+	border: 3px solid $color;
+	position: relative;
+	&:before {
+		content: '';
+		position: absolute;
+		top: 2px;
+		bottom: 2px;
+		left: 2px;
+		right: 2px;
+		border: 1px solid $color;
+		pointer-events: none;
+	}
+}
+
 
  //  RETINA IMAGE HELPER
 // ---------------------------------------- 

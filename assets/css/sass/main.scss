@@ -6,6 +6,7 @@
 
 //@import 'partials/vendor/select2';
 @import 'partials/vendor/font-awesome/font-awesome';
+@import 'partials/icons';
 
 @import 'partials/base';
 @import 'partials/buttons';
@@ -26,8 +27,9 @@
 @import 'partials/modules/blocks/block-chapters';
 @import 'partials/modules/blocks/block-quote';
 @import 'partials/modules/blocks/block-cta';
+@import 'partials/modules/blocks/block-newsevents';
 
-
-
+//custom blocks
+@import 'partials/modules/blocks/block-menu';
 
 @import 'partials/print';

@@ -1,22 +1,30 @@
 .btn {
 	display: inline-block;
 	border-radius: $border-radius;
-	padding: 0.3em 1.5em 0.2em;
-	font-size: 1.6rem;
+	padding: 0.5em 1.5em;
+	font-size: 1.3rem;
+	line-height: 1.54;
 	text-transform: uppercase;
-	color: $white;
-	background: $accent;
+
+	color: $accent;
+	background: $white;
+	border: 1px solid $accent;
+	transition: all $slow $ease;
 
 	&:link, &:visited {
-		color: $white;
-		background: $accent;
+		color: $accent;
+		background: rgba($accent, 0);
+		border: 1px solid $accent;
 	}
 	&:hover, &:focus {
-		background: darken($accent, 10%);
+		background: $accent;
+		color: $white;
 		text-decoration: none;
 	}
 	&:active {
-		background: darken($accent, 20%);
+		color: $gray;
+		border-color: $gray;
+		background: $white;
 	}
 }
 .btn-secondary {}

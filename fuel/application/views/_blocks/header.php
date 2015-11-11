@@ -53,7 +53,7 @@
 	<![endif]-->
 	<header class="header">
 		<div class="wrapper">
-			<div class="sitetitle"><a href="<?php echo site_url()?>" alt="Site Title"><img src="http://placehold.it/200x100"></a></div>
+			<div class="sitetitle"><a href="<?php echo site_url()?>" alt="Site Title"><img src="<?=img_path('_template/header_logo.svg')?>" alt="Daylight Roasters" width="86" height="84"></a></div>
 
 			<div class="mainnav-wrap">
 				<a href="#" id="menu-toggle" class="mainnav-toggle">Menu <i class="fa fa-bars"></i></a>
