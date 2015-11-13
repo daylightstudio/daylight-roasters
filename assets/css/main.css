@@ -3418,7 +3418,7 @@ body.pinned {
 }
 
 @media (min-width: 570px) {
-  .block-features.cols-4 .col {
+  .post-aside, .post-summary-thumbnail, .block-features.cols-4 .col {
     display: inline;
     float: left;
     width: 22.91667%;
@@ -3461,6 +3461,17 @@ body.pinned {
   }
 }
 
+@media (min-width: 570px) {
+  .post-main, .post-summary-content {
+    display: inline;
+    float: left;
+    width: 72.91667%;
+    margin-left: 1.04167%;
+    margin-right: 1.04167%;
+    padding-bottom: 0;
+  }
+}
+
 .row {
   display: block;
   width: 102.08333%;
@@ -3481,6 +3492,25 @@ body.pinned {
 }
 .row:after {
   clear: both;
+}
+
+.menu-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu-list li {
+  margin: 1em 2em 1em 0;
+  background: url("../images/_template/dot.png") repeat-x bottom;
+  line-height: 1;
+}
+.menu-list span {
+  position: relative;
+  background: white;
+  padding: 3px;
+}
+.menu-list span:last-child {
+  float: right;
 }
 
 .btn, input[type="submit"], input[type="button"], button, input[type="reset"] {
@@ -3838,6 +3868,12 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   }
 }
 
+.breadcrumb {
+  background: #f4f2e9;
+  border-bottom: 3px solid #e3dec7;
+  padding: 3em 0;
+  text-transform: uppercase;
+}
 .breadcrumb ul {
   margin: 0;
   padding: 0;
@@ -3854,7 +3890,7 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
 }
 
 .sep {
-  margin: 0.5em 0;
+  margin: 0.3em;
 }
 
 .hanger [class^="icon-"], .hanger .hanging {
@@ -3869,6 +3905,44 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   .page-header {
     padding: 20px 0 60px;
   }
+}
+
+.post-container {
+  padding: 80px 0;
+}
+
+.post-aside-item {
+  margin: 0 0 3em;
+}
+
+.post-aside-list {
+  list-style: none;
+  padding: 0;
+}
+.post-aside-list li {
+  margin: 0.5em 0;
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+.post-aside-title {
+  text-transform: uppercase;
+  font-size: 2rem;
+  font-family: "raleway", "Century Gothic", CenturyGothic, AppleGothic, Helvetica, sans-serif;
+}
+
+.post-summary {
+  margin-bottom: 2em;
+}
+
+@media (min-width: 570px) {
+  .post-summary-content {
+    padding-right: 2em;
+  }
+}
+
+.post-summary-title {
+  font-size: 2.8rem;
 }
 
 /** GLOBAL BLOCK STYLES

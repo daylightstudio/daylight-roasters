@@ -57,6 +57,7 @@ class Base_layout extends Fuel_layout {
 		$fields['Main Content'] = array('type' => 'fieldset', 'label' => 'Main Content', 'class' => 'tab');
 		$fields['h1'] = array('label' => 'Main heading');
 		$fields['body'] = array('type' => 'textarea');
+		$fields['hero_image'] = array();
 		$this->add_fields($fields);
 	}
 

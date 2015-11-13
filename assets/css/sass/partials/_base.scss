@@ -217,3 +217,24 @@ address {
 		@include column_center(10);
 	}
 }
+
+// ONE-OFFS
+// ---------------------------------------- //
+.menu-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	li {
+		margin: 1em 2em 1em 0;
+		background: url('../images/_template/dot.png') repeat-x bottom;
+		line-height: 1;
+	}
+	span {
+		position: relative;
+		background: white;
+		padding: 3px;
+	}
+	span:last-child {
+		float: right;
+	}
+}

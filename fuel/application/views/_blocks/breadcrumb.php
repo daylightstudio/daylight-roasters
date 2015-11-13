@@ -1,3 +1,5 @@
-<div class="breadcrumb">
-	<?=fuel_nav(array('render_type' => 'breadcrumb', 'delimiter' => '&#9658;', 'arrow_class' => 'sep', 'home_link' => ''));?>
-</div>
+<section class="breadcrumb">
+	<div class="wrapper">
+		<?=fuel_nav(array('render_type' => 'breadcrumb', 'delimiter' => '/', 'arrow_class' => 'sep', 'home_link' => 'Home'));?>
+	</div>
+</section>

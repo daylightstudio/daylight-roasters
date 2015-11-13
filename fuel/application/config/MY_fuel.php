@@ -9,7 +9,7 @@
 $config['fuel_path'] = 'fuel/';
 
 // the name to be displayed on the top left of the admin
-$config['site_name'] = 'My Website';
+$config['site_name'] = 'Daylight Roasters Demo';
 
 // whether the admin backend is enabled or not
 $config['admin_enabled'] = TRUE;

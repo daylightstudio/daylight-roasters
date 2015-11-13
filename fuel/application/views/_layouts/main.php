@@ -1,15 +1,10 @@
 <?php $this->load->view('_blocks/header')?>
 
 	<div class="main-container">
-		<section class="page-header">
-			<div class="wrapper">
-				<?php $this->load->view('_blocks/breadcrumb')?>
-				<h1><?=fuel_var('h1', ''); ?></h1>
-				<?=fuel_var('body', ''); ?>
-			</div>
-		</section>
+		<?php $this->load->view('_blocks/sections/hero', array('alignment' => 'center', 'title' => fuel_var('h1', ''), 'text' => fuel_var('body', ''), 'background_image' => $hero_image))?>
+		<?php $this->load->view('_blocks/breadcrumb')?>
 
-		<div class="main-repeater-container">
+		<main class="main-repeater-container">
 			<?php 
 			if (!empty($sections)) :
 			foreach($sections as $key => $section):
@@ -19,7 +14,7 @@
 				endif;
 			endforeach;
 			endif; ?>
-		</div>
+		</main>
 
 	</div>
 
