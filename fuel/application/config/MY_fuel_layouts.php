@@ -68,14 +68,15 @@ $config['blocks']['twocol'] = array(
 	'group' => 'Sections',
 	'label' => '2 Column Block',
 	'fields' => array(
-		'column_left' => array('type' => 'textarea'),
-		'column_right' => array('type' => 'textarea'),
-		'centered' => array('type' => 'enum', 'options' => $yesno),
 		'column_layout' => array('type' => 'select', 'options' => array(
 			'half' => 'Half',
 			'left-lg' => 'Larger left column',
 			'right-lg' => 'Larger right column',
 		)),
+		'column_left' => array('type' => 'textarea'),
+		'column_right' => array('type' => 'textarea'),
+		'centered' => array('type' => 'enum', 'options' => $yesno),
+		
 	),
 );
 $config['blocks']['features'] = array(
@@ -88,6 +89,7 @@ $config['blocks']['features'] = array(
 		'columns' => array('display_label' => FALSE,
 			'init_display' => 'none',
 			'type'          => 'template', 
+			'float' => TRUE,
 			'fields'        => array(
 				'sections' => array('type' => 'section', 'label' => '{__title__}'),
 				'title' => array(),

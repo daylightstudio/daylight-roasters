@@ -3945,6 +3945,19 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   font-size: 2.8rem;
 }
 
+.post-meta {
+  margin-bottom: 1em;
+}
+.post-meta h4 {
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.post-date {
+  font-weight: bold;
+}
+
 /** GLOBAL BLOCK STYLES
 ---------------------------------------- **/
 .block-text, .block-quote, .block-twocol, .block-features, .block-cta, .block-newsevents, .block-menu {
@@ -3979,6 +3992,18 @@ input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-bt
   .block-hero-image {
     height: 0;
     padding-bottom: 33.33333%;
+  }
+}
+.block-hero-image-sm {
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 200px;
+}
+@media (min-width: 960px) {
+  .block-hero-image-sm {
+    height: 0;
+    padding-bottom: 16.66667%;
   }
 }
 .block-hero-content {

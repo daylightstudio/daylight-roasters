@@ -12,6 +12,17 @@
 			padding-bottom: (400/1200)*100%; //height / width
 		}
 	}
+	&-image-sm {
+		position: relative;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 200px;
+
+		@media (min-width: $break-lg) {
+			height: 0;
+			padding-bottom: (200/1200)*100%; //height / width
+		}
+	}
 	&-content {
 		@include absCover;
 		margin-top: 0;

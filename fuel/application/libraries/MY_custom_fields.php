@@ -80,7 +80,7 @@ class MY_custom_fields {
 					$('.blockpicker_group').each(function(){
 						var style = ($(this).attr('style') ? $(this).attr('style') : '');
 						var name = $(this).find('input').val();
-						style = style + ' background-image: url(/assets/images/_template/blockpicker/'+name+'.png);background-size:cover;';
+						style = style + ' background-image: url(".img_path('_template/blockpicker/')."'+name+'.png);background-size:cover;';
 						$(this).attr('style', style);
 					});
 			    })

@@ -4,7 +4,7 @@ require_once('Base_layout.php');
 
 class Main_layout extends Base_layout {
 
-	public $double_parse = TRUE;
+	public $double_parse = FALSE;
 
 	// --------------------------------------------------------------------
 

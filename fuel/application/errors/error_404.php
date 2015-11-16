@@ -19,10 +19,16 @@ require_once(APPPATH.'helpers/MY_url_helper.php');
 require_once(APPPATH.'helpers/my_helper.php');
 include(APPPATH.'views/_blocks/header.php');
 ?>	
+<div class="main-container">
 
-<div id="error_404">
-	<h1><?php echo $heading; ?></h1>
-	<?php echo $message; ?>
+	<main class="main-repeater-container">
+		<div id="error_404" class="block-text wrapper">
+			<h1><?php echo $heading; ?></h1>
+			<?php echo $message; ?>
+		</div>
+	</main>
+
 </div>
+
 
 <?php include(APPPATH.'views/_blocks/footer.php'); ?>

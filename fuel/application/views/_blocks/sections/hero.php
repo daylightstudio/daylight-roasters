@@ -1,5 +1,5 @@
 <section class="block-hero block-<?=$alignment?>">
-	<div class="block-hero-image" style="background-image:url(<?=img_path($background_image)?>);background-size:cover;"></div>
+	<div class="block-hero-image<?=(!empty($size) ? '-'.$size : '')?>" style="background-image:url(<?=img_path($background_image)?>);background-size:cover;"></div>
 	<div class="block-hero-content">
 		<div class="wrapper">
 			<div class="col">
