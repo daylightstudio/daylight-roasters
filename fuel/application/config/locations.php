@@ -24,14 +24,14 @@ $config['locations']['gmap'] = array(
 	'mapID'            => 'map_canvas',
 	//'mapCenter'        => array('lat' => 45.5424364, 'lng' => -122.654422), // PDX default
 	'defaultMapCenter' => array('lat' => 45.5424364, 'lng' => -122.654422),
-	'imgPath'          => img_path(),
+	'imgPath'          => img_path().'_template/',
 	'zoom'             => 14,
 	'scrollwheel'      => FALSE,
 	'disableDefaultUI' => TRUE,
 	'mapTypeControl'   => FALSE,
-	'marker'           => array('custom' => FALSE),
-	'styles'           => array(),
-
+	//'marker'           => array('custom' => FALSE, 'colors' => array('stores' => '#f7584c', 'restaurants-bars' => '#e1d442')),
+	'marker'           => array('custom' => false),
+	'styles'           => json_decode('[ {"featureType": "poi", "stylers": [{"visibility": "simplified"} ] }, {"featureType": "road", "stylers": [{"visibility": "simplified"} ] }, {"featureType": "water", "stylers": [{"visibility": "simplified"} ] }, {"featureType": "transit", "stylers": [{"visibility": "simplified"} ] }, {"featureType": "landscape", "stylers": [{"visibility": "simplified"} ] }, {"featureType": "road.highway", "stylers": [{"visibility": "off"} ] }, {"featureType": "road.local", "stylers": [{"visibility": "on"} ] }, {"featureType": "road.highway", "elementType": "geometry", "stylers": [{"visibility": "on"} ] }, {"featureType": "water", "stylers": [{"color": "#84afa3"}, {"lightness": 52 } ] }, {"stylers": [{"saturation": -77 } ] }, {"featureType": "road"} ]', TRUE)
 	// example of what can be done with other parameters
 	// 'mapCenter'        => array('lat' => '45.5200', 'lng' => '122.6819'), // PDX
 	// 'defaultMapCenter' =>  array('lat' => '45.5200', 'lng' => '122.6819'), // If no data exists, this will be used
@@ -41,7 +41,7 @@ $config['locations']['gmap'] = array(
 	// 'panToXOffset' => 0,
 	// 'panToYOffset' => 0,
 	// 'forceGeoLocation' => false,
-	// 'customOverlay' => 'CustomOverlay',
+	// 
 	// 'displayInfoWindows' => true,
 	// 'displayTooltips' => true,
 	// 'navigationControl' => true,
@@ -49,10 +49,6 @@ $config['locations']['gmap'] = array(
 	// 'draggable' => true,
 	// 'zoomControl' => true,
 	// 'marker'           => array('custom' => true,
-	// 							'img' => 'map_pin',
-	// 							'size' => array('width' => 20, 'height' => 20), 
-	// 							'origin' => array('x' => 0, 'y' => 0),
-	// 							'anchor' => array('x' => 0, 'y' => 0),
 	// 							'shape' => array(
 	// 										'coord' => array(8,16,5,19,2,8,0,6,0,2,2,0,8,2,8,6,6,8),
 	// 										'type' => 'poly'
