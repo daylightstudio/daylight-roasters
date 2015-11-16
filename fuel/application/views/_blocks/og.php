@@ -10,7 +10,7 @@ $image = (!empty($og_image) ? $og_image : '_template/graphic_social_tag_facebook
 <meta name="keywords" content="<?=$meta_keywords?>" />
 <meta name="description" content="<?=$meta_description?>" />
 
-<meta property="og:site_name" content="LSN"/>
+<meta property="og:site_name" content="Daylight Roasters"/>
 <meta property="og:url" content="<?=current_url()?>" />
 <meta property="og:title" content="<?=$title?>" />
 <meta property="og:description" content="<?=$desc?>" />
