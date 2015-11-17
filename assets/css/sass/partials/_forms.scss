@@ -3,7 +3,9 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="search"]
 	width: 100%;
 	padding: 0.3em 0.5em;
 	border-radius: $border-radius;
+	background: $tan;
 	border: 1px solid white;
+	padding: 0.5em 1em;
 	&:focus {
 		border-color: $accent;
 	}
@@ -20,13 +22,13 @@ input[type="search"] {
 
 input[type="submit"], input[type="button"], button, input[type="reset"] {
 	@extend .btn;
-	border: none;
 	appearance: none;
 	&:disabled {
 		//background: gray;
 	}
 }
 label {
+	text-transform: uppercase;
 }
 label.error {
 	color: red;

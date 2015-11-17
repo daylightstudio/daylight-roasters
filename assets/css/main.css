@@ -3513,6 +3513,10 @@ body.pinned {
   float: right;
 }
 
+iframe.map {
+  display: block;
+}
+
 .btn, input[type="submit"], input[type="button"], button, input[type="reset"] {
   display: inline-block;
   border-radius: 0;
@@ -3546,7 +3550,9 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="search"]
   width: 100%;
   padding: 0.3em 0.5em;
   border-radius: 0;
+  background: #f4f2e9;
   border: 1px solid white;
+  padding: 0.5em 1em;
 }
 input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="search"]:focus, textarea:focus {
   border-color: #7A9E9F;
@@ -3567,10 +3573,13 @@ input[type="search"] {
 }
 
 input[type="submit"], input[type="button"], button, input[type="reset"] {
-  border: none;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+label {
+  text-transform: uppercase;
 }
 
 label.error {

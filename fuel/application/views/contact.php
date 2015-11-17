@@ -3,10 +3,3 @@
 <?php fuel_set_var('layout', 'contact') ?>
 <h2>Contact Us</h2>
 <?=form('contact')?>
-
-
-<section class="map-section">
-	<div id="map" class="map">
-		<?=location_map()?>
-	</div>
-</section>

@@ -238,3 +238,6 @@ address {
 		float: right;
 	}
 }
+iframe.map {
+	display: block; //otherwise we get a weird space below
+}
