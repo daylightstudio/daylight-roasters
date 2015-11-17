@@ -3584,6 +3584,9 @@ label {
 
 label.error {
   color: red;
+  font-size: 0.8em;
+  text-align: right;
+  display: block;
 }
 
 .form-field {

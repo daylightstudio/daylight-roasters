@@ -18,7 +18,7 @@ $config['nav']['forms'] = array(
 
 // you can add form configurations here which can then be referenced simply by one of the following methods form('test'), $this->fuel->forms->get('test')
 $config['forms']['forms'] = array(
-	'contact' => array('javascript_validate' => FALSE, 'javascript_submit' => FALSE, 'form_display' => 'block', 'block_view' => 'contact_form', 'form_builder' => array('required_text' => ''),
+	'contact' => array('javascript_validate' => TRUE, 'javascript_submit' => FALSE, 'form_display' => 'block', 'block_view' => 'contact_form', 'form_builder' => array('required_text' => ''),
 		'fields' => array(
 			'name' => array('required' => TRUE),
 			'email' => array('required' => TRUE),
