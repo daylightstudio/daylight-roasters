@@ -1,3 +1,5 @@
+
+<?=$column_layout?>
 <table>
 	<thead>
 		<th>Column left</th>

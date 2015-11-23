@@ -26,6 +26,13 @@ fuel_set_var('append', $append);
 					<main class="post-main">
 						<h2><?=$heading?></h2>
 						<?=fuel_var('body', ''); ?>
+
+						<?php if (!empty($pagination)) : ?>
+						<div class="pagination">
+							<?=$pagination?>
+						</div>
+						<?php endif; ?>
+
 					</main>
 					<aside class="post-aside">
 						

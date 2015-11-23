@@ -31,16 +31,16 @@ $config['modules']['projects'] = array(
 /*********************** /OVERWRITES ************************************/
 
 $config['modules']['news'] = array(
-	'preview_path' => '', // put in the preview path on the site e.g products/{slug}
+	'preview_path' => 'news/{year}/{month}/{day}/{slug}', // put in the preview path on the site e.g products/{slug}
 	'model_location' => '', // put in the advanced module name here
 	'pages' => array(
 		'base_uri' => 'news',
-		'per_page' => 10,
+		'per_page' => 1,
 		'layout' => 'news',
 		'list' => 'news',
 		'archive' => 'news',
 		'post' => 'news/detail',
-		'tag' => array('view' => 'news', 'empty_data_show_404' => TRUE, 'per_page' => 10), // this is essentially the same just using the string of 'news'
+		'tag' => array('view' => 'news', 'empty_data_show_404' => TRUE, 'per_page' => 1), // this is essentially the same just using the string of 'news'
 	)
 );
 

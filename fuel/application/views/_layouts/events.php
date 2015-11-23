@@ -16,6 +16,13 @@ endif;
 					<main class="post-main">
 						<h2>Events<?=(!empty($category) ? ' : '.$category->name : '')?></h2>
 						<?=fuel_var('body', ''); ?>
+
+						<?php if (!empty($pagination)) : ?>
+						<div class="pagination">
+							<?=$pagination?>
+						</div>
+						<?php endif; ?>
+
 					</main>
 					<aside class="post-aside">
 						

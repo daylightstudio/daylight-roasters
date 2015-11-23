@@ -44,7 +44,7 @@ class News_model extends Base_posts_model {
 		parent::__construct('news'); // table name
 	}
 
-	public function list_items($limit = null, $offset = null, $col = 'name', $order = 'asc')
+	public function list_items($limit = null, $offset = null, $col = 'name', $order = 'asc', $just_count = FALSE)
 	{
 		$this->db->select('news.id, news.title, news.publish_date, news.published', FALSE);
 		$data = parent::list_items($limit, $offset, $col, $order);
@@ -52,8 +52,11 @@ class News_model extends Base_posts_model {
 		{
 			foreach($data as $key => $val)
 			{
-				$data[$key]['start_date'] = date_formatter($val['start_date'], 'm/d/Y g:ia');
-				$data[$key]['end_date'] = date_formatter($val['start_date'], 'm/d/Y g:ia');
+				// format with PHP instead of MySQL so that ordering will still work with MySQL
+				if (!empty($val['publish_date']))
+				{
+					$data[$key]['publish_date'] = date_formatter($val['publish_date'], 'm/d/Y h:ia');	
+				}
 			}
 		}
 		return $data;

@@ -67,6 +67,22 @@ $config['blocks']['textblock'] = array(
 $config['blocks']['twocol'] = array(
 	'group' => 'Sections',
 	'label' => '2 Column Block',
+	// 'fields' => array(
+	// 	'twocol' => array(
+	// 		'type' => 'template',
+	// 		'repeatable' => FALSE,
+	// 		'view' => '_admin/fields/twocol',
+	// 		'display_label' => FALSE,
+	// 		'fields' => array(
+	// 			'column_layout' => array('type' => 'select', 'options' => array(
+	// 				'half' => 'Half',
+	// 				'left-lg' => 'Larger left column',
+	// 				'right-lg' => 'Larger right column',
+	// 			)),
+	// 			'column_left' => array('type' => 'textarea', 'style' => 'width: 400px;'),
+	// 			'column_right' => array('type' => 'textarea', 'style' => 'width: 400px;'),
+	// 			'centered' => array('type' => 'enum', 'options' => $yesno),
+	// ))),
 	'fields' => array(
 		'column_layout' => array('type' => 'select', 'options' => array(
 			'half' => 'Half',
@@ -79,6 +95,21 @@ $config['blocks']['twocol'] = array(
 		
 	),
 );
+
+/*
+
+<p><img alt="" src="{img_path('home_illustration_sm.png')}" /></p>
+
+
+<h3>We Know Beans About Beans</h3>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean fermentum cursus luctus. Ut bibendum orci velit, sit amet tempus erat tristique sed.</p>
+
+<p>Vivamus eu quam ut ipsum porttitor posuere at quis nisi. Praesent pulvinar volutpat sollicitudin. Sed in posuere velit, ut lobortis nulla.</p>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam congue velit orci, eu venenatis libero imperdiet vel.</p>
+
+ */
 $config['blocks']['features'] = array(
 	'group' => 'Sections',
 	'label' => 'Features Block',
