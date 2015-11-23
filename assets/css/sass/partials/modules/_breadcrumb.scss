@@ -1,0 +1,25 @@
+.breadcrumb {
+	background: $tan;
+	border-bottom: 3px solid darken($tan, 10%);
+	padding: 3em 0;
+	text-transform: uppercase;
+
+	ul {
+		margin: 0;
+		padding: 0;
+
+		list-style: none;
+		li {
+			display: inline;
+		}
+		a {
+			padding: 0.25em;
+		}
+		li:first-child a {
+			padding-left: 0;
+		}
+	}
+}
+.sep {
+	margin: 0.3em;
+}

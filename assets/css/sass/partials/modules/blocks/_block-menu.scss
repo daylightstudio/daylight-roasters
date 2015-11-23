@@ -1,0 +1,29 @@
+.block-menu {
+	@extend %block;
+	padding-bottom: 0;
+	color: $darkgray2;
+
+	.col {
+		@extend %column6;
+		margin-bottom: 1em;
+		@media (min-width: $break-sm) {
+			margin-bottom: 0;
+		}
+	}
+}
+.block-menu-contain {
+	@include doubleBorder($teal);
+	padding: 1em 2em;
+	@media (min-width: $break-sm) {
+		padding: 3em 5em;
+	}
+}
+.block-menu-title {
+	text-align: center;
+	padding-bottom: 1em;
+	span {
+		background: url('../images/_template/home_menu_title.svg') bottom center no-repeat;
+		background-size: contain;
+		padding-bottom: 0.5em;
+	}
+}

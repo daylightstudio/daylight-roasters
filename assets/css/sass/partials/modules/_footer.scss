@@ -1,0 +1,78 @@
+// FOOTER
+// ---------------------------------------- //
+.footer { 
+	background: $darkgray2 url('../images/_template/footer_illustration.png') right center no-repeat;
+	color: white;
+	text-align: center;
+	.wrapper {
+		padding: $spacing-md 0;
+	}
+	h5 {
+		text-transform: uppercase;
+		font-size: 1.6rem;
+		margin-bottom: 0.5em;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		font-size: 1.3rem;
+	}
+	@media (min-width: $break-sm) {
+		text-align: left;
+	}
+}
+.colophon {
+	text-align: center;
+	padding: 1em 0;
+	margin: 0;
+	font-size: 0.8em;
+	text-transform: uppercase;
+	line-height: 1;
+	background: $darkgray1;
+}
+.footer-col {
+	@extend %column4;
+	margin-bottom: 2em;
+}
+.footer-social-link {
+	font-size: 1.8rem;
+	margin: 0.2em;
+	border-radius: 50%;
+	background: $white;
+	width: 1.5em;
+	height: 1.5em;
+	line-height: 1.5;
+	display: inline-block;
+	text-align: center;
+
+	&:link {
+		color: $darkgray2;
+	}
+	&:hover {
+		background: $accent;
+	}
+}
+
+.footer-nav {
+	// global styles
+	// ---------------------------------------- //
+	&, ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	a {
+		display: block;
+	}
+	
+	// mobile-specific
+	// ---------------------------------------- //
+	@media (max-width: $break-nav - 1) {
+	}
+
+	// larger then break
+	// ---------------------------------------- //
+	@media (min-width: $break-nav) {
+	}
+}

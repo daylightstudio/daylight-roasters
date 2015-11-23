@@ -1,0 +1,454 @@
+/* -------------------------------------------------------------------------
+
+ Style Guide Boilerplate v2.0.1
+ Repo: https://github.com/bjankord/Style-Guide-Boilerplate
+ Author: Brett Jankord
+ License: MIT
+
+---------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ Layout
+---------------------------------------------------------------------------- */
+/* http:/paulirish.com/2012/box-sizing-border-box-ftw/ */
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box; 
+          box-sizing: border-box;
+}
+
+body { 
+  margin: 0;
+  background: #FFF !important;
+}
+
+.sg-header {
+  background: #f1f1f1;
+  color: #323232;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  border-bottom: 1px solid #b2b2b2;
+  z-index: 9999;
+}
+
+.sg-body.wrapper {
+  margin-top: 100px;
+}
+
+@media screen and (max-width: 650px) {
+  .sg-header {
+    text-align: center;
+    position: relative;
+  }
+  .sg-body.wrapper {
+    margin-top: 1em;
+  }
+}
+
+
+.sg-info, .sg-base-styles {
+  padding-bottom: 24px; /* For older browsers */
+  padding-bottom: 2rem;
+}
+
+
+/* -------------------------------------------------------------------------
+ Utility Classes
+---------------------------------------------------------------------------- */
+.sg-container {
+  overflow: hidden;
+  
+}
+
+@media (min-width: 570px) {
+  .sg-container  { padding: 1rem 1.5rem; }
+}
+
+.sg-animated {
+  -webkit-transition: all 0.6s ease-out;  
+     -moz-transition: all 0.6s ease-out;
+      -ms-transition: all 0.6s ease-out;
+       -o-transition: all 0.6s ease-out;
+          transition: all 0.6s ease-out;
+}
+
+
+/* -------------------------------------------------------------------------
+ Modules
+---------------------------------------------------------------------------- */
+
+/* Bradning
+---------------------------------------------------------------------------- */
+.sg-logo {
+  float: left;
+  font-size: 1.5em;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+  .sg-logo span {
+    font-weight: bold;
+  }
+
+.sg-updated_time {
+  margin: 0 0 0 10px;
+  float: left;
+}
+
+@media screen and (max-width: 650px) {
+  .sg-logo {
+    float: none;
+    padding-bottom: .5em;
+    text-align: center;
+  }
+}
+
+/* Navigation
+---------------------------------------------------------------------------- */
+.sg-nav{
+  float: right;
+}
+
+.js .sg-submit-btn {
+  display: none;
+}
+
+.operamini .sg-nav {
+  display: none;
+}
+
+@media screen and (max-width: 650px) {
+  .sg-nav{
+    display: inline;
+    float: none;
+  }
+}
+
+/* Headings
+---------------------------------------------------------------------------- */
+.sg-h1,
+.sg-h2,
+.sg-h3 {
+  font-weight: normal;
+  margin-bottom: 1em;
+  margin-top: 0;
+}
+
+.sg-h1 {    
+  font-size: 1.75em;
+  font-weight: bold;
+  padding-bottom: .2em;
+}
+
+.sg-h2 {
+  background: #f1f1f1;
+  color: #323232;
+  padding: 0.5em 1em;
+  font-size: 1.5em;
+  margin: 0.5em 0 ;
+  text-transform: capitalize; 
+  border-bottom: 1px solid #b2b2b2;
+}
+.sg-h2 a { padding: 0; color: #323232; }
+
+.sg-h3 {
+  font-size: 1.2em;
+}
+
+.sg-htmlview {
+  margin: 0 1em;
+}
+
+
+/* Buttons
+---------------------------------------------------------------------------- */
+.sg-btn {
+  background: #dbdbdb;
+  color: #222;
+  padding: .5em .9em;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.sg-btn:hover {
+  background: ;
+}
+
+.sg-btn--top {
+  float: right;
+}
+
+.sg-btn--select {
+  position: absolute;
+  right: 1px;
+  top: 14px;
+}
+
+.sg-btn--select.is-active:hover:after{
+  background:#111;
+  background:rgba(0,0,0,.8);
+  top:45px;
+  color:#fff;
+  content:"Selected code ready to be copied";
+  font-size: .8em;
+  display:block;
+  right:5px;
+  padding:5px 15px;
+  position:absolute;
+  white-space:nowrap;
+  z-index:98
+}
+
+.sg-btn--select.is-active:hover:before{
+  border:solid;
+  border-color:#111 transparent;
+  border-width:0 6px 6px 6px;
+  top:40px;
+  content:"";
+  display:block;
+  left:75%;
+  position:absolute;
+  z-index:99
+}
+
+/* Hide specific buttons for use with JS */
+.sg-btn--source,
+.sg-btn--select {
+  display: none;
+}
+
+/* Show specific buttons if JS enabled */
+.js .sg-btn--source,
+.js .sg-btn--select {
+  display: block;
+}
+
+/* Hide specific buttons conditionally */
+.operamini .sg-btn--source,
+.legacy .sg-btn--source {
+  display: none;
+}
+
+
+/* Sections
+---------------------------------------------------------------------------- */
+.sg-section {
+  margin-bottom: 32px; /* For older browsers */ 
+  margin-bottom: 3rem;
+  overflow: hidden;
+  border: 1px solid #b2b2b2;
+}
+
+  .sg-anchor {
+    display: block;
+    padding-top: 1em;
+  }
+
+/* Colors
+---------------------------------------------------------------------------- */
+.sg-color {
+  background: #fff;
+  border: 1px solid #bbb;
+  display: inline-block;
+  height: 100px;
+  margin: 0 .5em .5em 0;
+  padding: 5px;
+  position: relative;
+  width: 100px;
+}
+
+.sg-color-swatch {
+  display: block;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.sg-color-swatch span {
+  background: #000;
+  background: rgba(0,0,0,.7);
+  bottom: 0;
+  color: #fff;
+  font-size: .8em;
+  margin: 0;
+  padding: 5px 0;
+  position: absolute;
+  text-align: center;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+
+.gold { background: #fdb813; }
+.darkgold { background: #c58b01; }
+.yellow { background: #ffda00; }
+.sky { background: #4087cf; }
+.black { background: #2c3137; }
+.midnight { background: #333940; }
+.lime { background: #a4de2c; }
+.green { background: #649919; }
+.spring { background: #8cb32a; }
+.mint { background: #a0cb75; }
+.lightgray { background: #dfdfdf; }
+.gray { background: #aaaaaa; }
+.darkgray { background: #595959; }
+
+
+/* Fonts
+---------------------------------------------------------------------------- */
+.sg-font {
+  font-size: 1.4em;
+  padding: 0 0 .2em 0;
+}
+
+
+/* Markup
+---------------------------------------------------------------------------- */
+.sg-markup {}
+
+.sg-doc {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1em;
+}
+
+.sg-markup-controls {
+  overflow: hidden;
+  padding-top: 1.5em;
+  clear: both;
+}
+
+@media (max-width: 729px) {
+  .sg-source { display: none; }
+  .sg-markup-controls { display: none; }
+}
+
+.sg-source {
+  position: relative;
+  background: #dbdbdb;
+}
+
+.sg-source pre {
+  background: #333;
+  border: 1px solid #ddd;
+  color: #fff;
+  overflow-x: scroll;
+  padding: .5em .3em;
+  margin: 0;
+}
+
+.sg-source pre code {
+  background: transparent;
+}
+
+.js .sg-source {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.js .sg-source.is-active,
+.operamini .sg-source,
+.legacy .sg-source {
+  max-height: 2400px; 
+}
+
+
+/* -------------------------------------------------------------------------
+ Prettyprint
+---------------------------------------------------------------------------- */
+.pln {color: #fff} /* plain text */
+
+@media screen {
+  .str,
+  .string {color: #E6DB74;} /* string content */
+  
+  .kwd,
+  .keyword {color: #66D9EF;} /* a keyword */
+  
+  .com,
+  .comment {color: #75715E;} /* a comment */
+  
+  .typ {color: #A6E22E;} /* a type name */
+  
+  .lit,
+  .number {color: #AE81FF;} /* a literal value */
+  
+  /* punctuation, lisp open bracket, lisp close bracket */
+  /* .pun, .opn, .clo { color: #660 } */
+  
+  .tag {color: #F92672;} /* a markup tag name */
+  
+  .atn {color: #A6E22E;} /* a markup attribute name */
+  
+  .atv {color: #E6DB74;} /* a markup attribute value */
+  
+  /*.dec, .var { color: #606 }*/ /* a declaration; a variable name */
+  
+  .fun {color: #FF0000;} /* a function name */
+}
+
+/* Use higher contrast and text-weight for printable form. */
+@media print, projection {
+  .str {color: #060}
+
+  .kwd {color: #006; font-weight: bold }
+  
+  .com {color: #600; font-style: italic }
+  
+  .typ {color: #404; font-weight: bold }
+  
+  .lit {color: #044}
+  
+  .pun, 
+  .opn, 
+  
+  .clo {color: #440}
+  
+  .tag {color: #006; font-weight: bold }
+  
+  .atn {color: #404}
+  
+  .atv {color: #060}
+}
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums {
+  border-left:1px solid #444;
+  margin: 0 0 0 3.3em; /* IE indents via margin-left */
+  padding: 0;
+}
+
+ol.linenums li {
+  color: #bebec5;
+  line-height: 1.5;
+  padding-left: .8em;
+}
+
+
+/* -------------------------------------------------------------------------
+ Legacy IE
+---------------------------------------------------------------------------- */
+/**
+ * IE 7 Fixes
+ */
+.sg-color {
+  *display: inline;
+  zoom: 1;
+}
+/* End IE 7 Fixes */
+
+
+/**
+ * IE 6 Fixes
+ */
+pre{
+  _white-space: pre;
+  _white-space: pre-wrap;
+  _word-wrap: break-word;
+}
+/* End IE 6 Fixes */

@@ -1,0 +1,58 @@
+// POST LAYOUT
+// ---------------------------------------- //
+.post-container {
+	padding: $spacing-lg 0;
+}
+.post-main {
+	@extend %column9;
+}
+.post-aside {
+	@extend %column3;
+}
+.post-aside-item {
+	margin: 0 0 3em;
+}
+.post-aside-list {
+	list-style: none;
+	padding: 0;
+	li {
+		margin: 0.5em 0;
+		font-weight: bold;
+		font-size: 1.6rem;
+	}
+}
+.post-aside-title {
+	text-transform: uppercase;
+	font-size: 2rem;
+	font-family: $font-main;
+
+}
+
+// POST SUMMARIES
+// ---------------------------------------- //
+.post-summary {
+	margin-bottom: 2em;
+}
+.post-summary-thumbnail {
+	@extend %column3;
+}
+.post-summary-content {
+	@extend %column9;
+	@media (min-width: $break-sm) {
+		padding-right: 2em;
+	}
+}
+.post-summary-title {
+	font-size: 2.8rem;
+}
+.post-meta {
+	margin-bottom: 1em;
+	h4 {
+		font-size: 2rem;
+		margin: 0;
+		padding: 0;
+	}
+}
+.post-date {
+	font-weight: bold;
+}

@@ -1,0 +1,64 @@
+input[type="text"], input[type="email"], input[type="tel"], input[type="search"], textarea {
+	font-size: 16px;
+	width: 100%;
+	padding: 0.3em 0.5em;
+	border-radius: $border-radius;
+	background: $tan;
+	border: 1px solid white;
+	padding: 0.5em 1em;
+	&:focus {
+		border-color: $accent;
+	}
+	&.error {
+		border-color: red;
+	}
+	@media (min-width: $break-md) {
+		font-size: 1em;
+	}
+}
+input[type="search"] {
+	appearance: none;
+}
+
+input[type="submit"], input[type="button"], button, input[type="reset"] {
+	@extend .btn;
+	appearance: none;
+	&:disabled {
+		//background: gray;
+	}
+}
+label {
+	text-transform: uppercase;
+}
+label.error {
+	color: red;
+	font-size: 0.8em;
+	text-align: right;
+	display: block;
+}
+.required {
+}
+.form-field {
+	margin-bottom: 1em;
+}
+.form-field-submit {
+	margin: 2em 0;
+}
+input.form-input-nested-text {
+	float: left;
+	display: block;
+	width: 60%;
+	border-radius: $border-radius 0 0 $border-radius;
+	height: 32px;
+}
+input.form-input-nested-btn, button.form-input-nested-btn, .form-input-nested-btn {
+	float: right;
+	display: block;
+	width: 40%;
+	padding: 0.3em 0;
+	border-radius: 0 $border-radius $border-radius 0;
+	border-style: solid;
+	border-width: 1px 1px 1px 0;
+	border-color: $accent;
+	height: 32px;
+} 

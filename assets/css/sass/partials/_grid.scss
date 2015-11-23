@@ -1,0 +1,63 @@
+/* ==========================================================================
+	GRID - basic left-to-right, symmetric grid
+============================================================================= */
+
+// MODIFIED FROM http://Semantic.gs
+//----------------------------------------
+
+// Defaults which you can freely override
+$column-width: 60;
+$gutter-width: 20;
+$columns: 12;
+
+@function gridsystem-width($columns:$columns) {
+	@return ($column-width * $columns) + ($gutter-width * $columns);
+}
+@function getColWidth($x) {
+	@return $total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / gridsystem-width($columns));
+}
+@function getPush($offset:1) {
+	@return $total-width*((($gutter-width+$column-width)*$offset) / gridsystem-width($columns)) + $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}
+
+// Set $total-width to 100% for a fluid layout
+$total-width: 100%;
+// $total-width: $gridsystem-width;
+
+//////////
+// GRID //
+//////////
+
+body {
+	width: 100%;
+	@extend %clearfix;
+}
+@mixin row($columns:$columns) {
+	display: block;
+	width: $total-width*(($gutter-width + gridsystem-width($columns))/gridsystem-width($columns));
+	margin: 0 $total-width*((($gutter-width*.5)/gridsystem-width($columns))*-1);
+	@include clearfix();
+}
+@mixin column($x,$columns:$columns) {
+	display: inline;
+	float: left;
+	width: getColWidth($x);
+	margin-left: $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+	margin-right: $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}
+@mixin columnNofloat($x,$columns:$columns) {
+	width: $total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / gridsystem-width($columns));
+	margin-left: $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+	margin-right: $total-width*(($gutter-width*.5)/gridsystem-width($columns));
+}
+@mixin push($offset:1) {
+	margin-left: getPush($offset);
+}
+@mixin pull($offset:1) {
+	margin-right: getPush($offset);
+}
+@mixin column_center($x,$columns:$columns) { 
+	width: ($total-width*(((($gutter-width+$column-width)*$x)-$gutter-width) / $total-width));
+	margin-left: auto;
+	margin-right: auto;
+}

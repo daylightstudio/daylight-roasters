@@ -1,0 +1,61 @@
+.block-hero {
+	position: relative;
+	color: $white;
+	&-image {
+		position: relative;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 400px;
+
+		@media (min-width: $break-lg) {
+			height: 0;
+			padding-bottom: (400/1200)*100%; //height / width
+		}
+	}
+	&-image-sm {
+		position: relative;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 200px;
+
+		@media (min-width: $break-lg) {
+			height: 0;
+			padding-bottom: (200/1200)*100%; //height / width
+		}
+	}
+	&-content {
+		@include absCover;
+		margin-top: 0;
+		.wrapper {
+			@include verticalCenter;
+		}
+	}
+	h1 {
+		font-style: italic;
+		text-transform: uppercase;
+	}
+}
+
+.block-hero.block-center {
+	.col {
+		@media (min-width: $break-sm){
+			width: getColWidth(10);
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+}
+.block-hero.block-left {
+	@media (min-width: $break-sm){
+		.col {
+			width: getColWidth(7);
+		}
+	}
+}
+.block-hero.block-right {
+	@media (min-width: $break-sm){
+		.col {
+			margin-left: getPush(5);
+		}
+	}
+}

@@ -1,0 +1,66 @@
+/* ==========================================================================
+	VARIABLES
+============================================================================= */
+
+/** COLORS
+---------------------------------------- **/
+//Base Colors
+$teal: #7A9E9F;
+$babyblue: #B8D8D8;
+$black: #282828;
+$darkgray1: #404045;
+$darkgray2: #4B4B4D;
+$gray: #727272;
+$lightgray1: #EAE7D6;
+$lightgray2: #EDEBE2;
+$white: #fff;
+$tan: #f4f2e9;
+//End Base Colors
+
+$dark: $black;
+$copy: $dark;
+$accent: $teal;
+
+
+/** FONTS
+---------------------------------------- **/
+//Base Type
+$font-main: "raleway", 'Century Gothic', CenturyGothic, AppleGothic, Helvetica, sans-serif;
+$font-heading: "chaparral-pro", Palatino, Palatino Linotype,Palatino LT STD, Book Antiqua,Georgia,serif;
+//End Base Type
+
+$font-size-base: 1.6rem;
+$line-height-base: 1.44;
+$bold: 600;
+
+
+
+/** RESPONSIVE WIDTHS
+---------------------------------------- **/
+$break-sm: 570px; //568px for iphone .. and (orientation : landscape)
+$break-md: 770px;
+$break-lg: 960px;
+
+$break-nav: $break-md; //when it becomes the hamburger
+
+
+/** VERTICAL SPACING
+---------------------------------------- **/
+$spacing-xl: 100px;
+$spacing-lg: 80px;
+$spacing-md: 60px;
+$spacing-sm: 20px;
+
+
+/** TRANSITIONS
+---------------------------------------- **/
+$cubic_ease: cubic-bezier(0.5, 0, 0.5, 1);
+
+$fast: 0.2s;
+$slow: 0.4s;
+$ease: $cubic_ease;
+
+
+/** MISC VARIABLES
+---------------------------------------- **/
+$border-radius: 0;

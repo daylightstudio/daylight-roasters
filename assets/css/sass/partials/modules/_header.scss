@@ -1,0 +1,24 @@
+// HEADER
+// ---------------------------------------- //
+.header { 
+	background: $babyblue;
+	.wrapper {
+		@include clearfix;
+		padding: 1em 0;
+	}
+}
+.sitetitle { 
+	text-align: center;
+	font-size: inherit;
+
+	@media (min-width: $break-nav) {
+		float: left;
+	}
+}
+.mainnav-wrap { 
+	margin-top: 1em;
+	@media (min-width: $break-nav) {
+		float: right;
+		margin: 0;
+	}
+}

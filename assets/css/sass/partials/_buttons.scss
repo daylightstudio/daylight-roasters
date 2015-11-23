@@ -1,0 +1,30 @@
+.btn {
+	display: inline-block;
+	border-radius: $border-radius;
+	padding: 0.5em 1.5em;
+	font-size: 1.3rem;
+	line-height: 1.54;
+	text-transform: uppercase;
+
+	color: $accent;
+	background: $white;
+	border: 1px solid $accent;
+	transition: all $slow $ease;
+
+	&:link, &:visited {
+		color: $accent;
+		background: rgba($accent, 0);
+		border: 1px solid $accent;
+	}
+	&:hover, &:focus {
+		background: $accent;
+		color: $white;
+		text-decoration: none;
+	}
+	&:active {
+		color: $gray;
+		border-color: $gray;
+		background: $white;
+	}
+}
+.btn-secondary {}

@@ -1,0 +1,11 @@
+.block-text {
+	@extend %block;
+
+	.col {
+		@media (min-width: $break-sm) {
+			width: getColWidth(10);
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+}

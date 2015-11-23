@@ -1,0 +1,6 @@
+.idea
+.DS_Store
+fuel/application/cache/
+**/.sass-cache
+**/.sass-cache/*
+node_modules

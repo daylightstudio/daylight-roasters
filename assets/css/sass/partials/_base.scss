@@ -1,0 +1,243 @@
+// Remove text-shadow in selection highlight: h5bp.com/i
+// These selection declarations have to be separate.
+// Customize the background color to match your design.
+::selection { 
+	background: rgba($accent, 0.9); 
+	text-shadow: none; 
+	color: $white; 
+}
+
+// A better looking default horizontal rule
+hr { 
+	display: block; 
+	height: 1px; 
+	border: 0; 
+	border-top: 1px solid #ccc; 
+	margin: 1em 0; 
+	padding: 0; 
+}
+
+img {
+	vertical-align: middle; 
+	max-width: 100%;
+}
+.img-circle {
+	border-radius: 50%;
+}
+
+// Remove default fieldset styles.
+fieldset {
+	border: 0; 
+	margin: 0; 
+	padding: 0; 
+}
+
+// Allow only vertical resizing of textareas.
+textarea {
+	resize: vertical; 
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+// Set html/body max width
+html, body { 
+	width: 100%; 
+	min-height: 100%; 
+	padding: 0; 
+	margin: 0; 
+}
+
+
+// TYPOGRAPHY
+// ---------------------------------------- //
+html { 
+	font-size: 62.5%; 
+}
+.mainfont, html, body, button, input, select, textarea { 
+	font-family: $font-main;
+}
+body { 
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+}
+html, body, button, input, select, textarea { 
+	color: $copy; 
+}
+
+%first_last_margins {
+	&:first-child { margin-top: 0 }
+	// &:last-child { margin-bottom: 0 }
+}
+ul, ol { 
+	@extend %first_last_margins;
+	margin: 1em 0;
+}
+p { 
+	@extend %first_last_margins;
+	margin: 0 0 1em 0; 
+}
+
+a { 
+	&:link, &:visited {
+		color: $accent; 
+		text-decoration: none;
+	}
+	&:hover, &:focus { 
+		text-decoration: underline; 
+	}
+	&:active {
+		color: $gray;
+		text-decoration: underline; 
+	}
+}
+
+%header_global { 
+	margin: 0.5em 0;
+	font-family: $font-heading;
+	font-weight: normal;
+	&:first-child { 
+		margin-top: 0; 
+	}
+}
+h1, .h_headline { 
+	@extend %header_global;
+	font-size: 4rem;
+	line-height: 1.17;
+	@media (min-width: $break-sm) {
+		font-size: 5.8rem;
+	}
+}
+h2, .h_subheadline { 
+	@extend %header_global;
+	font-size: 3.7rem;
+	line-height: 1.22;
+	@media (min-width: $break-sm) {
+		font-size: 4.6rem;
+	}
+}
+h3, .h_byline {
+	@extend %header_global; 
+	color: $teal;
+	font-size: 3rem;
+	line-height: 1.18;
+	@media (min-width: $break-sm) {
+		font-size: 3.8rem;
+	}
+}
+h4, .h_standfirst { 
+	@extend %header_global;
+	font-size: 2.5rem;
+	line-height: 1.28;
+}
+h5, .h_related { 
+	//margin: 0.5em 0;
+	font-family: $font-main;
+	font-weight: $bold;
+	font-size: 1.6rem;
+	line-height: 1.3;
+	text-transform: uppercase;
+	&:first-child { 
+		margin-top: 0; 
+	}
+}
+big,
+.text_large,
+.text_intro { 
+	font-size: 2em;
+	line-height: 1.5; 
+}
+small,
+.text_small { 
+	font-size: 0.81em;
+	line-height: 1.54; 
+}
+blockquote {
+	font-size: $font-size-base*1.4;
+	margin: 1em 0;
+	.fancy {
+		position: relative;
+		&:before {
+			content: '\201C';
+			position: absolute;
+			right: 100%;
+			margin-right: 3px;
+			font-size: 1.4em;
+
+		}
+		&:after {
+			content: '\201D';
+		}
+	}
+}
+cite {
+	font-size: $font-size-base*0.9;
+	font-style: normal;
+}
+address {
+	margin: 1em 0;
+	font-style: normal;
+}
+.readmore-link {
+	&:after {
+		content: '\2192';
+		margin-left: 0.5em;
+	}
+}
+// LAYOUT
+// ---------------------------------------- //
+.wrapper { 
+	@include clearfix;
+ 	max-width:960px; 
+ 	width: 90%; 
+ 	padding: 0; 
+ 	margin: 0 auto; 
+ }
+ body.pinned {
+ 	overflow: hidden;
+ }
+
+// COLUMNS
+// ---------------------------------------- //
+@for $i from 1 through 12 {
+	%column#{$i} { 
+		@media (min-width: $break-sm){
+		  	@include column($i);
+		  	padding-bottom: 0;
+		}
+	}
+}
+.row {
+	@include row;
+	@include clearfix;
+}
+%narrow-column {
+	@media (min-width: $break-sm){
+		@include column_center(10);
+	}
+}
+
+// ONE-OFFS
+// ---------------------------------------- //
+.menu-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	li {
+		margin: 1em 2em 1em 0;
+		background: url('../images/_template/dot.png') repeat-x bottom;
+		line-height: 1;
+	}
+	span {
+		position: relative;
+		background: white;
+		padding: 3px;
+	}
+	span:last-child {
+		float: right;
+	}
+}
+iframe.map {
+	display: block; //otherwise we get a weird space below
+}
