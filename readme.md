@@ -1,3 +1,12 @@
+# DAYLIGHT ROASTERS
+This is a demo website for FUEL CMS. It showcases some common website features including:
++ [Page and block layouts](http://docs.getfuelcms.com/general/layouts)
++ Event and news [simple modules](http://docs.getfuelcms.com/modules/simple)
++ Contact [form](http://docs.getfuelcms.com/modules/forms) advanced module
++ Contact [locations](http://docs.getfuelcms.com/modules/locations) advanced module
+
+Install the fuel/install/demo.sql instead of the fuel/install/fuel.sql.
+
 # FUEL CMS
 FUEL CMS is a [CodeIgniter](http://ellislab.com/codeigniter) based content management system. To learn more about its features visit: http://www.getfuelcms.com
 
