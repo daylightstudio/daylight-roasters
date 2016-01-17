@@ -22,14 +22,14 @@ $config['modules']['events'] = array(
 
 			<div class="post-summary-thumbnail">
 				<?php if ($post->has_image()) : ?>
-				<p><a href="<?=$post->url?>"><img src="<?=$post->image_path?>" alt="<?=$post->title_entities?>" /></a></p>
+				<p><img src="<?=$post->image_path?>" alt="<?=$post->title_entities?>" /></p>
 				<?php endif; ?>
 			</div>
 
 			<div class="post-summary-content">
 				<h3 class="post-summary-title">
 					<?=fuel_edit($post)?>
-					<a href="<?=$post->url?>"><?=$post->title?></a>
+					<?=$post->title?>
 				</h3>
 
 				<div class="post-meta">
