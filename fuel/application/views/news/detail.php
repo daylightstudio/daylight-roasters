@@ -16,11 +16,6 @@ $config['modules']['events'] = array(
 ?>
 <div class="posts left">
 
-	<?=fuel_edit('create', 'Create Post', $module->info('module_uri'))?>
-	
-	<?php if (!empty($posts)) : ?>
-		<?php foreach($posts as $post) : ?>
-
 		<article class="row post-summary" id="news-<?=$post->id?>">
 
 			<?=fuel_block(array('view' => 'posts/post_unpublished', 'vars' => array('post' => $post)))?>
@@ -41,9 +36,7 @@ $config['modules']['events'] = array(
 					<span class="post-date"><?=$post->publish_date_formatted('F j, Y')?></span>
 				</div>
 
-				<?=$post->excerpt_formatted?>
-
-				<p><a href="<?=$post->url?>" class="readmore-link"<?=link_target($post->url)?>>Read More</a></p>
+				<?=$post->content_formatted?>
 
 				<div class="post-categories">
 					<?php if ($tags_linked = $post->tags_linked) : ?>
@@ -55,15 +48,6 @@ $config['modules']['events'] = array(
 
 			</div>
 		</article>
-		
-		<?php endforeach; ?>
-
-
-	<?php else: ?>
-	<div class="no_posts">
-		<p>There are no news items available.</p>
-	</div>
-	<?php endif; ?> 
 </div>
 
 
