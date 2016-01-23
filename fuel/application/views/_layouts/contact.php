@@ -5,19 +5,18 @@
 		<?=location_map()?>
 	</div>
 		
-		<?=fuel_block('breadcrumb')?>
-		
-		<main class="main-repeater-container">
-			<section class="block-text">
-				<div class="wrapper">
-					<div class="row">
-						<main class="post-main">
-							<?=fuel_var('body', ''); ?>
-						</main>
-					</div>
+	<?=fuel_block('breadcrumb')?>
+	
+	<main class="main-repeater-container">
+		<section class="block-text">
+			<div class="wrapper">
+				<div class="row">
+					<main class="post-main">
+						<?=fuel_var('body', ''); ?>
+					</main>
 				</div>
-			</section>
-		</main>
-	</div>
-
+			</div>
+		</section>
+	</main>
+	
 <?php $this->load->view('_blocks/footer')?>
